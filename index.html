@@ -1,599 +1,411 @@
 <!DOCTYPE html>
 <html lang="es">
+<!-- Si estás leyendo esto, primero ya te dije que no estoy usando ningún framework de moda hipster como React, next, nest, lo que sea. A lo sumo Blazor. -->
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IR0 Kernel - Wiki</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f4f4f4;
-        }
-
-        .navbar {
-            background-color: #000;
-            color: white;
-            padding: 1rem 0;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #fff;
-        }
-
-        .nav-menu {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-
-        .nav-link {
-            color: #ccc;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-link:hover {
-            color: #fff;
-            background-color: #333;
-        }
-
-        .nav-link.active {
-            color: #fff;
-            background-color: #444;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 6rem 2rem 2rem;
-        }
-
-        .section {
-            display: none;
-            background: white;
-            border-radius: 8px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        h1 {
-            color: #333;
-            border-bottom: 2px solid #000;
-            padding-bottom: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        h2 {
-            color: #444;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            padding-left: 1rem;
-            border-left: 4px solid #000;
-        }
-
-        h3 {
-            color: #666;
-            margin-top: 1.5rem;
-            margin-bottom: 0.8rem;
-        }
-
-        .info-card {
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-        }
-
-        .code-block {
-            background: #2c2c2c;
-            color: #f8f8f8;
-            padding: 1.5rem;
-            border-radius: 6px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            overflow-x: auto;
-            margin: 1rem 0;
-        }
-
-        .branch-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin: 2rem 0;
-        }
-
-        .branch-card {
-            background: white;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .branch-title {
-            font-size: 1.3rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            color: #333;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-        }
-
-        .status-stable {
-            background-color: #28a745;
-            color: white;
-        }
-
-        .status-development {
-            background-color: #ffc107;
-            color: #333;
-        }
-
-        .feature-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .feature-list li {
-            padding: 0.3rem 0;
-            padding-left: 1.5rem;
-            position: relative;
-        }
-
-        .feature-list li::before {
-            content: '•';
-            position: absolute;
-            left: 0;
-            color: #000;
-            font-weight: bold;
-        }
-
-        .architecture-box {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
-            padding: 2rem;
-            margin: 2rem 0;
-            text-align: center;
-        }
-
-        .layer {
-            background: #333;
-            color: white;
-            padding: 0.8rem 1.5rem;
-            margin: 0.5rem;
-            border-radius: 4px;
-            display: inline-block;
-            min-width: 180px;
-        }
-
-        .panic-output {
-            background: #000;
-            color: #0f0;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-            padding: 1.5rem;
-            border-radius: 6px;
-            margin: 1rem 0;
-            overflow-x: auto;
-        }
-
-        @media (max-width: 768px) {
-            .nav-container {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .nav-menu {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 1rem;
-            }
-            
-            .container {
-                padding: 8rem 1rem 2rem;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
+
+    <script src="main.js"></script>
+
     <nav class="navbar">
         <div class="nav-container">
-            <div class="logo">IR0</div>
+            <div class="logo"><a href="index.html" target="_blank" rel="noopener noreferrer"
+                    style="text-decoration: none; color: white;">IR0 Wiki</a></div>
             <ul class="nav-menu">
                 <li><a href="#overview" class="nav-link active" onclick="showSection('overview')">Overview</a></li>
                 <li><a href="#architecture" class="nav-link" onclick="showSection('architecture')">Arquitectura</a></li>
                 <li><a href="#branches" class="nav-link" onclick="showSection('branches')">Ramas</a></li>
                 <li><a href="#development" class="nav-link" onclick="showSection('development')">Desarrollo</a></li>
-                <li><a href="#panic" class="nav-link" onclick="showSection('panic')">Panic Handler</a></li>
+                <li><a href="#panic" class="nav-link" onclick="showSection('panic')">Subsistemas</a></li>
             </ul>
         </div>
     </nav>
 
     <div class="container">
         <section id="overview" class="section active">
-            <h1>IR0 Kernel - Overview</h1>
-            
-            <div class="info-card">
-                <h2>¿Qué es IR0?</h2>
-                <p>IR0 es un kernel de sistema operativo desarrollado desde cero para arquitectura x86-32. El proyecto se enfoca en crear un kernel monolítico robusto con herramientas avanzadas de debugging y gestión eficiente de recursos del sistema.</p>
-            </div>
+            <h1 class="titulo-principal">IR0 Kernel - Overview</h1>
 
             <div class="info-card">
-                <h2>Características Principales</h2>
+                <p>
+                    El propósito de esta "wiki", documentación web, guía, como le digas, es usarla como ayuda-memoria personal
+                    para el desarrollo del kernel.
+                    No tiene que ser una página ultra estética, pero me estoy esforzando para que no se note que la hice
+                    con html, css y js vanilla como la de <a href="https://docs.kernel.org/" target="_blank"
+                        rel="noopener noreferrer">algún proyecto aficionado</a>
+                    que anda por ahí. <br> <br>
+                    Un kernel de sistema operativo mínimamente funcional (todo el kernel space más un user space mínimo)
+                    puede andar fácilmente en las <strong>15.000</strong> líneas de código por lo que, como verás;
+                    es humanamente imposible memorizar y comprender todo el flujo del kernel por mí mismo. Además son
+                    muchos subsistemas complejos trabajando a bajo nivel juntos para intermediar entre hardware y
+                    software.
+                </p>
+            </div>
+
+
+            <div class="info-card">
+                <h2>¿Qué es IR0?</h2>
+                <p>
+                    <strong>IR0</strong> es un <strong>kernel de sistema operativo multipropósito</strong> desarrollado
+                    desde cero para arquitectura
+                    <strong>x86-32</strong> escrito principalmente en <strong>C</strong> y <strong>ASM</strong> (Aunque
+                    no tengo ningún problema en incluir código de otros lenguajes especializados en performance como
+                    <strong>Cpp</strong> o <strong>Rust</strong>).
+                    <br>
+                    Lo estoy creando para aprender más sobre sistemas operativos y poder usarlo como materia
+                    prima para otro proyecto que replica a <a href="https://learn.microsoft.com/es-es/windows/wsl/about"
+                        target="_blank" rel="noopener noreferrer">WSL2</a> pero con mi propio kernel.
+                    No descarto escalarlo lo suficiente como para hacerlo usable en servidores mínimos o incluso IoT,
+                    pero entiendo que eso es al largo <i>(larguísimo)</i> plazo.
+                </p>
+            </div>
+
+
+            <div class="info-card">
+                <h2>Características Principales y las futuras</h2>
                 <ul class="feature-list">
-                    <li>Kernel monolítico para arquitectura i386</li>
-                    <li>Sistema de panic avanzado con debugging detallado</li>
-                    <li>Gestión de memoria con paging</li>
+                    <li>Kernel monolítico para arquitectura x86-64</li>
+                    <li>Gestión de memoria con paging en esas dos arquitecturas</li>
                     <li>Manejo de interrupciones y excepciones</li>
-                    <li>Bootloader personalizado</li>
-                    <li>Migración a sintaxis Intel Assembly</li>
+                    <li>Bootloader personalizado (Sólo en x86 y segúramente migre todas las arquitecturas a GRUB)</li>
+                    <li>El código ensamblador que uso es en sintaxis de <a
+                            href="https://cs.lmu.edu/~ray/notes/nasmtutorial/" target="_blank"
+                            rel="noopener noreferrer">Intel Netwide Assembler (nasm)</a>.</li>
+                    <li>Filesystem propio basado en EXT con optimización con bbdd vectorial en espacio de usuario</li>
+                    <li>Pila de red y <a href="https://opensource.com/article/22/12/linux-abi" target="_blank"
+                            rel="noopener noreferrer">ABI</a> prestados de Linux (Son millones de líneas de código que
+                        no pienso escribir solo)</li>
+                    <li>Syscalls propias y algunas mapeadas de Linux</li>
+                    <li>Algunos drivers para manejo de hardware mínimo.</li>
                 </ul>
             </div>
 
             <div class="info-card">
                 <h2>Estado del Proyecto</h2>
-                <p><strong>Versión:</strong> 0.3.x-dev<br>
-                <strong>Arquitectura:</strong> x86-32 (i386)<br>
-                <strong>Bootloader:</strong> Custom<br>
-                <strong>Sintaxis ASM:</strong> Intel (en migración)</p>
+                <p><strong>Versión:</strong> no versionado aún (pero vamos a decir pre-release)<br>
+                    <strong>Arquitectura:</strong> x86-32 (i386)<br>
+                    <strong>Bootloader:</strong> GRUB<br>
+                    <strong>Sintaxis ASM:</strong> Intel
+                </p>
             </div>
         </section>
 
         <section id="architecture" class="section">
-            <h1>Arquitectura del Sistema</h1>
-            
+            <h1 class="titulo-principal">Arquitectura del Sistema</h1>
+
             <div class="architecture-box">
-                <h3>Capas del Kernel IR0</h3>
-                <div>
-                    <div class="layer">User Applications</div>
-                </div>
-                <div>
-                    <div class="layer">System Call Interface</div>
-                </div>
-                <div>
-                    <div class="layer">Kernel Core (IR0)</div>
-                </div>
-                <div>
-                    <div class="layer">Hardware Abstraction</div>
-                </div>
-                <div>
-                    <div class="layer">Hardware x86-32</div>
-                </div>
+                <img src="Assets/scheme-core.png" alt="ir0-arch" srcset="">
             </div>
+            <div class="info-card">
+                <h2>Arquitectura y "Filosofía" del proyecto</h2>
+                <p>
+                    A diferencia de kernels como <a href="https://en.wikipedia.org/wiki/Windows_NT" target="_blank" rel="noopener noreferrer">kernel NT (Híbrido)</a> de Microsoft, <a href="https://www.redox-os.org/" target="_blank" rel="noopener noreferrer">Redox-OS (Microkernel)</a>, 
+                    o el mismo <a href="https://es.wikipedia.org/wiki/MINIX" target="_blank" rel="noopener noreferrer">MINIX kernel (microkernel)</a>, IR0 se basa en una arquitectura más similar a la que tiene Linux, que es monolítico. <br>
+                    sin embargo, mi argumento principal es el del rendimiento. Entiendo que alguien podría venir y señalar que, como todo monolito, si un subcomponente se rompe, se cae todo el sistema <small>(y tendría razón)</small>
+                    pero lo que respondo a eso es que <i>"¿De qué me sirve a mí que el kernel soporte seguir sin filesystem si no puedo hacer nada práctico sin él?"</i>, es decir, no tiene sentido que el kernel 
+                    continúe funcionando <strong>sin uno de sus componentes clave corriendo</strong>. <br>
+                    Eso lo resuelve el patrón monolítico. Y además me ahorra el tener que interconectar subsistemas clave entre sí con IPC, lo que impacta de una en el rendimiento del Sistema Operativo. No es
+                    perfecto, pero es estable. No es del todo trazable y requiere escalar de a poco, pero si escala bien rinde mucho. <br>
+
+                    <br>
+                    Sin embargo yo también tengo desacuerdos con la <a href="https://es.wikipedia.org/wiki/Filosof%C3%ADa_de_Unix" target="_blank" rel="noopener noreferrer">filosofía UNIX</a>. Ellos (entre otras cosas y de forma resumidísima) consideran
+                    que si algo falla, que falle bien. Lo que en términos kernelísticos sería: <i>Si se rompe el scheduler, Panic() directo. Si tenés corrupción en memoria (en espacio de kernel), Panic.</i><br>
+                    Y no es que lo cuestiono por que sí, simplemente pregunto (aunque sin soluciones todavía) <i>"¿Por qué no rescatar el sistema en tiempo de Panic()?, o por lo menos hacer el intento"</i>. <br>
+                    Mas allá del punto filosófico y para resumir, el kernel es monolítico porque es más performante y siento que las piezas clave del núcleo deben <strong>trabajar sin overhead</strong>. <br>
+                    Sin embargo, si en el futuro necesitara integrar algún subsistema específico de forma híbrida, seguramente sería pragmático.
+                </p>
+                <h2>El Kernel Space es sagrado</h2>
+                <p>
+                    Yo sé que hablo como si IR0 fuera usado por miles de personas y toda la historia, pero el punto es que el kernel space es sólo habitable por subsistemas que trabajen en ese Entorno,
+                    nada mas. <br> RING 0 es únicamente para el kernel. Todo lo que venga del RING 3 se comunica con <i>syscalls()</i>, fin del comunicado.
+                </p>
+
+            </div>
+
 
             <div class="info-card">
                 <h2>Estructura de Directorios</h2>
-                <div class="code-block">
-ir0/
-├── boot/           # Bootloader y código de arranque
-│   └── boot.asm    # Punto de entrada del kernel
-├── kernel/         # Core del kernel
-│   ├── arch/       # Código específico de x86
-│   ├── mm/         # Memory Management
-│   ├── panic/      # Sistema de panic
-│   └── drivers/    # Device drivers
-├── include/        # Headers del kernel
-│   └── ir0/        # Headers públicos
-└── build/          # Sistema de compilación
-                </div>
+                <p>
+                    Cómo la estructura de archivos puede cambiar constantemente, prefiero que la consultes en el 
+                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank" rel="noopener noreferrer">Repo de GitHub</a>.
+                </p>
+
             </div>
 
-            <div class="info-card">
-                <h2>Componentes del Kernel</h2>
-                <h3>Memory Manager</h3>
-                <p>Gestión de memoria física y virtual. Implementa paging, allocación dinámica y protección de memoria entre procesos.</p>
-                
-                <h3>Interrupt Handler</h3>
-                <p>Sistema completo de manejo de interrupciones con IDT (Interrupt Descriptor Table), manejo de excepciones del procesador y timer del sistema.</p>
-                
-                <h3>Panic System</h3>
-                <p>Sistema avanzado de debugging que captura el estado completo del sistema en caso de errores fatales, incluyendo registros, stack trace y información de memoria.</p>
-
-                <h3>Device Drivers</h3>
-                <p>Controladores básicos para VGA, teclado y otros dispositivos esenciales del sistema.</p>
-            </div>
         </section>
 
         <section id="branches" class="section">
-            <h1>Gestión de Ramas</h1>
-            
+            <h1 class="titulo-principal">Gestión de Ramas</h1>
+            <div class="info-card">
+                <h2>Flujo de Trabajo con Git</h2>
+                <div class="code-block">
+                    <article>Como es la primera vez que escribo un proyecto de esta evergadura, lo que busco
+                        es que el Workflow para el desarrollo del kernel sea
+                        lo mas limpio, predecible y escalable posible. Para eso uso 3 ramas de git principales en el
+                        proceso: mainline, dev y feature (que aunque no está en el repositorio, es la que se usa para
+                        integrar código nuevo).
+                        Donde sólo <strong>mainline</strong> y <strong>dev</strong> son las únicas 2 <i>ramas upstream</i>. <strong>experimental</strong> es una rama
+                        divergente a dev y feature es la rama donde se envían contribuciones.
+                    </article>
+                </div>
+            </div>
+
+            <!-- mainline BRANCH -->
             <div class="branch-grid">
                 <div class="branch-card">
                     <div class="branch-title">mainline</div>
                     <div class="status-badge status-stable">STABLE</div>
-                    <p><strong>Propósito:</strong> Rama principal con código estable y completamente probado.</p>
-                    
-                    <h3>Política:</h3>
+                    <p><strong>-</strong> Rama principal con código estable y testeado.</p>
+
+                    <h3>Características</h3>
                     <ul class="feature-list">
                         <li>Solo código probado y funcional</li>
-                        <li>Builds garantizados</li>
                         <li>Documentación completa</li>
-                        <li>Base para releases oficiales</li>
+                        <li>Mi base para rc's.</li>
+                        <li>mainline es sagrada, ya que este rama tiene que compilar y bootear siempre . Es la mas
+                            estable de las
+                            dos ramas upstream.</li>
                     </ul>
-                    
-                    <h3>Merge Policy:</h3>
-                    <p>El código debe pasar por dev y testing completo antes de ser integrado a mainline.</p>
-                </div>
 
+                </div>
+                <!-- DEV BRANCH -->
                 <div class="branch-card">
                     <div class="branch-title">dev</div>
-                    <div class="status-badge status-development">DEVELOPMENT</div>
-                    <p><strong>Propósito:</strong> Rama de desarrollo activo donde se implementan nuevas características.</p>
-                    
+                    <div class="status-badge status-development">STAGING</div>
+                    <p><strong>-</strong> Rama de desarrollo activo donde se implementan y testean nuevas
+                        features.</p>
+
                     <h3>Características:</h3>
                     <ul class="feature-list">
-                        <li>Nuevas features en desarrollo</li>
-                        <li>Refactoring de código existente</li>
-                        <li>Experimentos y pruebas</li>
-                        <li>Puede contener bugs temporales</li>
+                        <li>Es el espejo del mainline. Lo que se mergee acá no tiene porque pasar al mainline</li>
+                        <li>Nuevas features en desarrollo que me convencieron de feature</li>
+                        <li>Parches de código, refactors y optimizaciones</li>
+                        <li>Puede contener bugs temporales que se resuelven sí o sí en esta rama.</li>
                     </ul>
-                    
-                    <h3>Workflow:</h3>
-                    <p>Desarrollo → Testing en dev → Merge a mainline cuando esté estable y probado.</p>
+
+                </div>
+
+                <!-- exp BRANCH -->
+
+                <div class="branch-card">
+                    <div class="branch-title">experimental</div>
+                    <div class="status-badge status-exp">MISC</div>
+                    <p><strong>-</strong>
+                        En esta rama, se integran features lo suficientemente inestables como para terminar en
+                        <strong>mainline</strong>
+                        pero que pueden tener potencial a futuro.
+                    </p>
+
+                    <h3>Características:</h3>
+                    <ul class="feature-list">
+                        <li>Es una rama de pruebas puras, no tiene nada que ver con las ramas upstream estables</li>
+                        <li>Acá caen las features y experimentos que no llegan al <strong>mainline</strong></li>
+                        <li>Cosas que no se prueban en sistemas operativos o ideas nuevas</li>
+                        <li>No es tan importante la estabilidad en esta rama</li>
+                        <li>Si se testean lo suficiente sin romper nada, pueden o no mergear a mainline primero
+                            pasando por <strong>dev</strong> de nuevo.
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- feat BRANCH -->
+                <div class="branch-card">
+                    <div class="branch-title">feature</div>
+                    <div class="status-badge status-feat">DEVELOPMENT</div>
+                    <p><strong>-</strong>
+                        La agrego porque es la rama donde se crean feats que despues pasan al upstream
+                        mergeando a <strong>dev</strong> . Es la más inestable de todas porque es donde se integra
+                        código nuevo que también debe ser testeado y revisado antes de llegar a merge.
+                    </p>
+
+                    <h3>Características:</h3>
+                    <ul class="feature-list">
+                        <li>Acá es donde yo empiezo a implementar nuevas funcionalidades o parches</li>
+                        <li>Es la primera que se debuggea</li>
+                    </ul>
                 </div>
             </div>
-
             <div class="info-card">
-                <h2>Flujo de Trabajo con Git</h2>
-                <div class="code-block">
-# Trabajar en nueva feature
-git checkout dev
-git pull origin dev
+                <h2>Cómo es el merging desde feature hasta mainline?</h2>
 
-# Desarrollar código...
-git add .
-git commit -m "feat: implementar nueva característica"
-git push origin dev
+                <article> 
+                    Básicamente, vos creás tu mejora/optmización desde un fork del repo con una rama nueva que va a ser algo como "feature/fix-scheduler" por ej.  <br>
+                    Después, <strong>hacés PR a la rama dev del upstream</strong> y se hace la revisión y el merge en dado caso. <br>
+                    El merge a mainline depende de <strong>cuán alineado con el proyecto considere que es la feature</strong>. <br>
+                    Ni siquiera algunas de mis propias implementaciones las mergearía directo al mainline por esta misma razón.  
+                </article>
 
-# Testing y validación
-make clean && make all
-make test
-
-# Cuando esté listo, merge a mainline
-git checkout mainline
-git merge dev
-git push origin mainline
-                </div>
-            </div>
-        </section>
-
-        <section id="development" class="section">
-            <h1>Guía de Desarrollo</h1>
-            
-            <div class="info-card">
-                <h2>Configuración del Entorno</h2>
-                <h3>Dependencias Requeridas:</h3>
-                <div class="code-block">
-# Ubuntu/Debian
-sudo apt update
-sudo apt install gcc make nasm qemu-system-x86 gdb
-
-# Arch Linux
-sudo pacman -S gcc make nasm qemu gdb
-
-# Verificar instalación
-gcc --version
-nasm -v
-qemu-system-i386 --version
-                </div>
             </div>
 
-            <div class="info-card">
-                <h2>Compilación y Ejecución</h2>
-                <div class="code-block">
-# Clonar repositorio
-git clone https://github.com/usuario/ir0-kernel.git
-cd ir0-kernel
-
-# Compilar kernel
-make clean
-make all
-
-# Ejecutar en QEMU
-make run
-
-# Debug con GDB
-make debug
-                </div>
-            </div>
-
-            <div class="info-card">
-                <h2>Estándares de Código</h2>
-                <h3>Convenciones de Nombres:</h3>
-                <ul class="feature-list">
-                    <li>Funciones: <code>snake_case()</code></li>
-                    <li>Macros: <code>UPPER_CASE</code></li>
-                    <li>Structs: <code>struct_name_t</code></li>
-                    <li>Variables globales: <code>g_variable_name</code></li>
-                    <li>Constantes: <code>CONSTANT_NAME</code></li>
-                </ul>
-
-                <h3>Comentarios:</h3>
-                <ul class="feature-list">
-                    <li>Headers de funciones documentados</li>
-                    <li>Explicación de algoritmos complejos</li>
-                    <li>TODOs claramente marcados</li>
-                    <li>Referencias a documentación técnica</li>
-                </ul>
-            </div>
-
-            <div class="info-card">
-                <h2>Sistema de Testing</h2>
-                <div class="code-block">
-# Tests básicos
-make test-boot      # Test de arranque
-make test-memory    # Test de gestión de memoria
-make test-panic     # Test del sistema de panic
-
-# Test completo
-make test-all
-
-# Ejecutar con logging detallado
-make run-verbose
-                </div>
-            </div>
-        </section>
-
-        <section id="panic" class="section">
-            <h1>Sistema de Panic Avanzado</h1>
-            
-            <div class="info-card">
-                <h2>Características del Panic Handler</h2>
-                <p>El sistema de panic de IR0 proporciona información detallada para debugging cuando ocurren errores fatales en el kernel.</p>
-                
-                <h3>Tipos de Panic:</h3>
-                <ul class="feature-list">
-                    <li><strong>PANIC_KERNEL_BUG:</strong> Errores en código del kernel</li>
-                    <li><strong>PANIC_HARDWARE_FAULT:</strong> Fallos de hardware</li>
-                    <li><strong>PANIC_OUT_OF_MEMORY:</strong> Sistema sin memoria</li>
-                    <li><strong>PANIC_STACK_OVERFLOW:</strong> Desbordamiento de pila</li>
-                    <li><strong>PANIC_ASSERT_FAILED:</strong> Falla de assertion</li>
-                </ul>
-            </div>
-
-            <div class="info-card">
-                <h2>Ejemplo de Salida de Panic</h2>
-                <div class="panic-output">
-╔═══════════════════════════════════════════════════════════╗
-║                     KERNEL PANIC                          ║
-╚═══════════════════════════════════════════════════════════╝
-
-Type: KERNEL BUG
-Location: memory.c:245
-Message: Invalid page frame detected
-
---- REGISTER DUMP ---
-EAX: 0x12345678  EBX: 0x87654321
-ECX: 0xABCDEF00  EDX: 0x11223344
-ESP: 0xC0100000  EBP: 0xC0100020
-CR0: 0x80000031  CR2: 0x00000000  CR3: 0x00101000
-EFLAGS: 0x00000202
-
---- STACK TRACE ---
-#0: 0xC0101234
-#1: 0xC0102456
-#2: 0xC0103678
-
---- MEMORY INFO ---
-Total memory: 33554432 bytes
-Free memory: 16777216 bytes
-Memory usage: 50%
-
-═══ SYSTEM HALTED ═══
-Safe to power off or reboot
-                </div>
-            </div>
-
-            <div class="info-card">
-                <h2>Uso del Sistema de Panic</h2>
-                <div class="code-block">
-// Panic básico
-panic("Error fatal en el kernel");
-
-// Panic con tipo específico
-panic_advanced("Invalid pointer", PANIC_KERNEL_BUG, __FILE__, __LINE__);
-
-// Macros útiles para debugging
-BUG_ON(ptr == NULL);        // Panic si la condición es verdadera
-ASSERT(size > 0);           // Panic si la condición es falsa
-
-// Verificaciones de memoria
-if (unlikely(!valid_address(addr))) {
-    panic_advanced("Invalid memory address", PANIC_HARDWARE_FAULT, 
-                   __FILE__, __LINE__);
-}
-                </div>
-            </div>
-
-            <div class="info-card">
-                <h2>Protección contra Double Panic</h2>
-                <p>El sistema incluye protección contra situaciones donde el propio panic handler puede fallar:</p>
-                <ul class="feature-list">
-                    <li>Detección de panic recursivo</li>
-                    <li>Mensaje de emergencia simplificado</li>
-                    <li>Halt inmediato para evitar corrupción</li>
-                    <li>Estado volatile para threading seguro</li>
-                </ul>
-            </div>
-        </section>
     </div>
 
-    <script>
-        function showSection(sectionId) {
-            // Ocultar todas las secciones
-            var sections = document.querySelectorAll('.section');
-            for (var i = 0; i < sections.length; i++) {
-                sections[i].classList.remove('active');
-            }
-            
-            // Mostrar la sección seleccionada
-            document.getElementById(sectionId).classList.add('active');
-            
-            // Actualizar navegación
-            var navLinks = document.querySelectorAll('.nav-link');
-            for (var i = 0; i < navLinks.length; i++) {
-                navLinks[i].classList.remove('active');
-            }
-            
-            // Encontrar y activar el link correspondiente
-            var currentLink = document.querySelector('a[href="#' + sectionId + '"]');
-            if (currentLink) {
-                currentLink.classList.add('active');
-            }
-            
-            // Scroll suave hacia arriba
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
 
-        // Inicialización cuando se carga la página
-        document.addEventListener('DOMContentLoaded', function() {
-            // Asegurar que la primera sección esté visible
-            showSection('overview');
-        });
-    </script>
+
+    </section>
+
+    <section id="development" class="section">
+        <h1 class="titulo-guia">Guía de Desarrollo</h1>
+
+        <div class="info-card">
+            <h2>Configuración del Entorno</h2>
+            <h3>Dependencias Requeridas:</h3>
+            <strong>-</strong> Gcc, QEMU(vm), makefile y el nasm. <br><br>
+            
+                <strong>Ubuntu/Debian</strong><br> 
+                sudo apt update <br>
+                sudo apt install gcc make nasm qemu-system-x86 gdb <br>
+
+                <strong>Arch Linux</strong> <br>
+                sudo pacman -S gcc make nasm qemu gdb
+            
+        </div>
+
+        <div class="info-card">
+            <h2>Compilación y Ejecución</h2>
+            <div class="code-block">
+                # Clonar repositorio
+                git clone https://github.com/usuario/ir0-kernel.git
+                cd ir0-kernel
+
+                # Compilar kernel
+                make clean
+                make all
+
+                # Ejecutar en QEMU
+                make run
+
+                # Debug con GDB
+                make debug
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h2>Cómo escribo código?</h2>
+            <h3>Convenciones de Nombres:</h3>
+            <ul class="feature-list">
+                <li>Funciones: <code>snake_case()</code></li>
+                <li>Macros: <code>UPPER_CASE</code></li>
+                <li>Structs: <code>struct_name_t</code></li>
+                <li>Variables globales: <code>g_variable_name</code></li>
+                <li>Constantes: <code>CONSTANT_NAME</code></li>
+            </ul>
+
+            <h3>Comentarios:</h3>
+            <ul class="feature-list">
+                <li>Headers de funciones documentados</li>
+                <li>Explicación de algoritmos complejos</li>
+                <li>TODOs claramente marcados</li>
+                <li>Referencias a documentación técnica</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h2>Sistema de Testing</h2>
+            <div class="code-block">
+                # Tests básicos
+                make test-boot <br>
+                make test-memory # Test de gestión de memoria
+                make test-panic # Test del sistema de panic
+
+                # Test completo
+                make test-all
+
+                # Ejecutar con logging detallado
+                make run-verbose
+            </div>
+        </div>
+    </section>
+
+    <section id="panic" class="section">
+        <h1 class="titulo-guia">Sistema de Panic Avanzado</h1>
+
+        <div class="info-card">
+            <h2>Características del Panic Handler</h2>
+            <p>El sistema de panic de IR0 proporciona información detallada para debugging cuando ocurren errores
+                fatales en el kernel.</p>
+
+            <h3>Tipos de Panic:</h3>
+            <ul class="feature-list">
+                <li><strong>PANIC_KERNEL_BUG:</strong> Errores en código del kernel</li>
+                <li><strong>PANIC_HARDWARE_FAULT:</strong> Fallos de hardware</li>
+                <li><strong>PANIC_OUT_OF_MEMORY:</strong> Sistema sin memoria</li>
+                <li><strong>PANIC_STACK_OVERFLOW:</strong> Desbordamiento de pila</li>
+                <li><strong>PANIC_ASSERT_FAILED:</strong> Falla de assertion</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h2>Ejemplo de Salida de Panic</h2>
+            <div class="panic-output">
+                ╔═══════════════════════════════════════════════════════════╗
+                ║ KERNEL PANIC ║
+                ╚═══════════════════════════════════════════════════════════╝
+
+                Type: KERNEL BUG
+                Location: memory.c:245
+                Message: Invalid page frame detected
+
+                --- REGISTER DUMP ---
+                EAX: 0x12345678 EBX: 0x87654321
+                ECX: 0xABCDEF00 EDX: 0x11223344
+                ESP: 0xC0100000 EBP: 0xC0100020
+                CR0: 0x80000031 CR2: 0x00000000 CR3: 0x00101000
+                EFLAGS: 0x00000202
+
+                --- STACK TRACE ---
+                #0: 0xC0101234
+                #1: 0xC0102456
+                #2: 0xC0103678
+
+                --- MEMORY INFO ---
+                Total memory: 33554432 bytes
+                Free memory: 16777216 bytes
+                Memory usage: 50%
+
+                ═══ SYSTEM HALTED ═══
+                Safe to power off or reboot
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h2>Uso del Sistema de Panic</h2>
+            <div class="code-block">
+                // Panic básico
+                panic("Error fatal en el kernel");
+
+                // Panic con tipo específico
+                panic_advanced("Invalid pointer", PANIC_KERNEL_BUG, __FILE__, __LINE__);
+
+                // Macros útiles para debugging
+                BUG_ON(ptr == NULL); // Panic si la condición es verdadera
+                ASSERT(size > 0); // Panic si la condición es falsa
+
+                // Verificaciones de memoria
+                if (unlikely(!valid_address(addr))) {
+                panic_advanced("Invalid memory address", PANIC_HARDWARE_FAULT,
+                __FILE__, __LINE__);
+                }
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h2>Protección contra Double Panic</h2>
+            <p>El sistema incluye protección contra situaciones donde el propio panic handler puede fallar:</p>
+            <ul class="feature-list">
+                <li>Detección de panic recursivo</li>
+                <li>Mensaje de emergencia simplificado</li>
+                <li>Halt inmediato para evitar corrupción</li>
+                <li>Estado volatile para threading seguro</li>
+            </ul>
+        </div>
+    </section>
+    </div>
+
 </body>
+
 </html>
