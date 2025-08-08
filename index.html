@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/Assets/cuatro-nucleos.png" type="image/x-icon">
     <title>IR0 Kernel - Wiki</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -264,26 +265,6 @@
                 sudo pacman -S gcc make nasm qemu gdb
             
         </div>
-
-        <div class="info-card">
-            <h2>Compilación y Ejecución</h2>
-            <div class="code-block">
-                # Clonar repositorio
-                git clone https://github.com/usuario/ir0-kernel.git
-                cd ir0-kernel
-
-                # Compilar kernel
-                make clean
-                make all
-
-                # Ejecutar en QEMU
-                make run
-
-                # Debug con GDB
-                make debug
-            </div>
-        </div>
-
         <div class="info-card">
             <h2>Cómo escribo código?</h2>
             <h3>Convenciones de Nombres:</h3>
@@ -294,10 +275,25 @@
                 <li>Variables globales: <code>g_variable_name</code></li>
                 <li>Constantes: <code>CONSTANT_NAME</code></li>
             </ul>
-
+            <div class="code-block">
+                //funciones, bucles, etc
+                int main_function() <br>
+                {
+                    <br><br>
+                    int var1 = 13;
+                    <br><br>
+                }
+                <br>
+                // Pueden ser sin llaves solo cuando hayan pocas condiciones por legibilidad o cuando haya nesting (esperemos que nunca). 
+                <br>if(condition) <br>
+                {
+                    <br> lo que sea <br>
+                }
+            </div>
             <h3>Comentarios:</h3>
             <ul class="feature-list">
-                <li>Headers de funciones documentados</li>
+                <li>archivos .h de funciones documentados</li>
+                <li>Archivos de código fuente con comentatios en algunas funciones, pero mas acotados</li>
                 <li>Explicación de algoritmos complejos</li>
                 <li>TODOs claramente marcados</li>
                 <li>Referencias a documentación técnica</li>
@@ -305,96 +301,20 @@
         </div>
 
         <div class="info-card">
-            <h2>Sistema de Testing</h2>
+            <h2>Cómo compilar (por ahora)</h2>
             <div class="code-block">
-                # Tests básicos
-                make test-boot <br>
-                make test-memory # Test de gestión de memoria
-                make test-panic # Test del sistema de panic
-
-                # Test completo
-                make test-all
-
-                # Ejecutar con logging detallado
-                make run-verbose
+            <li>Tiene que haber un makefile en todos los subsistemas, por lo que se debería poder hacer <i>make "subsistema"</i></li> <br>
+            <li>Después, el kernel tiene un makefile general para generar el binario, con su clean respectivo. Por ahora se usa así: <i>make all</i></li> <br>
+            <li>A futuro, seguramente hayan estrategias de compilación que permitan compilar el kernel entero para sus distintos usos.</li>
             </div>
         </div>
     </section>
 
     <section id="panic" class="section">
-        <h1 class="titulo-guia">Sistema de Panic Avanzado</h1>
+        <h1 class="titulo-guia">Subsistemas del kernel</h1>          
 
         <div class="info-card">
-            <h2>Características del Panic Handler</h2>
-            <p>El sistema de panic de IR0 proporciona información detallada para debugging cuando ocurren errores
-                fatales en el kernel.</p>
-
-            <h3>Tipos de Panic:</h3>
-            <ul class="feature-list">
-                <li><strong>PANIC_KERNEL_BUG:</strong> Errores en código del kernel</li>
-                <li><strong>PANIC_HARDWARE_FAULT:</strong> Fallos de hardware</li>
-                <li><strong>PANIC_OUT_OF_MEMORY:</strong> Sistema sin memoria</li>
-                <li><strong>PANIC_STACK_OVERFLOW:</strong> Desbordamiento de pila</li>
-                <li><strong>PANIC_ASSERT_FAILED:</strong> Falla de assertion</li>
-            </ul>
-        </div>
-
-        <div class="info-card">
-            <h2>Ejemplo de Salida de Panic</h2>
-            <div class="panic-output">
-                ╔═══════════════════════════════════════════════════════════╗
-                ║ KERNEL PANIC ║
-                ╚═══════════════════════════════════════════════════════════╝
-
-                Type: KERNEL BUG
-                Location: memory.c:245
-                Message: Invalid page frame detected
-
-                --- REGISTER DUMP ---
-                EAX: 0x12345678 EBX: 0x87654321
-                ECX: 0xABCDEF00 EDX: 0x11223344
-                ESP: 0xC0100000 EBP: 0xC0100020
-                CR0: 0x80000031 CR2: 0x00000000 CR3: 0x00101000
-                EFLAGS: 0x00000202
-
-                --- STACK TRACE ---
-                #0: 0xC0101234
-                #1: 0xC0102456
-                #2: 0xC0103678
-
-                --- MEMORY INFO ---
-                Total memory: 33554432 bytes
-                Free memory: 16777216 bytes
-                Memory usage: 50%
-
-                ═══ SYSTEM HALTED ═══
-                Safe to power off or reboot
-            </div>
-        </div>
-
-        <div class="info-card">
-            <h2>Uso del Sistema de Panic</h2>
-            <div class="code-block">
-                // Panic básico
-                panic("Error fatal en el kernel");
-
-                // Panic con tipo específico
-                panic_advanced("Invalid pointer", PANIC_KERNEL_BUG, __FILE__, __LINE__);
-
-                // Macros útiles para debugging
-                BUG_ON(ptr == NULL); // Panic si la condición es verdadera
-                ASSERT(size > 0); // Panic si la condición es falsa
-
-                // Verificaciones de memoria
-                if (unlikely(!valid_address(addr))) {
-                panic_advanced("Invalid memory address", PANIC_HARDWARE_FAULT,
-                __FILE__, __LINE__);
-                }
-            </div>
-        </div>
-
-        <div class="info-card">
-            <h2>Protección contra Double Panic</h2>
+            <h2>Scheduler</h2>
             <p>El sistema incluye protección contra situaciones donde el propio panic handler puede fallar:</p>
             <ul class="feature-list">
                 <li>Detección de panic recursivo</li>
