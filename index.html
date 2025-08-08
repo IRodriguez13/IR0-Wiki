@@ -136,7 +136,7 @@
                    Si pretendo hacer que IR0 funcione como soporte para servidores (backends, juegos, etc), que pueda correr docker y kubernetes (al menos) y que, en algún momento, 
                    pueda funcionar base para IoT, necesito tener en primer lugar <strong>soporte de red, con sus drivers, soporte de protocolos de red modernos</strong> mas <strong>todos los algoritmos que implementan internamente</strong>.
                    <br><br>
-                   En el Kernel Linux son en mas o menos <i>1.500.000</i> de líneas de código <strong>SÓLO LA PILA DE RED COMPLETA</strong>.
+                   En el Kernel Linux son mas o menos <i>1.500.000</i> de líneas de código <strong>SÓLO LA PILA DE RED COMPLETA</strong>.
                    <br>
                     Literal, si quisiera levantarla de cero, a lo mejor pasaría una década y no estaría lista. No me siento tan zarpado la verdad. 
                     <br><br>
@@ -292,12 +292,30 @@
         <h1 class="titulo-guia">Guía de Desarrollo</h1>
 
         <div class="info-card">
+            <p>
+                <strong>-</strong> Esta sección es por si alguien se interesa en contribuir al proyecto. <strong>No son reglas estrictas, son simplemente recomendaciones
+                para que sea mas llevadero.</strong>
+            </p>
+            <h2>¿Qué hay que saber para contribuir?</h2>
+            Más que nada lo siguiente:
+            <li>Saber programación estructurada/funcional/orientada a objetos</li>
+            <li>Conocer C/C++/Rust </li>
+            <li>Assembly si contribuís en subsistemas muy pegados al hard, pero recomiendo conocer los básicos para saber cómo funcionan <i>panic(), boot.asm, etc.</i></li>
+            <li><strong>Conocer cómo funciona un makefile</strong>, como compilar los subsistemas por partes, por qué hay que compilar los subsistemas por separado con su propio makefile</li>
+            <li><strong>Herramientas de desarrollo general</strong>: GIT/GitHub, como crear, cambiar, pullear y lanzar PR's entre ramas</li>
+            <li><strong>QEMU básico.</strong> Cómo funciona la VM, como se le carga la imagen generada al compilar el kernel.</li>
+            <li><strong>Conocer Bash es un plus para los testeos rápidos</strong>, ya que podés iniciar QEMU con un script sin repetir el comando completo.</li>
+            <li>Comunicación. <strong>Argumentar decisiones sobre las PR's</strong>, debatir sanamente al respecto.</li>
+            <li>Saber utilizar IA's en general para optimizar el debug y adaptarlo a las convenciones de código.</li>
+            <br>
+            De igual forma, <strong>no hay que ser un experto para contribuir al kernel. Simplemente con tener ganas de aprender/estudiar sobre lo que vayas a contribuir es más que suficiente</strong>.
+
             <h2>Configuración del Entorno</h2>
             <h3>Dependencias Requeridas:</h3>
             <li>Básicamente tener instalado: el compilador de C/Cpp (gcc/g++), el compilador de asm (nasm), make para la compilación y
                 QEMU como vm de prueba.
             </li>
-            <small>Te daría los comandos o las webs para instalar, pero chatgpt te lo puede resolver mejor.</small>
+            Te daría los comandos o las webs para instalar, pero chatgpt te lo puede resolver mejor.
             <br><br>
 
             <strong>NOTA</strong>: Como este proyecto es un kernel, es <i>Freestanding</i>. Eso quiere decir que vos <strong>no podés incluir librerías como
