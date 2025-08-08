@@ -109,8 +109,9 @@
                     o el mismo <a href="https://es.wikipedia.org/wiki/MINIX" target="_blank" rel="noopener noreferrer">MINIX kernel (microkernel)</a>, IR0 se basa en una arquitectura más similar a la que tiene Linux, que es monolítico. <br>
                     sin embargo, mi argumento principal es el del rendimiento. Entiendo que alguien podría venir y señalar que, como todo monolito, si un subcomponente se rompe, se cae todo el sistema <small>(y tendría razón)</small>
                     pero lo que respondo a eso es que <i>"¿De qué me sirve a mí que el kernel soporte seguir sin filesystem si no puedo hacer nada práctico sin él?"</i>, es decir, no tiene sentido que el kernel 
-                    continúe funcionando <strong>sin uno de sus componentes clave corriendo</strong>. <br>
-                    Eso lo resuelve el patrón monolítico. Y además me ahorra el tener que interconectar subsistemas clave entre sí con IPC, lo que impacta de una en el rendimiento del Sistema Operativo. No es
+                    continúe funcionando <strong>sin uno de sus componentes clave corriendo</strong>. <br><br>
+
+                    Por eso no veo mejor alternativa (por ahora) que el patrón <a href="https://es.wikipedia.org/wiki/N%C3%BAcleo_monol%C3%ADtico" target="_blank" rel="noopener noreferrer">monolítico</a>. Y además me ahorra el tener que interconectar subsistemas clave entre sí con IPC, lo que impacta de una en el rendimiento del Sistema Operativo. No es
                     perfecto, pero es estable. No es del todo trazable y requiere escalar de a poco, pero si escala bien rinde mucho. <br>
 
                     <br>
@@ -122,8 +123,46 @@
                 </p>
                 <h2>El Kernel Space es sagrado</h2>
                 <p>
-                    Yo sé que hablo como si IR0 fuera usado por miles de personas y toda la historia, pero el punto es que el kernel space es sólo habitable por subsistemas que trabajen en ese Entorno,
-                    nada mas. <br> RING 0 es únicamente para el kernel. Todo lo que venga del RING 3 se comunica con <i>syscalls()</i>, fin del comunicado.
+                    Yo sé que hablo como si IR0 fuera usado por miles de personas y toda la historia, pero me voy a dar el lujo de opinar al respecto. 
+                    <br>Entonces, el punto es que el kernel space <strong>tiene que ser sólo habitable por subsistemas que trabajen en ese Entorno</strong>,
+                    nada mas. <br>
+                    Entiendo que hayan ciertos <a href="https://www.reddit.com/r/riotgames/comments/1gxhfmh/the_future_of_riot_vanguard_and_kernel_level/" target="_blank" rel="noopener noreferrer">fabricantes preocupados por la seguridad de sus clientes</a> que,
+                    casualmente, tienen acceso a <i>toda interrupción que el usuario haga (saben qué teclas presionás, el tiempo de tu sesión cada vez que prendés la compu, etc.)</i> Y todo eso porque tienen
+                    software funcionando en el <a href="https://en.wikipedia.org/wiki/User_space_and_kernel_space" target="_blank" rel="noopener noreferrer">kernel space</a> con todos los privilegios que eso implica.
+                    <br> <a href="https://en.wikipedia.org/wiki/Protection_ring" target="_blank" rel="noopener noreferrer">RING 0</a> es únicamente para el kernel. Todo lo que venga del RING 3 se comunica con <i>syscalls()</i>, fin del comunicado.
+                </p>
+                 <h2>Qué le pido prestado a Linux?</h2>
+                <p>
+                   Si pretendo hacer que IR0 funcione como soporte para servidores (backends, juegos, etc), que pueda correr docker y kubernetes (al menos) y que, en algún momento, 
+                   pueda funcionar base para IoT, necesito tener en primer lugar <strong>soporte de red, con sus drivers, soporte de protocolos de red modernos</strong> mas <strong>todos los algoritmos que implementan internamente</strong>.
+                   <br><br>
+                   En el Kernel Linux son en mas o menos <i>1.500.000</i> de líneas de código <strong>SÓLO LA PILA DE RED COMPLETA</strong>.
+                   <br>
+                    Literal, si quisiera levantarla de cero, a lo mejor pasaría una década y no estaría lista. No me siento tan zarpado la verdad. 
+                    <br><br>
+                    Te muestro como sería lo que necesito de la pila de red: 
+                    <br><br>
+                    <img src="/Assets/deepseek_mermaid_20250808_234e4e.png" alt="chiquita la pilita de red" srcset="" style="width: 50%;">
+                    <br>
+                    <small><i>Entiédase hardware como los componentes de tu <a href="https://es.wikipedia.org/wiki/Placa_base" target="_blank" rel="noopener noreferrer"></a>MOBO</i> que hablan con el kernel.
+                    Aparte, acá se ve clarito como el kernel intermedia entre el hard y el soft.</small>
+                    <br><br>
+
+                    El mismo asunto tenemos con el <strong>soporte para contenedores</strong>. Acá el tema es un toque más tranqui porque son un par menos de líneas de código en total: <i>unas 300.000 líneas</i>
+                    pero igual, como pasa con la pila de red, son dos proyectos totalmente aparte.
+                    <br> <br>
+                    Mas o menos esto es lo que requiere docker para andar, desde la app con su runtime, hasta sus accesos en el kernel.
+                    <br><br>
+                    <img src="/Assets/docker.png" alt="" srcset="" style="width: 101%;"> 
+                    <br>
+                    <small>Fijate que docker necesita levantar literalmente un file system virtual, además de limitar la cpu, acceder a RAM, tener una interfaz de red privada, usa los namespaces para aislar del entorno su contenido, etc.
+                    </small>
+                    <br>
+                    <h2>Cómo lo voy a resolver?</h2>
+                    Bueno, si escribir la pila red y el soporte de contenedores no es trivial, integrarlos fuera de su entorno tampoco lo es, pero es mas humano que diagramar, implementar y testear.
+                    <br><br>
+                    Muy seguramente me toque mapear las syscalls que espera esa parte de Linux al estilo <a href="https://es.wikipedia.org/wiki/Wine" target="_blank" rel="noopener noreferrer">Wine/Proton</a>, o copiarles algunas de las que usan 
+                    nativamente si me sirven después.
                 </p>
 
             </div>
@@ -151,7 +190,7 @@
                         proceso: mainline, dev y feature (que aunque no está en el repositorio, es la que se usa para
                         integrar código nuevo).
                         Donde sólo <strong>mainline</strong> y <strong>dev</strong> son las únicas 2 <i>ramas upstream</i>. <strong>experimental</strong> es una rama
-                        divergente a dev y feature es la rama donde se envían contribuciones.
+                        divergente a <strong>dev</strong>, y <strong>feature</strong> es la rama que se crea para enviar contribuciones.
                     </article>
                 </div>
             </div>
@@ -235,8 +274,8 @@
                 <h2>Cómo es el merging desde feature hasta mainline?</h2>
 
                 <article> 
-                    Básicamente, vos creás tu mejora/optmización desde un fork del repo con una rama nueva que va a ser algo como "feature/fix-scheduler" por ej.  <br>
-                    Después, <strong>hacés PR a la rama dev del upstream</strong> y se hace la revisión y el merge en dado caso. <br>
+                    Básicamente, vos creás tu mejora/optmización <strong>desde un fork del repo con una rama nueva</strong> que va a ser algo como <i>"feature/fix-scheduler"</i> por ejemplo.  <br>
+                    Después, <strong>hacés PR a la rama dev del upstream (no al mainline)</strong> y se hace la revisión y el merge en dado caso. <br>
                     El merge a mainline depende de <strong>cuán alineado con el proyecto considere que es la feature</strong>. <br>
                     Ni siquiera algunas de mis propias implementaciones las mergearía directo al mainline por esta misma razón.  
                 </article>
@@ -255,15 +294,15 @@
         <div class="info-card">
             <h2>Configuración del Entorno</h2>
             <h3>Dependencias Requeridas:</h3>
-            <strong>-</strong> Gcc, QEMU(vm), makefile y el nasm. <br><br>
-            
-                <strong>Ubuntu/Debian</strong><br> 
-                sudo apt update <br>
-                sudo apt install gcc make nasm qemu-system-x86 gdb <br>
+            <li>Básicamente tener instalado: el compilador de C/Cpp (gcc/g++), el compilador de asm (nasm), make para la compilación y
+                QEMU como vm de prueba.
+            </li>
+            <small>Te daría los comandos o las webs para instalar, pero chatgpt te lo puede resolver mejor.</small>
+            <br><br>
 
-                <strong>Arch Linux</strong> <br>
-                sudo pacman -S gcc make nasm qemu gdb
-            
+            <strong>NOTA</strong>: Como este proyecto es un kernel, es <i>Freestanding</i>. Eso quiere decir que vos <strong>no podés incluir librerías como
+                stdio.h por que no hay sistema operativo que responda a esas funciones </strong>. <strong>Vos sos el sistema operativo</strong>. por eso, en el repo tengo la carpeta de dependencias "includes".
+            </strong>
         </div>
         <div class="info-card">
             <h2>Cómo escribo código?</h2>
@@ -274,22 +313,8 @@
                 <li>Structs: <code>struct_name_t</code></li>
                 <li>Variables globales: <code>g_variable_name</code></li>
                 <li>Constantes: <code>CONSTANT_NAME</code></li>
+                <li>includes: <code>#INCLUDE -ir0/Lib.h - </code>(se estan migrando a ese formato)</li>
             </ul>
-            <div class="code-block">
-                //funciones, bucles, etc
-                int main_function() <br>
-                {
-                    <br><br>
-                    int var1 = 13;
-                    <br><br>
-                }
-                <br>
-                // Pueden ser sin llaves solo cuando hayan pocas condiciones por legibilidad o cuando haya nesting (esperemos que nunca). 
-                <br>if(condition) <br>
-                {
-                    <br> lo que sea <br>
-                }
-            </div>
             <h3>Comentarios:</h3>
             <ul class="feature-list">
                 <li>archivos .h de funciones documentados</li>
@@ -298,6 +323,21 @@
                 <li>TODOs claramente marcados</li>
                 <li>Referencias a documentación técnica</li>
             </ul>
+            <small>Esto es aproximado. Por lo general trato de respetar esas convenciones lo máximo que puedo.</small>
+            <br><br>
+            <li>Algo así sería en este ejemplo una archivo promedio de código fuente:</li>
+            <br>
+            <img src="/Assets/funcion.c.png" alt="" srcset="" style="width: 50%;">
+            <br>
+            <i>Fijate en cómo uso las llaves por debajo del nombre de la funcion y los mismo en condicionales, bucles, etc. También como directamente no las uso cuando el condicional tiene una sola línea 
+            o hay cierto nesting.</i> 
+            <br>
+            <br>
+            <li>Así manejo los encabezados (o la mayoría):</li>
+            <br><br>
+            <img src="/Assets/encabezado.png" alt="" srcset="">
+            <br>
+            <i>Los comentarios grandes van por lo general en éstos .h y en los fuente hacemos acotaciones.</i>
         </div>
 
         <div class="info-card">
