@@ -19,7 +19,7 @@
             <div class="logo"><a href="index.html" target="_blank" rel="noopener noreferrer"
                     style="text-decoration: none; color: white;">IR0 Wiki</a></div>
             <ul class="nav-menu">
-                <li><a href="#overview" class="nav-link active" onclick="showSection('overview')">Overview</a></li>
+                <li><a href="#overview" class="nav-link active" onclick="showSection('overview')">Inicio</a></li>
                 <li><a href="#architecture" class="nav-link" onclick="showSection('architecture')">Arquitectura</a></li>
                 <li><a href="#branches" class="nav-link" onclick="showSection('branches')">Ramas</a></li>
                 <li><a href="#development" class="nav-link" onclick="showSection('development')">Desarrollo</a></li>
@@ -209,7 +209,8 @@
                         <li>Mi base para rc's.</li>
                         <li>mainline es sagrada, ya que este rama tiene que compilar y bootear siempre . Es la mas
                             estable de las
-                            dos ramas upstream.</li>
+                            dos ramas upstream.
+                        </li>
                     </ul>
 
                 </div>
@@ -218,7 +219,8 @@
                     <div class="branch-title">dev</div>
                     <div class="status-badge status-development">STAGING</div>
                     <p><strong>-</strong> Rama de desarrollo activo donde se implementan y testean nuevas
-                        features.</p>
+                        features.
+                    </p>
 
                     <h3>Características:</h3>
                     <ul class="feature-list">
@@ -373,13 +375,12 @@
 
         <div class="info-card">
             <h2>Scheduler</h2>
-            <p>El sistema incluye protección contra situaciones donde el propio panic handler puede fallar:</p>
-            <ul class="feature-list">
-                <li>Detección de panic recursivo</li>
-                <li>Mensaje de emergencia simplificado</li>
-                <li>Halt inmediato para evitar corrupción</li>
-                <li>Estado volatile para threading seguro</li>
-            </ul>
+            <p>
+                Por ahora es un Round-Robin simple. La idea es usarlo como fallback ya que el sched principal debería ser preemptivo 
+                y usa un esquema de prioridad simple (CFS o algo así).
+                <br>
+            </p>
+
         </div>
     </section>
     </div>
