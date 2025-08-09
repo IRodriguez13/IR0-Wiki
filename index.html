@@ -34,7 +34,8 @@
 
             <div class="info-card">
                 <p>
-                    El propósito de esta "wiki", documentación web, guía, como le digas, es usarla como ayuda-memoria personal
+                    El propósito de esta "wiki", documentación web, guía, como le digas, es usarla como ayuda-memoria
+                    personal
                     para el desarrollo del kernel.
                     No tiene que ser una página ultra estética, pero me estoy esforzando para que no se note que la hice
                     con html, css y js vanilla como la de <a href="https://docs.kernel.org/" target="_blank"
@@ -105,64 +106,111 @@
             <div class="info-card">
                 <h2>Arquitectura y "Filosofía" del proyecto</h2>
                 <p>
-                    A diferencia de kernels como <a href="https://en.wikipedia.org/wiki/Windows_NT" target="_blank" rel="noopener noreferrer">kernel NT (Híbrido)</a> de Microsoft, <a href="https://www.redox-os.org/" target="_blank" rel="noopener noreferrer">Redox-OS (Microkernel)</a>, 
-                    o el mismo <a href="https://es.wikipedia.org/wiki/MINIX" target="_blank" rel="noopener noreferrer">MINIX kernel (microkernel)</a>, IR0 se basa en una arquitectura más similar a la que tiene Linux, que es monolítico. <br>
-                    sin embargo, mi argumento principal es el del rendimiento. Entiendo que alguien podría venir y señalar que, como todo monolito, si un subcomponente se rompe, se cae todo el sistema <small>(y tendría razón)</small>
-                    pero lo que respondo a eso es que <i>"¿De qué me sirve a mí que el kernel soporte seguir sin filesystem si no puedo hacer nada práctico sin él?"</i>, es decir, no tiene sentido que el kernel 
+                    A diferencia de kernels como <a href="https://en.wikipedia.org/wiki/Windows_NT" target="_blank"
+                        rel="noopener noreferrer">kernel NT (Híbrido)</a> de Microsoft, <a
+                        href="https://www.redox-os.org/" target="_blank" rel="noopener noreferrer">Redox-OS
+                        (Microkernel)</a>,
+                    o el mismo <a href="https://es.wikipedia.org/wiki/MINIX" target="_blank"
+                        rel="noopener noreferrer">MINIX kernel (microkernel)</a>, IR0 se basa en una arquitectura más
+                    similar a la que tiene Linux, que es monolítico. <br>
+                    sin embargo, mi argumento principal es el del rendimiento. Entiendo que alguien podría venir y
+                    señalar que, como todo monolito, si un subcomponente se rompe, se cae todo el sistema <small>(y
+                        tendría razón)</small>
+                    pero lo que respondo a eso es que <i>"¿De qué me sirve a mí que el kernel soporte seguir sin
+                        filesystem si no puedo hacer nada práctico sin él?"</i>, es decir, no tiene sentido que el
+                    kernel
                     continúe funcionando <strong>sin uno de sus componentes clave corriendo</strong>. <br><br>
 
-                    Por eso no veo mejor alternativa (por ahora) que el patrón <a href="https://es.wikipedia.org/wiki/N%C3%BAcleo_monol%C3%ADtico" target="_blank" rel="noopener noreferrer">monolítico</a>. Y además me ahorra el tener que interconectar subsistemas clave entre sí con IPC, lo que impacta de una en el rendimiento del Sistema Operativo. No es
-                    perfecto, pero es estable. No es del todo trazable y requiere escalar de a poco, pero si escala bien rinde mucho. <br>
+                    Por eso no veo mejor alternativa (por ahora) que el patrón <a
+                        href="https://es.wikipedia.org/wiki/N%C3%BAcleo_monol%C3%ADtico" target="_blank"
+                        rel="noopener noreferrer">monolítico</a>. Y además me ahorra el tener que interconectar
+                    subsistemas clave entre sí con IPC, lo que impacta de una en el rendimiento del Sistema Operativo.
+                    No es
+                    perfecto, pero es estable. No es del todo trazable y requiere escalar de a poco, pero si escala bien
+                    rinde mucho. <br>
 
                     <br>
-                    Sin embargo yo también tengo desacuerdos con la <a href="https://es.wikipedia.org/wiki/Filosof%C3%ADa_de_Unix" target="_blank" rel="noopener noreferrer">filosofía UNIX</a>. Ellos (entre otras cosas y de forma resumidísima) consideran
-                    que si algo falla, que falle bien. Lo que en términos kernelísticos sería: <i>Si se rompe el scheduler, Panic() directo. Si tenés corrupción en memoria (en espacio de kernel), Panic.</i><br>
-                    Y no es que lo cuestiono por que sí, simplemente pregunto (aunque sin soluciones todavía) <i>"¿Por qué no rescatar el sistema en tiempo de Panic()?, o por lo menos hacer el intento"</i>. <br>
-                    Mas allá del punto filosófico y para resumir, el kernel es monolítico porque es más performante y siento que las piezas clave del núcleo deben <strong>trabajar sin overhead</strong>. <br>
-                    Sin embargo, si en el futuro necesitara integrar algún subsistema específico de forma híbrida, seguramente sería pragmático.
+                    Sin embargo yo también tengo desacuerdos con la <a
+                        href="https://es.wikipedia.org/wiki/Filosof%C3%ADa_de_Unix" target="_blank"
+                        rel="noopener noreferrer">filosofía UNIX</a>. Ellos (entre otras cosas y de forma resumidísima)
+                    consideran
+                    que si algo falla, que falle bien. Lo que en términos kernelísticos sería: <i>Si se rompe el
+                        scheduler, Panic() directo. Si tenés corrupción en memoria (en espacio de kernel),
+                        Panic.</i><br>
+                    Y no es que lo cuestiono por que sí, simplemente pregunto (aunque sin soluciones todavía) <i>"¿Por
+                        qué no rescatar el sistema en tiempo de Panic()?, o por lo menos hacer el intento"</i>. <br>
+                    Mas allá del punto filosófico y para resumir, el kernel es monolítico porque es más performante y
+                    siento que las piezas clave del núcleo deben <strong>trabajar sin overhead</strong>. <br>
+                    Sin embargo, si en el futuro necesitara integrar algún subsistema específico de forma híbrida,
+                    seguramente sería pragmático.
                 </p>
                 <h2>El Kernel Space es sagrado</h2>
                 <p>
-                    Yo sé que hablo como si IR0 fuera usado por miles de personas y toda la historia, pero me voy a dar el lujo de opinar al respecto. 
-                    <br>Entonces, el punto es que el kernel space <strong>tiene que ser sólo habitable por subsistemas que trabajen en ese Entorno</strong>,
+                    Yo sé que hablo como si IR0 fuera usado por miles de personas y toda la historia, pero me voy a dar
+                    el lujo de opinar al respecto.
+                    <br>Entonces, el punto es que el kernel space <strong>tiene que ser sólo habitable por subsistemas
+                        que trabajen en ese Entorno</strong>,
                     nada mas. <br>
-                    Entiendo que hayan ciertos <a href="https://www.reddit.com/r/riotgames/comments/1gxhfmh/the_future_of_riot_vanguard_and_kernel_level/" target="_blank" rel="noopener noreferrer">fabricantes preocupados por la seguridad de sus clientes</a> que,
-                    casualmente, tienen acceso a <i>toda interrupción que el usuario haga (saben qué teclas presionás, el tiempo de tu sesión cada vez que prendés la compu, etc.)</i> Y todo eso porque tienen
-                    software funcionando en el <a href="https://en.wikipedia.org/wiki/User_space_and_kernel_space" target="_blank" rel="noopener noreferrer">kernel space</a> con todos los privilegios que eso implica.
-                    <br> <a href="https://en.wikipedia.org/wiki/Protection_ring" target="_blank" rel="noopener noreferrer">RING 0</a> es únicamente para el kernel. Todo lo que venga del RING 3 se comunica con <i>syscalls()</i>, fin del comunicado.
+                    Entiendo que hayan ciertos <a
+                        href="https://www.reddit.com/r/riotgames/comments/1gxhfmh/the_future_of_riot_vanguard_and_kernel_level/"
+                        target="_blank" rel="noopener noreferrer">fabricantes preocupados por la seguridad de sus
+                        clientes</a> que,
+                    casualmente, tienen acceso a <i>toda interrupción que el usuario haga (saben qué teclas presionás,
+                        el tiempo de tu sesión cada vez que prendés la compu, etc.)</i> Y todo eso porque tienen
+                    software funcionando en el <a href="https://en.wikipedia.org/wiki/User_space_and_kernel_space"
+                        target="_blank" rel="noopener noreferrer">kernel space</a> con todos los privilegios que eso
+                    implica.
+                    <br> <a href="https://en.wikipedia.org/wiki/Protection_ring" target="_blank"
+                        rel="noopener noreferrer">RING 0</a> es únicamente para el kernel. Todo lo que venga del RING 3
+                    se comunica con <i>syscalls()</i>, fin del comunicado.
                 </p>
-                 <h2>Qué le pido prestado a Linux?</h2>
+                <h2>Qué le pido prestado a Linux?</h2>
                 <p>
-                   Si pretendo hacer que IR0 funcione como soporte para servidores (backends, juegos, etc), que pueda correr docker y kubernetes (al menos) y que, en algún momento, 
-                   pueda funcionar base para IoT, necesito tener en primer lugar <strong>soporte de red, con sus drivers, soporte de protocolos de red modernos</strong> mas <strong>todos los algoritmos que implementan internamente</strong>.
-                   <br><br>
-                   En el Kernel Linux son mas o menos <i>1.500.000</i> de líneas de código <strong>SÓLO LA PILA DE RED COMPLETA</strong>.
-                   <br>
-                    Literal, si quisiera levantarla de cero, a lo mejor pasaría una década y no estaría lista. No me siento tan zarpado la verdad. 
+                    Si pretendo hacer que IR0 funcione como soporte para servidores (backends, juegos, etc), que pueda
+                    correr docker y kubernetes (al menos) y que, en algún momento,
+                    pueda funcionar base para IoT, necesito tener en primer lugar <strong>soporte de red, con sus
+                        drivers, soporte de protocolos de red modernos</strong> mas <strong>todos los algoritmos que
+                        implementan internamente</strong>.
                     <br><br>
-                    Te muestro como sería lo que necesito de la pila de red: 
-                    <br><br>
-                    <img src="/Assets/deepseek_mermaid_20250808_234e4e.png" alt="chiquita la pilita de red" srcset="" style="width: 50%;">
+                    En el Kernel Linux son mas o menos <i>1.500.000</i> de líneas de código <strong>SÓLO LA PILA DE RED
+                        COMPLETA</strong>.
                     <br>
-                    <small><i>Entiédase hardware como los componentes de tu <a href="https://es.wikipedia.org/wiki/Placa_base" target="_blank" rel="noopener noreferrer"></a>MOBO</i> que hablan con el kernel.
-                    Aparte, acá se ve clarito como el kernel intermedia entre el hard y el soft.</small>
+                    Literal, si quisiera levantarla de cero, a lo mejor pasaría una década y no estaría lista. No me
+                    siento tan zarpado la verdad.
+                    <br><br>
+                    Te muestro como sería lo que necesito de la pila de red:
+                    <br><br>
+                    <img src="/Assets/deepseek_mermaid_20250808_234e4e.png" alt="chiquita la pilita de red" srcset=""
+                        style="width: 50%;">
+                    <br>
+                    <small><i>Entiédase hardware como los componentes de tu <a
+                                href="https://es.wikipedia.org/wiki/Placa_base" target="_blank"
+                                rel="noopener noreferrer"></a>MOBO</i> que hablan con el kernel.
+                        Aparte, acá se ve clarito como el kernel intermedia entre el hard y el soft.</small>
                     <br><br>
 
-                    El mismo asunto tenemos con el <strong>soporte para contenedores</strong>. Acá el tema es un toque más tranqui porque son un par menos de líneas de código en total: <i>unas 300.000 líneas</i>
+                    El mismo asunto tenemos con el <strong>soporte para contenedores</strong>. Acá el tema es un toque
+                    más tranqui porque son un par menos de líneas de código en total: <i>unas 300.000 líneas</i>
                     pero igual, como pasa con la pila de red, son dos proyectos totalmente aparte.
                     <br> <br>
-                    Mas o menos esto es lo que requiere docker para andar, desde la app con su runtime, hasta sus accesos en el kernel.
+                    Mas o menos esto es lo que requiere docker para andar, desde la app con su runtime, hasta sus
+                    accesos en el kernel.
                     <br><br>
-                    <img src="/Assets/docker.png" alt="" srcset="" style="width: 101%;"> 
+                    <img src="/Assets/docker.png" alt="" srcset="" style="width: 101%;">
                     <br>
-                    <small>Fijate que docker necesita levantar literalmente un file system virtual, además de limitar la cpu, acceder a RAM, tener una interfaz de red privada, usa los namespaces para aislar del entorno su contenido, etc.
+                    <small>Fijate que docker necesita levantar literalmente un file system virtual, además de limitar la
+                        cpu, acceder a RAM, tener una interfaz de red privada, usa los namespaces para aislar del
+                        entorno su contenido, etc.
                     </small>
                     <br>
-                    <h2>Cómo lo voy a resolver?</h2>
-                    Bueno, si escribir la pila red y el soporte de contenedores no es trivial, integrarlos fuera de su entorno tampoco lo es, pero es mas humano que diagramar, implementar y testear.
-                    <br><br>
-                    Muy seguramente me toque mapear las syscalls que espera esa parte de Linux al estilo <a href="https://es.wikipedia.org/wiki/Wine" target="_blank" rel="noopener noreferrer">Wine/Proton</a>, o copiarles algunas de las que usan 
-                    nativamente si me sirven después.
+                <h2>Cómo lo voy a resolver?</h2>
+                Bueno, si escribir la pila red y el soporte de contenedores no es trivial, integrarlos fuera de su
+                entorno tampoco lo es, pero es mas humano que diagramar, implementar y testear.
+                <br><br>
+                Muy seguramente me toque mapear las syscalls que espera esa parte de Linux al estilo <a
+                    href="https://es.wikipedia.org/wiki/Wine" target="_blank" rel="noopener noreferrer">Wine/Proton</a>,
+                o copiarles algunas de las que usan
+                nativamente si me sirven después.
                 </p>
 
             </div>
@@ -171,8 +219,9 @@
             <div class="info-card">
                 <h2>Estructura de Directorios</h2>
                 <p>
-                    Cómo la estructura de archivos puede cambiar constantemente, prefiero que la consultes en el 
-                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank" rel="noopener noreferrer">Repositorio de GitHub</a>.
+                    Cómo la estructura de archivos puede cambiar constantemente, prefiero que la consultes en el
+                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank"
+                        rel="noopener noreferrer">Repositorio de GitHub</a>.
                 </p>
 
             </div>
@@ -189,8 +238,10 @@
                         lo mas limpio, predecible y escalable posible. Para eso uso 3 ramas de git principales en el
                         proceso: mainline, dev y feature (que aunque no está en el repositorio, es la que se usa para
                         integrar código nuevo).
-                        Donde sólo <strong>mainline</strong> y <strong>dev</strong> son las únicas 2 <i>ramas upstream</i>. <strong>experimental</strong> es una rama
-                        divergente a <strong>dev</strong>, y <strong>feature</strong> es la rama que se crea para enviar contribuciones.
+                        Donde sólo <strong>mainline</strong> y <strong>dev</strong> son las únicas 2 <i>ramas
+                            upstream</i>. <strong>experimental</strong> es una rama
+                        divergente a <strong>dev</strong>, y <strong>feature</strong> es la rama que se crea para enviar
+                        contribuciones.
                     </article>
                 </div>
             </div>
@@ -275,11 +326,15 @@
             <div class="info-card">
                 <h2>Cómo es el merging desde feature hasta mainline?</h2>
 
-                <article> 
-                    Básicamente, vos creás tu mejora/optmización <strong>desde un fork del repo con una rama nueva</strong> que va a ser algo como <i>"feature/fix-scheduler"</i> por ejemplo.  <br>
-                    Después, <strong>hacés PR a la rama dev del upstream (no al mainline)</strong> y se hace la revisión y el merge en dado caso. <br>
-                    El merge a mainline depende de <strong>cuán alineado con el proyecto considere que es la feature</strong>. <br>
-                    Ni siquiera algunas de mis propias implementaciones las mergearía directo al mainline por esta misma razón.  
+                <article>
+                    Básicamente, vos creás tu mejora/optmización <strong>desde un fork del repo con una rama
+                        nueva</strong> que va a ser algo como <i>"feature/fix-scheduler"</i> por ejemplo. <br>
+                    Después, <strong>hacés PR a la rama dev del upstream (no al mainline)</strong> y se hace la revisión
+                    y el merge en dado caso. <br>
+                    El merge a mainline depende de <strong>cuán alineado con el proyecto considere que es la
+                        feature</strong>. <br>
+                    Ni siquiera algunas de mis propias implementaciones las mergearía directo al mainline por esta misma
+                    razón.
                 </article>
 
             </div>
@@ -295,33 +350,43 @@
 
         <div class="info-card">
             <p>
-                <strong>-</strong> Esta sección es por si alguien se interesa en contribuir al proyecto. <strong>No son reglas estrictas, son simplemente recomendaciones
-                para que sea mas llevadero.</strong>
+                <strong>-</strong> Esta sección es por si alguien se interesa en contribuir al proyecto. <strong>No son
+                    reglas estrictas, son simplemente recomendaciones
+                    para que sea mas llevadero.</strong>
             </p>
             <h2>¿Qué hay que saber para contribuir?</h2>
             Más que nada lo siguiente:
             <li>Saber programación estructurada/funcional/orientada a objetos</li>
             <li>Conocer C/C++/Rust </li>
-            <li>Assembly si contribuís en subsistemas muy pegados al hard, pero recomiendo conocer los básicos para saber cómo funcionan <i>panic(), boot.asm, etc.</i></li>
-            <li><strong>Conocer cómo funciona un makefile</strong>, como compilar los subsistemas por partes, por qué hay que compilar los subsistemas por separado con su propio makefile</li>
-            <li><strong>Herramientas de desarrollo general</strong>: GIT/GitHub, como crear, cambiar, pullear y lanzar PR's entre ramas</li>
-            <li><strong>QEMU básico.</strong> Cómo funciona la VM, como se le carga la imagen generada al compilar el kernel.</li>
-            <li><strong>Conocer Bash es un plus para los testeos rápidos</strong>, ya que podés iniciar QEMU con un script sin repetir el comando completo.</li>
+            <li>Assembly si contribuís en subsistemas muy pegados al hard, pero recomiendo conocer los básicos para
+                saber cómo funcionan <i>panic(), boot.asm, etc.</i></li>
+            <li><strong>Conocer cómo funciona un makefile</strong>, como compilar los subsistemas por partes, por qué
+                hay que compilar los subsistemas por separado con su propio makefile</li>
+            <li><strong>Herramientas de desarrollo general</strong>: GIT/GitHub, como crear, cambiar, pullear y lanzar
+                PR's entre ramas</li>
+            <li><strong>QEMU básico.</strong> Cómo funciona la VM, como se le carga la imagen generada al compilar el
+                kernel.</li>
+            <li><strong>Conocer Bash es un plus para los testeos rápidos</strong>, ya que podés iniciar QEMU con un
+                script sin repetir el comando completo.</li>
             <li>Comunicación. <strong>Argumentar decisiones sobre las PR's</strong>, debatir sanamente al respecto.</li>
             <li>Saber utilizar IA's en general para optimizar el debug y adaptarlo a las convenciones de código.</li>
             <br>
-            De igual forma, <strong>no hay que ser un experto para contribuir al kernel. Simplemente con tener ganas de aprender/estudiar sobre lo que vayas a contribuir es más que suficiente</strong>.
+            De igual forma, <strong>no hay que ser un experto para contribuir al kernel. Simplemente con tener ganas de
+                aprender/estudiar sobre lo que vayas a contribuir es más que suficiente</strong>.
 
             <h2>Configuración del Entorno</h2>
             <h3>Dependencias Requeridas:</h3>
-            <li>Básicamente tener instalado: el compilador de C/Cpp (gcc/g++), el compilador de asm (nasm), make para la compilación y
+            <li>Básicamente tener instalado: el compilador de C/Cpp (gcc/g++), el compilador de asm (nasm), make para la
+                compilación y
                 QEMU como vm de prueba.
             </li>
             Te daría los comandos o las webs para instalar, pero chatgpt te lo puede resolver mejor.
             <br><br>
 
-            <strong>NOTA</strong>: Como este proyecto es un kernel, es <i>Freestanding</i>. Eso quiere decir que vos <strong>no podés incluir librerías como
-                stdio.h por que no hay sistema operativo que responda a esas funciones </strong>. <strong>Vos sos el sistema operativo</strong>. por eso, en el repo tengo la carpeta de dependencias "includes".
+            <strong>NOTA</strong>: Como este proyecto es un kernel, es <i>Freestanding</i>. Eso quiere decir que vos
+            <strong>no podés incluir librerías como
+                stdio.h por que no hay sistema operativo que responda a esas funciones </strong>. <strong>Vos sos el
+                sistema operativo</strong>. por eso, en el repo tengo la carpeta de dependencias "includes".
             </strong>
         </div>
         <div class="info-card">
@@ -349,8 +414,9 @@
             <br>
             <img src="/Assets/funcion.c.png" alt="" srcset="" style="width: 50%;">
             <br>
-            <i>Fijate en cómo uso las llaves por debajo del nombre de la funcion y los mismo en condicionales, bucles, etc. También como directamente no las uso cuando el condicional tiene una sola línea 
-            o hay cierto nesting.</i> 
+            <i>Fijate en cómo uso las llaves por debajo del nombre de la funcion y los mismo en condicionales, bucles,
+                etc. También como directamente no las uso cuando el condicional tiene una sola línea
+                o hay cierto nesting.</i>
             <br>
             <br>
             <li>Así manejo los encabezados (o la mayoría):</li>
@@ -363,25 +429,70 @@
         <div class="info-card">
             <h2>Cómo compilar (por ahora)</h2>
             <div class="code-block">
-            <li>Tiene que haber un makefile en todos los subsistemas, por lo que se debería poder hacer <i>make "subsistema"</i></li> <br>
-            <li>Después, el kernel tiene un makefile general para generar el binario, con su clean respectivo. Por ahora se usa así: <i>make all</i></li> <br>
-            <li>A futuro, seguramente hayan estrategias de compilación que permitan compilar el kernel entero para sus distintos usos.</li>
+                <li>Tiene que haber un makefile en todos los subsistemas, por lo que se debería poder hacer <i>make
+                        "subsistema"</i></li> <br>
+                <li>Después, el kernel tiene un makefile general para generar el binario, con su clean respectivo. Por
+                    ahora se usa así: <i>make all</i></li> <br>
+                <li>A futuro, seguramente hayan estrategias de compilación que permitan compilar el kernel entero para
+                    sus distintos usos.</li>
             </div>
         </div>
     </section>
 
     <section id="panic" class="section">
-        <h1 class="titulo-guia">Subsistemas del kernel</h1>          
+        <h1 class="titulo-guia">Subsistemas del kernel</h1>
+        <div class="info-card">
+            <p>
+                <strong>-</strong> No hay mucha ciencia acá. Simplemente doy una revisión de los subsistemas y algunas
+                features a desarrollar
+                a futuro.
+            </p>
+        </div>
 
         <div class="info-card">
             <h2>Scheduler</h2>
             <p>
-                Por ahora es un Round-Robin simple. La idea es usarlo como fallback ya que el sched principal debería ser preemptivo 
+                Por ahora es un <a href="https://en.wikipedia.org/wiki/Round-robin_scheduling" target="_blank"
+                    rel="noopener noreferrer">Round-Robin</a> simple. La idea es usarlo como fallback ya que el sched
+                principal debería ser preemptivo
                 y usa un esquema de prioridad simple (CFS o algo así).
                 <br>
+                <br>
+                <strong>Archivos:</strong> scheduler/scheduler.c, scheduler/task.h, scheduler/switch/switch.asm.
             </p>
+            <br>
+
+
 
         </div>
+
+        <div class="info-card">
+            <h2>Filesystem</h2>
+            <p>
+                Basado en <a href="https://es.wikipedia.org/wiki/Ext2" target="_blank"
+                    rel="noopener noreferrer">EXT2</a> y hecho desde cero. La única innovación
+                sería incluir optimizacion en funciones de búsqueda con una <a
+                    href="https://github.com/victor-base/libvictor" target="_blank" rel="noopener noreferrer">lib de
+                    bbdd vectorial</a>
+                en la que contribuí.
+                <br>
+                <br>
+
+                <strong>Archivos:</strong> A implementar.
+            </p>
+        </div>
+
+        <div class="info-card">
+            <h2>Sistema de Interrupciones</h2>
+            <p>
+                IDT de 256 entradas, manejo de page faults, handlers y wrapper en ensamblador.
+                <br>
+                <br>
+
+                <strong>Archivos:</strong> interrupt/idt.c, interrupt/interrupt.asm, interrupt/isr_handlers.c con sus encabezados.
+            </p>
+        </div>
+
     </section>
     </div>
 
