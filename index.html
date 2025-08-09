@@ -41,7 +41,7 @@
                     con html, css y js vanilla como la de <a href="https://docs.kernel.org/" target="_blank"
                         rel="noopener noreferrer">algún proyecto aficionado</a>
                     que anda por ahí. <br> <br>
-                    Un kernel de sistema operativo mínimamente funcional (todo el kernel space más un user space mínimo)
+                    Un kernel de sistema operativo mínimamente funcional (todo el <a href="https://en.wikipedia.org/wiki/User_space_and_kernel_space" target="_blank" rel="noopener noreferrer">Kernel Space</a> más un user space mínimo)
                     puede andar fácilmente en las <strong>15.000</strong> líneas de código por lo que, como verás;
                     es humanamente imposible memorizar y comprender todo el flujo del kernel por mí mismo. Además son
                     muchos subsistemas complejos trabajando a bajo nivel juntos para intermediar entre hardware y
@@ -64,6 +64,9 @@
                         target="_blank" rel="noopener noreferrer">WSL2</a> pero con mi propio kernel.
                     No descarto escalarlo lo suficiente como para hacerlo usable en servidores mínimos o incluso IoT,
                     pero entiendo que eso es al largo <i>(larguísimo)</i> plazo.
+                    <br>
+                    <br>
+                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank" rel="noopener noreferrer">Este es su Repositortio de GitHub.</a>
                 </p>
             </div>
 
@@ -89,7 +92,7 @@
 
             <div class="info-card">
                 <h2>Estado del Proyecto</h2>
-                <p><strong>Versión:</strong> no versionado aún (pero vamos a decir pre-release)<br>
+                <p><strong>Versión:</strong> no versionado aún (pero vamos a decir pre-release por ahora.)<br>
                     <strong>Arquitectura:</strong> x86-64 (i386)<br>
                     <strong>Bootloader:</strong> GRUB<br>
                     <strong>Sintaxis ASM:</strong> Intel
@@ -112,8 +115,10 @@
                         (Microkernel)</a>,
                     o el mismo <a href="https://es.wikipedia.org/wiki/MINIX" target="_blank"
                         rel="noopener noreferrer">MINIX kernel (microkernel)</a>, IR0 se basa en una arquitectura más
-                    similar a la que tiene Linux, que es monolítico. <br>
-                    sin embargo, mi argumento principal es el del rendimiento. Entiendo que alguien podría venir y
+                    similar a la que tiene Linux, que es monolítico. 
+                    <br>
+                    
+                    Sin embargo, mi argumento principal es el del rendimiento. Entiendo que alguien podría venir y
                     señalar que, como todo monolito, si un subcomponente se rompe, se cae todo el sistema <small>(y
                         tendría razón)</small>
                     pero lo que respondo a eso es que <i>"¿De qué me sirve a mí que el kernel soporte seguir sin
@@ -134,7 +139,7 @@
                         href="https://es.wikipedia.org/wiki/Filosof%C3%ADa_de_Unix" target="_blank"
                         rel="noopener noreferrer">filosofía UNIX</a>. Ellos (entre otras cosas y de forma resumidísima)
                     consideran
-                    que si algo falla, que falle bien. Lo que en términos kernelísticos sería: <i>Si se rompe el
+                    que si algo falla, <i>que falle bien</i>. Lo que en términos kernelísticos sería: <i>Si se rompe el
                         scheduler, Panic() directo. Si tenés corrupción en memoria (en espacio de kernel),
                         Panic.</i><br>
                     Y no es que lo cuestiono por que sí, simplemente pregunto (aunque sin soluciones todavía) <i>"¿Por
@@ -459,7 +464,7 @@
 
                 Igual, la mejor forma de interiorizarse sobre el funcionamiento del kernel, es viendo el código del <a
                     href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank"
-                    rel="noopener noreferrer">repositorio</a>.
+                    rel="noopener noreferrer">Repositorio de GitHub</a>.
             </p>
         </div>
 
