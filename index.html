@@ -364,7 +364,7 @@
             </p>
             <h2>¿Qué hay que saber para contribuir?</h2>
             Más que nada lo siguiente:
-            <li>Saber programación estructurada/funcional/orientada a objetos</li>
+            <li>Saber programación estructurada/funcional/orientada a objetos según sea necesario por el lenguaje.</li>
             <li>Conocer C o C++ o Rust.</li>
             <li>Assembly si contribuís en subsistemas muy pegados al hard, pero recomiendo conocer los básicos para
                 saber cómo funcionan <i>panic(), boot.asm, etc.</i></li>
@@ -397,7 +397,7 @@
             <div class="code-block">
                 <strong>NOTA</strong>: Como este proyecto es un kernel, es <i>Freestanding</i>. Eso quiere decir que vos
                 <strong>no podés incluir librerías como
-                    stdio.h por que no hay sistema operativo que responda a esas funciones </strong>. <strong>Vos sos el
+                    stdio.h para hacer un <code>print(), write()</code>, etc. por que no hay sistema operativo que responda a esas funciones </strong>. <strong>Vos sos el
                     sistema operativo</strong>. por eso, en el repo tengo la carpeta de dependencias "includes".
                 </strong>
             </div>
