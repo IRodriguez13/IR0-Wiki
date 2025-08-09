@@ -350,14 +350,16 @@
 
         <div class="info-card">
             <p>
+            <div class="code-block">
                 <strong>-</strong> Esta sección es por si alguien se interesa en contribuir al proyecto. <strong>No son
                     reglas estrictas, son simplemente recomendaciones
                     para que sea mas llevadero.</strong>
+            </div>
             </p>
             <h2>¿Qué hay que saber para contribuir?</h2>
             Más que nada lo siguiente:
             <li>Saber programación estructurada/funcional/orientada a objetos</li>
-            <li>Conocer C/C++/Rust </li>
+            <li>Conocer C o C++ o Rust.</li>
             <li>Assembly si contribuís en subsistemas muy pegados al hard, pero recomiendo conocer los básicos para
                 saber cómo funcionan <i>panic(), boot.asm, etc.</i></li>
             <li><strong>Conocer cómo funciona un makefile</strong>, como compilar los subsistemas por partes, por qué
@@ -383,11 +385,14 @@
             Te daría los comandos o las webs para instalar, pero chatgpt te lo puede resolver mejor.
             <br><br>
 
-            <strong>NOTA</strong>: Como este proyecto es un kernel, es <i>Freestanding</i>. Eso quiere decir que vos
-            <strong>no podés incluir librerías como
-                stdio.h por que no hay sistema operativo que responda a esas funciones </strong>. <strong>Vos sos el
-                sistema operativo</strong>. por eso, en el repo tengo la carpeta de dependencias "includes".
-            </strong>
+            <div class="code-block">
+                <strong>NOTA</strong>: Como este proyecto es un kernel, es <i>Freestanding</i>. Eso quiere decir que vos
+                <strong>no podés incluir librerías como
+                    stdio.h por que no hay sistema operativo que responda a esas funciones </strong>. <strong>Vos sos el
+                    sistema operativo</strong>. por eso, en el repo tengo la carpeta de dependencias "includes".
+                </strong>
+            </div>
+
         </div>
         <div class="info-card">
             <h2>Cómo escribo código?</h2>
@@ -489,7 +494,8 @@
                 <br>
                 <br>
 
-                <strong>Archivos:</strong> interrupt/idt.c, interrupt/interrupt.asm, interrupt/isr_handlers.c con sus encabezados.
+                <strong>Archivos:</strong> interrupt/idt.c, interrupt/interrupt.asm, interrupt/isr_handlers.c con sus
+                encabezados.
             </p>
         </div>
 
