@@ -42,7 +42,9 @@
                     con html, css y js vanilla como la de <a href="https://docs.kernel.org/" target="_blank"
                         rel="noopener noreferrer">algún proyecto aficionado</a>
                     que anda por ahí. <br> <br>
-                    Un kernel de sistema operativo mínimamente funcional (todo el <a href="https://en.wikipedia.org/wiki/User_space_and_kernel_space" target="_blank" rel="noopener noreferrer">Kernel Space</a> más un user space mínimo)
+                    Un kernel de sistema operativo mínimamente funcional (todo el <a
+                        href="https://en.wikipedia.org/wiki/User_space_and_kernel_space" target="_blank"
+                        rel="noopener noreferrer">Kernel Space</a> más un user space mínimo)
                     puede andar fácilmente en las <strong>15.000</strong> líneas de código por lo que, como verás;
                     es humanamente imposible memorizar y comprender todo el flujo del kernel por mí mismo. Además son
                     muchos subsistemas complejos trabajando a bajo nivel juntos para intermediar entre hardware y
@@ -67,7 +69,8 @@
                     pero entiendo que eso es al largo <i>(larguísimo)</i> plazo.
                     <br>
                     <br>
-                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank" rel="noopener noreferrer">Este es su Repositortio de GitHub.</a>
+                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank" rel="noopener noreferrer">Este
+                        es su Repositortio de GitHub.</a>
                 </p>
             </div>
 
@@ -116,9 +119,9 @@
                         (Microkernel)</a>,
                     o el mismo <a href="https://es.wikipedia.org/wiki/MINIX" target="_blank"
                         rel="noopener noreferrer">MINIX kernel (microkernel)</a>, IR0 se basa en una arquitectura más
-                    similar a la que tiene Linux, que es monolítico. 
+                    similar a la que tiene Linux, que es monolítico.
                     <br>
-                    
+
                     Sin embargo, mi argumento principal es el del rendimiento. Entiendo que alguien podría venir y
                     señalar que, como todo monolito, si un subcomponente se rompe, se cae todo el sistema <small>(y
                         tendría razón)</small>
@@ -241,11 +244,18 @@
                 <div class="code-block">
                     <article>Como es la primera vez que escribo un proyecto de este calibre, lo que busco
                         es que el Workflow para el desarrollo del kernel sea
-                        lo mas limpio, predecible y escalable posible. Para eso uso 3 ramas de git principales en el
-                        proceso: mainline, dev y feature (que aunque no está en el repositorio, es la que se usa para
+                        lo mas limpio, predecible y escalable posible.
+                        <br>
+                        <br>
+                        Para eso uso 3 ramas de git principales en el
+                        proceso: mainline, dev y feature (que aunque feature no está en el repositorio, es la que se usa
+                        como convención para
                         integrar código nuevo).
                         Donde sólo <strong>mainline</strong> y <strong>dev</strong> son las únicas 2 <i>ramas
-                            upstream</i>. <strong>experimental</strong> es una rama
+                            upstream</i>.
+                        <br>
+                        <br>
+                        <strong>experimental</strong> es una rama
                         divergente a <strong>dev</strong>, y <strong>feature</strong> es la rama que se crea para enviar
                         contribuciones.
                     </article>
@@ -264,7 +274,8 @@
                         <li>Solo código probado y funcional</li>
                         <li>Documentación completa</li>
                         <li>Mi base para rc's.</li>
-                        <li>mainline es sagrada, ya que este rama tiene que compilar y bootear siempre . Es la mas
+                        <li><strong>mainline es sagrada</strong>, ya que este rama <strong>tiene que compilar y bootear
+                                siempre</strong>. Es la mas
                             estable de las
                             dos ramas upstream.
                         </li>
@@ -281,7 +292,8 @@
 
                     <h3>Características:</h3>
                     <ul class="feature-list">
-                        <li>Es el espejo del mainline. Lo que se mergee acá no tiene por qué pasar al mainline</li>
+                        <li>Es el espejo de <strong>mainline</strong>.</li>
+                        <li>Lo que se mergee acá no tiene por qué pasar a <strong>mainline</strong>.</li>
                         <li>Nuevas features en desarrollo que me convencieron de feature</li>
                         <li>Parches de código, refactors y optimizaciones</li>
                         <li>Puede contener bugs temporales que se resuelven sí o sí en esta rama.</li>
@@ -289,6 +301,26 @@
 
                 </div>
 
+
+
+                <!-- feat BRANCH -->
+                <div class="branch-card">
+                    <div class="branch-title">feature</div>
+                    <div class="status-badge status-feat">DEVELOPMENT</div>
+                    <p><strong>-</strong>
+                        La agrego porque es la rama donde se crean feats que despues pasan al upstream
+                        mergeando a <strong>dev</strong> . Es la más inestable de todas porque es donde se integra
+                        código nuevo que también debe ser testeado y revisado antes de llegar a merge.
+                    </p>
+
+                    <h3>Características:</h3>
+                    <ul class="feature-list">
+                        <li>Acá es donde yo empiezo a implementar nuevas funcionalidades o parches</li>
+                        <li>Es la primera que se debuggea.</li>
+                        <li>Es la que crearías cuando forkeás el repo.</li>
+                        <li>Se espera que compile antes de pasar a <strong>dev</strong>.</li>
+                    </ul>
+                </div>
                 <!-- exp BRANCH -->
 
                 <div class="branch-card">
@@ -312,38 +344,24 @@
                     </ul>
                 </div>
 
-                <!-- feat BRANCH -->
-                <div class="branch-card">
-                    <div class="branch-title">feature</div>
-                    <div class="status-badge status-feat">DEVELOPMENT</div>
-                    <p><strong>-</strong>
-                        La agrego porque es la rama donde se crean feats que despues pasan al upstream
-                        mergeando a <strong>dev</strong> . Es la más inestable de todas porque es donde se integra
-                        código nuevo que también debe ser testeado y revisado antes de llegar a merge.
-                    </p>
-
-                    <h3>Características:</h3>
-                    <ul class="feature-list">
-                        <li>Acá es donde yo empiezo a implementar nuevas funcionalidades o parches</li>
-                        <li>Es la primera que se debuggea</li>
-                    </ul>
-                </div>
             </div>
-            <div class="info-card">
-                <h2>Cómo es el merging desde feature hasta mainline?</h2>
+    </div>
 
-                <article>
-                    Básicamente, vos creás tu mejora/optmización <strong>desde un fork del repo con una rama
-                        nueva</strong> que va a ser algo como <i>"feature/fix-scheduler"</i> por ejemplo. <br>
-                    Después, <strong>hacés PR a la rama dev del upstream (no al mainline)</strong> y se hace la revisión
-                    y el merge en dado caso. <br>
-                    El merge a mainline depende de <strong>cuán alineado con el proyecto considere que es la
-                        feature</strong>. <br>
-                    Ni siquiera algunas de mis propias implementaciones las mergearía directo al mainline por esta misma
-                    razón.
-                </article>
+    <div class="info-card">
+        <h2>Cómo es el merging desde feature hasta mainline?</h2>
 
-            </div>
+        <article>
+            Básicamente, vos creás tu mejora/optmización <strong>desde un fork del repo con una rama
+                nueva</strong> que va a ser algo como <i>"feature/fix-scheduler"</i> por ejemplo. <br>
+            Después, <strong>hacés PR a la rama dev del upstream (no al mainline)</strong> y se hace la revisión
+            y el merge en dado caso. <br>
+            El merge a mainline depende de <strong>cuán alineado con el proyecto considere que es la
+                feature</strong>. <br>
+            Ni siquiera algunas de mis propias implementaciones las mergearía directo al mainline por esta misma
+            razón.
+        </article>
+
+    </div>
 
     </div>
 
@@ -397,7 +415,8 @@
             <div class="code-block">
                 <strong>NOTA</strong>: Como este proyecto es un kernel, es <i>Freestanding</i>. Eso quiere decir que vos
                 <strong>no podés incluir librerías como
-                    stdio.h para hacer un <code>print(), write()</code>, etc. por que no hay sistema operativo que responda a esas funciones </strong>. <strong>Vos sos el
+                    stdio.h para hacer un <code>print(), write()</code>, etc. por que no hay sistema operativo que
+                    responda a esas funciones </strong>. <strong>Vos sos el
                     sistema operativo</strong>. por eso, en el repo tengo la carpeta de dependencias "includes".
                 </strong>
             </div>
@@ -516,7 +535,7 @@
         </div>
 
         <div class="info-card">
-            <h2>Subsistema  de arranque </h2>
+            <h2>Subsistema de arranque </h2>
             <p>
                 Arranque dependiendo de la arquitectura (X86_64) con punto de entrada en ASM.
                 <br>
@@ -535,7 +554,8 @@
 
         <div class="info-card">
             <p>
-                <li>La descarga del binario del kernel se expondrá en esta sección cuando salga la primer versión estable de la rama <strong>mainline</strong>.</li>
+                <li>La descarga del binario del kernel se expondrá en esta sección cuando salga la primer versión
+                    estable de la rama <strong>mainline</strong>.</li>
             </p>
         </div>
     </section>
