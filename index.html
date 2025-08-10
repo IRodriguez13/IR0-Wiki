@@ -345,220 +345,236 @@
                 </div>
 
             </div>
-    </div>
-
-    <div class="info-card">
-        <h2>Cómo es el merging desde feature hasta mainline?</h2>
-
-        <article>
-            Básicamente, vos creás tu mejora/optmización <strong>desde un fork del repo con una rama
-                nueva</strong> que va a ser algo como <i>"feature/fix-scheduler"</i> por ejemplo. <br>
-            Después, <strong>hacés PR a la rama dev del upstream (no al mainline)</strong> y se hace la revisión
-            y el merge en dado caso. <br>
-            El merge a mainline depende de <strong>cuán alineado con el proyecto considere que es la
-                feature</strong>. <br>
-            Ni siquiera algunas de mis propias implementaciones las mergearía directo al mainline por esta misma
-            razón.
-        </article>
-
-    </div>
-
-    </div>
 
 
+            <div class="info-card">
+                <h2>Cómo es el merging desde feature hasta mainline?</h2>
 
-    </section>
+                <article>
+                    Básicamente, vos creás tu mejora/optmización <strong>desde un fork del repo con una rama
+                        nueva</strong> que va a ser algo como <i>"feature/fix-scheduler"</i> por ejemplo. <br>
+                    Después, <strong>hacés PR a la rama dev del upstream (no al mainline)</strong> y se hace la revisión
+                    y el merge en dado caso. <br>
+                    El merge a mainline depende de <strong>cuán alineado con el proyecto considere que es la
+                        feature</strong>. <br>
+                    Ni siquiera algunas de mis propias implementaciones las mergearía directo al mainline por esta misma
+                    razón.
+                </article>
 
-    <section id="development" class="section">
-        <h1 class="titulo-guia">Guía de Desarrollo</h1>
-
-        <div class="info-card">
-            <p>
-            <div class="code-block">
-                <strong>-</strong> Esta sección es por si alguien se interesa en contribuir al proyecto. <strong>No son
-                    reglas estrictas, son simplemente recomendaciones
-                    para que sea mas llevadero.</strong>
-            </div>
-            </p>
-            <h2>¿Qué hay que saber para contribuir?</h2>
-            Más que nada lo siguiente:
-            <li>Saber programación estructurada/funcional/orientada a objetos según sea necesario por el lenguaje.</li>
-            <li>Conocer C o C++ o Rust.</li>
-            <li>Assembly si contribuís en subsistemas muy pegados al hard, pero recomiendo conocer los básicos para
-                saber cómo funcionan <i>panic(), boot.asm, etc.</i></li>
-            <li><strong>Conocer cómo funciona un makefile</strong>, como compilar los subsistemas por partes, por qué
-                hay que compilar los subsistemas por separado con su propio makefile</li>
-            <li><strong>Herramientas de desarrollo general</strong>: GIT/GitHub, como crear, cambiar, pullear y lanzar
-                PR's entre ramas</li>
-            <li><strong>QEMU básico.</strong> Cómo funciona la VM, como se le carga la imagen generada al compilar el
-                kernel.</li>
-            <li><strong>Conocer Bash es un plus para los testeos rápidos</strong>, ya que podés iniciar QEMU con un
-                script sin repetir el comando completo.</li>
-            <li>Comunicación. <strong>Argumentar decisiones sobre las PR's</strong>, debatir sanamente al respecto.</li>
-            <li>Saber utilizar IA's en general para optimizar el debug y adaptarlo a las convenciones de código.</li>
-            <li>Saber que, al contrubuir, <strong>podés ser manteiner del subsistema al que aportaste</strong>. Y si no
-                podés dar mantenimiento
-                recurrente al subsistema, <strong>dejarlo bien documentado</strong>.</li>
-            <br>
-            De igual forma, <strong>no hay que ser un experto para contribuir al kernel. Simplemente con tener ganas de
-                aprender/estudiar sobre lo que vayas a contribuir es más que suficiente</strong>.
-
-            <h2>Configuración del Entorno</h2>
-            <h3>Dependencias Requeridas:</h3>
-            <li>Básicamente tener instalado: el compilador de C/Cpp (gcc/g++), el compilador de asm (nasm), make para la
-                compilación y
-                QEMU como vm de prueba.
-            </li>
-            Te daría los comandos o las webs para instalar, pero chatgpt te lo puede resolver mejor.
-            <br><br>
-
-            <div class="code-block">
-                <strong>NOTA</strong>: Como este proyecto es un kernel, es <i>Freestanding</i>. Eso quiere decir que vos
-                <strong>no podés incluir librerías como
-                    stdio.h para hacer un <code>print(), write()</code>, etc. por que no hay sistema operativo que
-                    responda a esas funciones </strong>. <strong>Vos sos el
-                    sistema operativo</strong>. por eso, en el repo tengo la carpeta de dependencias "includes".
-                </strong>
             </div>
 
-        </div>
-        <div class="info-card">
-            <h2>Cómo escribo código?</h2>
-            <h3>Convenciones de Nombres:</h3>
-            <ul class="feature-list">
-                <li>Funciones: <code>snake_case()</code></li>
-                <li>Macros: <code>UPPER_CASE</code></li>
-                <li>Structs: <code>struct_name_t</code></li>
-                <li>Variables globales: <code>g_variable_name</code></li>
-                <li>Constantes: <code>CONSTANT_NAME</code></li>
-                <li>includes: <code>#INCLUDE -ir0/Lib.h - </code>(se estan migrando a ese formato)</li>
-            </ul>
-            <h3>Comentarios:</h3>
-            <ul class="feature-list">
-                <li>archivos de encabezado .h de funciones documentadas</li>
-                <li>Archivos de código fuente con comentarios en algunas funciones, pero mas acotados</li>
-                <li>Explicación de algoritmos complejos</li>
-                <li>TO DO's claramente marcados</li>
-                <li>Referencias a documentación técnica</li>
-            </ul>
-            <small>Esto es aproximado. Por lo general trato de respetar esas convenciones lo máximo que puedo.</small>
-            <br><br>
-            <li>Algo así sería en este ejemplo una archivo promedio de código fuente:</li>
-            <br>
-            <img src="/Assets/funcion.c.png" alt="" srcset="" style="width: 50%;">
-            <br>
-            <i>Fijate en cómo uso las llaves por debajo del nombre de la funcion y los mismo en condicionales, bucles,
-                etc. También como directamente no las uso cuando el condicional tiene una sola línea
-                o hay cierto nesting.</i>
-            <br>
-            <br>
-            <li>Así manejo los encabezados (o la mayoría):</li>
-            <br><br>
-            <img src="/Assets/encabezado.png" alt="" srcset="">
-            <br>
-            <i>Los comentarios grandes van por lo general en éstos .h y en los fuente hacemos acotaciones.</i>
-        </div>
 
-        <div class="info-card">
-            <h2>Cómo compilar (por ahora)</h2>
-            <div class="code-block">
-                <li>Tiene que haber un makefile en todos los subsistemas, por lo que se debería poder hacer <i>make
-                        "subsistema"</i></li> <br>
-                <li>Después, el kernel tiene un makefile general para generar el binario, con su clean respectivo. Por
-                    ahora se usa así: <i>make all</i></li> <br>
-                <li>A futuro, seguramente hayan estrategias de compilación que permitan compilar el kernel entero para
-                    sus distintos usos.</li>
+
+        </section>
+
+        <section id="development" class="section">
+            <h1 class="titulo-guia">Guía de Desarrollo</h1>
+
+            <div class="info-card">
+                <p>
+                <div class="code-block">
+                    <strong>-</strong> Esta sección es por si alguien se interesa en contribuir al proyecto. <strong>No
+                        son
+                        reglas estrictas, son simplemente recomendaciones
+                        para que sea mas llevadero.</strong>
+                </div>
+                </p>
+                <h2>¿Qué hay que saber para contribuir?</h2>
+                Más que nada lo siguiente:
+                <li>Saber programación estructurada/funcional/orientada a objetos según sea necesario por el lenguaje.
+                </li>
+                <li>Conocer C o C++ o Rust.</li>
+                <li>Assembly si contribuís en subsistemas muy pegados al hard, pero recomiendo conocer los básicos para
+                    saber cómo funcionan <i>panic(), boot.asm, etc.</i></li>
+                <li><strong>Conocer cómo funciona un makefile</strong>, como compilar los subsistemas por partes, por
+                    qué
+                    hay que compilar los subsistemas por separado con su propio makefile</li>
+                <li><strong>Herramientas de desarrollo general</strong>: GIT/GitHub, como crear, cambiar, pullear y
+                    lanzar
+                    PR's entre ramas</li>
+                <li><strong>QEMU básico.</strong> Cómo funciona la VM, como se le carga la imagen generada al compilar
+                    el
+                    kernel.</li>
+                <li><strong>Conocer Bash es un plus para los testeos rápidos</strong>, ya que podés iniciar QEMU con un
+                    script sin repetir el comando completo.</li>
+                <li>Comunicación. <strong>Argumentar decisiones sobre las PR's</strong>, debatir sanamente al respecto.
+                </li>
+                <li>Saber utilizar IA's en general para optimizar el debug y adaptarlo a las convenciones de código.
+                </li>
+                <li>Saber que, al contrubuir, <strong>podés ser manteiner del subsistema al que aportaste</strong>. Y si
+                    no
+                    podés dar mantenimiento
+                    recurrente al subsistema, <strong>dejarlo bien documentado</strong>.</li>
+                <br>
+                De igual forma, <strong>no hay que ser un experto para contribuir al kernel. Simplemente con tener ganas
+                    de
+                    aprender/estudiar sobre lo que vayas a contribuir es más que suficiente</strong>.
+
+                <h2>Configuración del Entorno</h2>
+                <h3>Dependencias Requeridas:</h3>
+                <li>Básicamente tener instalado: el compilador de C/Cpp (gcc/g++), el compilador de asm (nasm), make
+                    para la
+                    compilación y
+                    QEMU como vm de prueba.
+                </li>
+                Te daría los comandos o las webs para instalar, pero chatgpt te lo puede resolver mejor.
+                <br><br>
+
+                <div class="code-block">
+                    <strong>NOTA</strong>: Como este proyecto es un kernel, es <i>Freestanding</i>. Eso quiere decir que
+                    vos
+                    <strong>no podés incluir librerías como
+                        stdio.h para hacer un <code>print(), write()</code>, etc. por que no hay sistema operativo que
+                        responda a esas funciones </strong>. <strong>Vos sos el
+                        sistema operativo</strong>. por eso, en el repo tengo la carpeta de dependencias "includes".
+                    </strong>
+                </div>
+
             </div>
-        </div>
-    </section>
-
-    <section id="panic" class="section">
-        <h1 class="titulo-guia">Subsistemas del kernel</h1>
-        <div class="code-block">
-            <p>
-                <strong>-</strong> No hay mucha ciencia acá. Simplemente doy una revisión de los subsistemas y algunas
-                features a desarrollar
-                a futuro.
+            <div class="info-card">
+                <h2>Cómo escribo código?</h2>
+                <h3>Convenciones de Nombres:</h3>
+                <ul class="feature-list">
+                    <li>Funciones: <code>snake_case()</code></li>
+                    <li>Macros: <code>UPPER_CASE</code></li>
+                    <li>Structs: <code>struct_name_t</code></li>
+                    <li>Variables globales: <code>g_variable_name</code></li>
+                    <li>Constantes: <code>CONSTANT_NAME</code></li>
+                    <li>includes: <code>#INCLUDE -ir0/Lib.h - </code>(se estan migrando a ese formato)</li>
+                </ul>
+                <h3>Comentarios:</h3>
+                <ul class="feature-list">
+                    <li>archivos de encabezado .h de funciones documentadas</li>
+                    <li>Archivos de código fuente con comentarios en algunas funciones, pero mas acotados</li>
+                    <li>Explicación de algoritmos complejos</li>
+                    <li>TO DO's claramente marcados</li>
+                    <li>Referencias a documentación técnica</li>
+                </ul>
+                <small>Esto es aproximado. Por lo general trato de respetar esas convenciones lo máximo que
+                    puedo.</small>
+                <br><br>
+                <li>Algo así sería en este ejemplo una archivo promedio de código fuente:</li>
+                <br>
+                <img src="/Assets/funcion.c.png" alt="" srcset="" style="width: 50%;">
+                <br>
+                <i>Fijate en cómo uso las llaves por debajo del nombre de la funcion y los mismo en condicionales,
+                    bucles,
+                    etc. También como directamente no las uso cuando el condicional tiene una sola línea
+                    o hay cierto nesting.</i>
                 <br>
                 <br>
-
-                Igual, la mejor forma de interiorizarse sobre el funcionamiento del kernel, es viendo el código del <a
-                    href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank"
-                    rel="noopener noreferrer">Repositorio de GitHub</a>.
-            </p>
-        </div>
-
-        <div class="info-card">
-            <h2>Scheduler</h2>
-            <p>
-                Por ahora es un <a href="https://en.wikipedia.org/wiki/Round-robin_scheduling" target="_blank"
-                    rel="noopener noreferrer">Round-Robin</a> simple. La idea es usarlo como fallback ya que el sched
-                principal debería ser preemptivo
-                y usa un esquema de prioridad simple (CFS o algo así).
+                <li>Así manejo los encabezados (o la mayoría):</li>
+                <br><br>
+                <img src="/Assets/encabezado.png" alt="" srcset="">
                 <br>
-                <br>
-                <strong>Archivos:</strong> scheduler/scheduler.c, scheduler/task.h, scheduler/switch/switch.asm.
-            </p>
-            <br>
+                <i>Los comentarios grandes van por lo general en éstos .h y en los fuente hacemos acotaciones.</i>
+            </div>
 
+            <div class="info-card">
+                <h2>Cómo compilar (por ahora)</h2>
+                <div class="code-block">
+                    <li>Tiene que haber un makefile en todos los subsistemas, por lo que se debería poder hacer <i>make
+                            "subsistema"</i></li> <br>
+                    <li>Después, el kernel tiene un makefile general para generar el binario, con su clean respectivo.
+                        Por
+                        ahora se usa así: <i>make all</i></li> <br>
+                    <li>A futuro, seguramente hayan estrategias de compilación que permitan compilar el kernel entero
+                        para
+                        sus distintos usos.</li>
+                </div>
+            </div>
+        </section>
 
+        <section id="panic" class="section">
+            <h1 class="titulo-guia">Subsistemas del kernel</h1>
+            <div class="code-block">
+                <p>
+                    <strong>-</strong> No hay mucha ciencia acá. Simplemente doy una revisión de los subsistemas y
+                    algunas
+                    features a desarrollar
+                    a futuro.
+                    <br>
+                    <br>
 
-        </div>
+                    Igual, la mejor forma de interiorizarse sobre el funcionamiento del kernel, es viendo el código del
+                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank"
+                        rel="noopener noreferrer">Repositorio de GitHub</a>.
+                </p>
+            </div>
 
-        <div class="info-card">
-            <h2>Filesystem</h2>
-            <p>
-                Basado en <a href="https://es.wikipedia.org/wiki/Ext2" target="_blank"
-                    rel="noopener noreferrer">EXT2</a> y hecho desde cero. La única innovación
-                sería incluir optimizacion en funciones de búsqueda con una <a
-                    href="https://github.com/victor-base/libvictor" target="_blank" rel="noopener noreferrer">lib de
-                    bbdd vectorial</a>
-                en la que contribuí.
-                <br>
-                <br>
-
-                <strong>Archivos:</strong> A implementar.
-            </p>
-        </div>
-
-
-        <div class="info-card">
-            <h2>Sistema de Interrupciones</h2>
-            <p>
-                IDT de 256 entradas, manejo de page faults, handlers y wrapper en ensamblador.
-                <br>
-                <br>
-
-                <strong>Archivos:</strong> interrupt/idt.c, interrupt/interrupt.asm, interrupt/isr_handlers.c con sus
-                encabezados.
-            </p>
-        </div>
-
-        <div class="info-card">
-            <h2>Subsistema de arranque </h2>
-            <p>
-                Arranque dependiendo de la arquitectura (X86_64) con punto de entrada en ASM.
-                <br>
+            <div class="info-card">
+                <h2>Scheduler</h2>
+                <p>
+                    Por ahora es un <a href="https://en.wikipedia.org/wiki/Round-robin_scheduling" target="_blank"
+                        rel="noopener noreferrer">Round-Robin</a> simple. La idea es usarlo como fallback ya que el
+                    sched
+                    principal debería ser preemptivo
+                    y usa un esquema de prioridad simple (CFS o algo así).
+                    <br>
+                    <br>
+                    <strong>Archivos:</strong> scheduler/scheduler.c, scheduler/task.h, scheduler/switch/switch.asm.
+                </p>
                 <br>
 
-                <strong>Archivos:</strong> boot.asm, kmain.c con su encabezado.
-            </p>
-        </div>
+
+
+            </div>
+
+            <div class="info-card">
+                <h2>Filesystem</h2>
+                <p>
+                    Basado en <a href="https://es.wikipedia.org/wiki/Ext2" target="_blank"
+                        rel="noopener noreferrer">EXT2</a> y hecho desde cero. La única innovación
+                    sería incluir optimizacion en funciones de búsqueda con una <a
+                        href="https://github.com/victor-base/libvictor" target="_blank" rel="noopener noreferrer">lib de
+                        bbdd vectorial</a>
+                    en la que contribuí.
+                    <br>
+                    <br>
+
+                    <strong>Archivos:</strong> A implementar.
+                </p>
+            </div>
+
+
+            <div class="info-card">
+                <h2>Sistema de Interrupciones</h2>
+                <p>
+                    IDT de 256 entradas, manejo de page faults, handlers y wrapper en ensamblador.
+                    <br>
+                    <br>
+
+                    <strong>Archivos:</strong> interrupt/idt.c, interrupt/interrupt.asm, interrupt/isr_handlers.c con
+                    sus
+                    encabezados.
+                </p>
+            </div>
+
+            <div class="info-card">
+                <h2>Subsistema de arranque </h2>
+                <p>
+                    Arranque dependiendo de la arquitectura (X86_64) con punto de entrada en ASM.
+                    <br>
+                    <br>
+
+                    <strong>Archivos:</strong> boot.asm, kmain.c con su encabezado.
+                </p>
+            </div>
 
 
 
-    </section>
+        </section>
 
-    <section id="descarga" class="section">
-        <h1 class="titulo-guia">Descargas</h1>
+        <section id="descarga" class="section">
+            <h1 class="titulo-guia">Descargas</h1>
 
-        <div class="info-card">
-            <p>
-                <li>La descarga del binario del kernel se expondrá en esta sección cuando salga la primer versión
-                    estable de la rama <strong>mainline</strong>.</li>
-            </p>
-        </div>
-    </section>
+            <div class="info-card">
+                <p>
+                    <li>La descarga del binario del kernel se expondrá en esta sección cuando salga la primer versión
+                        estable de la rama <strong>mainline</strong>.</li>
+                </p>
+            </div>
+        </section>
     </div>
 
 </body>
