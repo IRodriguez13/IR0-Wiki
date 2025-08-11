@@ -88,6 +88,11 @@
        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
    }
 
+.link-repo
+{
+    color:#f4f4f4
+}
+
    .section.active {
        display: block;
    }
