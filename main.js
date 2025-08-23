@@ -27,6 +27,22 @@
             });
         }
 
+        // Función para mostrar/ocultar el menú de idiomas
+        function toggleLanguageMenu() {
+            const menu = document.getElementById('languageMenu');
+            menu.classList.toggle('show');
+        }
+
+        // Cerrar el menú cuando se hace clic fuera de él
+        document.addEventListener('click', function(event) {
+            const dropdown = document.querySelector('.language-dropdown');
+            const menu = document.getElementById('languageMenu');
+            
+            if (!dropdown.contains(event.target)) {
+                menu.classList.remove('show');
+            }
+        });
+
         // Inicialización cuando se carga la página
         document.addEventListener('DOMContentLoaded', function() {
             // Asegurar que la primera sección esté visible

@@ -73,6 +73,86 @@
        background-color: #444;
    }
 
+   .language-dropdown {
+       position: relative;
+       display: inline-block;
+   }
+
+   .translate-btn {
+       background: #007bff;
+       color: white;
+       border: none;
+       padding: 0.5rem 1rem;
+       border-radius: 4px;
+       cursor: pointer;
+       font-size: 0.9rem;
+       transition: all 0.3s ease;
+   }
+
+   .translate-btn:hover {
+       background: #0056b3;
+       transform: translateY(-1px);
+   }
+
+   .language-menu {
+       display: none;
+       position: absolute;
+       top: 100%;
+       right: 0;
+       background: white;
+       border: 1px solid #ddd;
+       border-radius: 6px;
+       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+       z-index: 1000;
+       min-width: 150px;
+       margin-top: 5px;
+   }
+
+   .language-menu.show {
+       display: block;
+   }
+
+   .language-option {
+       display: block;
+       padding: 0.8rem 1rem;
+       color: #333;
+       text-decoration: none;
+       transition: background-color 0.2s ease;
+       border-bottom: 1px solid #eee;
+   }
+
+   .language-option:last-child {
+       border-bottom: none;
+   }
+
+   .language-option:hover {
+       background-color: #f8f9fa;
+   }
+
+   .language-option.active {
+       background-color: #007bff;
+       color: white;
+   }
+
+   .download-btn {
+       background: #17a2b8;
+       color: white;
+       border: none;
+       padding: 1rem 2rem;
+       border-radius: 6px;
+       cursor: pointer;
+       font-size: 1rem;
+       font-weight: bold;
+       transition: all 0.3s ease;
+       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+   }
+
+   .download-btn:hover {
+       background: #138496;
+       transform: translateY(-2px);
+       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+   }
+
    .container {
        max-width: 1200px;
        margin: 0 auto;
@@ -258,5 +338,28 @@
 
        .container {
            padding: 8rem 1rem 2rem;
+       }
+   }
+
+   /* Animaciones para notificaciones */
+   @keyframes slideIn {
+       from {
+           transform: translateX(100%);
+           opacity: 0;
+       }
+       to {
+           transform: translateX(0);
+           opacity: 1;
+       }
+   }
+
+   @keyframes slideOut {
+       from {
+           transform: translateX(0);
+           opacity: 1;
+       }
+       to {
+           transform: translateX(100%);
+           opacity: 0;
        }
    }

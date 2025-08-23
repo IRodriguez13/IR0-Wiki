@@ -25,6 +25,13 @@
                 <li><a href="#development" class="nav-link" onclick="showSection('development')">Desarrollo</a></li>
                 <li><a href="#panic" class="nav-link" onclick="showSection('panic')">Subsistemas</a></li>
                 <li><a href="#overview" class="nav-link" onclick="showSection('descarga')">Descarga</a></li>
+                <li class="language-dropdown">
+                    <button class="translate-btn" onclick="toggleLanguageMenu()">🌐 ES</button>
+                    <div class="language-menu" id="languageMenu">
+                        <a href="index.html" class="language-option active">🇪🇸 Español</a>
+                        <a href="index_en.html" class="language-option">🇺🇸 English</a>
+                    </div>
+                </li>
             </ul>
         </div>
     </nav>
@@ -577,6 +584,16 @@
                     <li>La descarga del binario del kernel se expondrá en esta sección cuando salga la primer versión
                         estable de la rama <strong>mainline</strong>.</li>
                 </p>
+                
+                <div style="margin-top: 2rem; text-align: center;">
+                    <h3 id="wikiVersions">Versiones de la Wiki</h3>
+                    <button id="downloadBtn" onclick="window.open('index_en.html', '_blank')" class="download-btn">
+                        📄 Ver Versión en Inglés
+                    </button>
+                    <p id="downloadDesc" style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
+                        Abre la versión en inglés de la wiki en una nueva pestaña.
+                    </p>
+                </div>
             </div>
         </section>
     </div>
