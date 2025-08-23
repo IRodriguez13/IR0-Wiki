@@ -20,11 +20,8 @@
                 currentLink.classList.add('active');
             }
             
-            // Scroll suave hacia arriba
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            // Scroll instantáneo hacia arriba
+            window.scrollTo(0, 0);
         }
 
         // Función para mostrar/ocultar el menú de idiomas

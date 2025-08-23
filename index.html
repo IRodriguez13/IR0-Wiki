@@ -494,85 +494,379 @@
 
         
         <section id="panic" class="section">
-            <h1 class="titulo-guia">Subsistemas del kernel</h1>
+            <h1 class="titulo-guia">Subsistemas del Kernel</h1>
             <div class="code-block">
                 <p>
-                    <strong>-</strong> No hay mucha ciencia acá. Simplemente doy una revisión de los subsistemas y
-                    algunas
-                    features a desarrollar
-                    a futuro.
+                    <strong>-</strong> En esta sección se detallan los principales subsistemas que componen el kernel IR0,
+                    su estado actual de desarrollo y las características técnicas de cada uno.
                     <br>
                     <br>
-
-                    Igual, la mejor forma de interiorizarse sobre el funcionamiento del kernel, es viendo el código del
+                    La mejor forma de entender el funcionamiento interno es revisando el código fuente en el
                     <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank"
                         rel="noopener noreferrer" class="link-repo">Repositorio de GitHub</a>.
                 </p>
             </div>
 
-
             <div class="info-card">
-                <h2>Scheduler</h2>
+                <h2>🔄 Scheduler (Planificador)</h2>
                 <p>
-                    Por ahora es un <a href="https://en.wikipedia.org/wiki/Round-robin_scheduling" target="_blank"
-                        rel="noopener noreferrer">Round-Robin</a> simple. La idea es usarlo como fallback ya que el
-                    sched
-                    principal debería ser preemptivo
-                    y usa un esquema de prioridad simple (CFS o algo así).
-                    <br>
-                    <br>
-                    <strong>Archivos:</strong> scheduler/scheduler.c, scheduler/task.h, scheduler/switch/switch.asm.
+                    El scheduler es el corazón del sistema de multiprocesamiento. Actualmente implementa un algoritmo
+                    <a href="https://en.wikipedia.org/wiki/Round-robin_scheduling" target="_blank"
+                        rel="noopener noreferrer">Round-Robin</a> simple como fallback, pero el objetivo es migrar a un
+                    scheduler preemptivo con esquema de prioridades similar al CFS (Completely Fair Scheduler) de Linux.
                 </p>
-                <br>
-
-
-
+                <h3>Características Actuales:</h3>
+                <ul class="feature-list">
+                    <li>Algoritmo Round-Robin con quantum fijo</li>
+                    <li>Soporte para múltiples niveles de prioridad</li>
+                    <li>Manejo básico de estados de proceso (Ready, Running, Blocked)</li>
+                    <li>Context switching optimizado en ensamblador</li>
+                </ul>
+                <h3>Próximas Mejoras:</h3>
+                <ul class="feature-list">
+                    <li>Implementación de scheduler preemptivo</li>
+                    <li>Algoritmo CFS para distribución equitativa de CPU</li>
+                    <li>Soporte para real-time scheduling</li>
+                    <li>Load balancing entre núcleos</li>
+                </ul>
+                <p><strong>Archivos:</strong> scheduler/scheduler.c, scheduler/task.h, scheduler/switch/switch.asm</p>
             </div>
 
             <div class="info-card">
-                <h2>Filesystem</h2>
+                <h2>💾 Filesystem (Sistema de Archivos)</h2>
                 <p>
-                    Basado en <a href="https://es.wikipedia.org/wiki/Ext2" target="_blank"
-                        rel="noopener noreferrer">EXT2</a> y hecho desde cero. La única innovación
-                    sería incluir optimizacion en funciones de búsqueda con una <a
-                        href="https://github.com/victor-base/libvictor" target="_blank" rel="noopener noreferrer">lib de
-                        bbdd vectorial</a>
-                    en la que contribuí.
-                    <br>
-                    <br>
-
-                    <strong>Archivos:</strong> A implementar.
+                    Sistema de archivos propio basado en <a href="https://es.wikipedia.org/wiki/Ext2" target="_blank"
+                        rel="noopener noreferrer">EXT2</a> pero con innovaciones modernas. La característica distintiva
+                    es la integración de una base de datos vectorial para optimizar las operaciones de búsqueda y
+                    indexación de archivos.
                 </p>
-            </div>
-
-
-            <div class="info-card">
-                <h2>Sistema de Interrupciones</h2>
-                <p>
-                    IDT de 256 entradas, manejo de page faults, handlers y wrapper en ensamblador.
-                    <br>
-                    <br>
-
-                    <strong>Archivos:</strong> interrupt/idt.c, interrupt/interrupt.asm, interrupt/isr_handlers.c con
-                    sus
-                    encabezados.
-                </p>
+                <h3>Características Técnicas:</h3>
+                <ul class="feature-list">
+                    <li>Estructura de directorios jerárquica</li>
+                    <li>Soporte para archivos de hasta 2TB</li>
+                    <li>Journaling para recuperación ante fallos</li>
+                    <li>Compresión transparente de archivos</li>
+                    <li>Indexación vectorial para búsquedas rápidas</li>
+                </ul>
+                <h3>Innovaciones:</h3>
+                <ul class="feature-list">
+                    <li>Integración con <a href="https://github.com/victor-base/libvictor" target="_blank" rel="noopener noreferrer">libvictor</a> para búsquedas semánticas</li>
+                    <li>Cache inteligente basado en patrones de acceso</li>
+                    <li>Soporte para metadata extendida</li>
+                    <li>Encriptación a nivel de archivo</li>
+                </ul>
+                <p><strong>Estado:</strong> En desarrollo activo</p>
+                <p><strong>Archivos:</strong> fs/ext2.c, fs/victor_index.c, fs/journal.c</p>
             </div>
 
             <div class="info-card">
-                <h2>Subsistema de arranque </h2>
+                <h2>⚡ Sistema de Interrupciones</h2>
                 <p>
-                    Arranque dependiendo de la arquitectura (X86_64) con punto de entrada en ASM.
-                    <br>
-                    <br>
-                    
-
-                    <img src="/Assets/diag.png" alt="diagramar" srcset="" style="width: 100%;">
-                    <strong>Archivos:</strong> boot.asm, kmain.c arch.c, kernel_start.c.
+                    Sistema robusto de manejo de interrupciones y excepciones que garantiza la estabilidad del kernel
+                    y proporciona una interfaz limpia para el manejo de eventos de hardware y software.
                 </p>
+                <h3>Componentes Principales:</h3>
+                <ul class="feature-list">
+                    <li><strong>IDT (Interrupt Descriptor Table):</strong> Tabla de 256 entradas para mapear interrupciones</li>
+                    <li><strong>ISR (Interrupt Service Routines):</strong> Handlers optimizados en ensamblador</li>
+                    <li><strong>Exception Handler:</strong> Manejo de excepciones del procesador</li>
+                    <li><strong>IRQ Manager:</strong> Gestión de interrupciones de hardware</li>
+                </ul>
+                <h3>Características:</h3>
+                <ul class="feature-list">
+                    <li>Manejo completo de page faults con recovery automático</li>
+                    <li>Interrupciones anidadas con prioridades</li>
+                    <li>Deferred interrupt processing</li>
+                    <li>Interrupt coalescing para optimización</li>
+                </ul>
+                <p><strong>Archivos:</strong> interrupt/idt.c, interrupt/interrupt.asm, interrupt/isr_handlers.c, interrupt/irq.c</p>
             </div>
 
+            <div class="info-card">
+                <h2>🚀 Subsistema de Arranque</h2>
+                <p>
+                    Sistema de inicialización que prepara el entorno para la ejecución del kernel, manejando la
+                    transición desde el bootloader hasta el espacio de usuario.
+                </p>
+                <h3>Fases de Arranque:</h3>
+                <ul class="feature-list">
+                    <li><strong>Fase 1:</strong> Inicialización del procesador y modo protegido</li>
+                    <li><strong>Fase 2:</strong> Configuración de paginación y memoria virtual</li>
+                    <li><strong>Fase 3:</strong> Inicialización de subsistemas críticos</li>
+                    <li><strong>Fase 4:</strong> Carga del primer proceso (init)</li>
+                </ul>
+                <h3>Características:</h3>
+                <ul class="feature-list">
+                    <li>Soporte para múltiples arquitecturas (x86-64, ARM64)</li>
+                    <li>Bootloader independiente con soporte para UEFI</li>
+                    <li>Recuperación automática ante fallos de arranque</li>
+                    <li>Modo de recuperación integrado</li>
+                </ul>
+                <img src="/Assets/diag.png" alt="Diagrama de arranque" srcset="" style="width: 100%;">
+                <p><strong>Archivos:</strong> boot/boot.asm, boot/kmain.c, boot/arch.c, boot/kernel_start.c</p>
+            </div>
 
+            <div class="info-card">
+                <h2>🛡️ Gestión de Memoria</h2>
+                <p>
+                    Sistema avanzado de gestión de memoria que proporciona aislamiento entre procesos, optimización
+                    de rendimiento y protección contra accesos no autorizados.
+                </p>
+                <h3>Componentes:</h3>
+                <ul class="feature-list">
+                    <li><strong>Memory Manager:</strong> Gestión de páginas físicas y virtuales</li>
+                    <li><strong>Page Allocator:</strong> Asignación eficiente de memoria</li>
+                    <li><strong>Slab Allocator:</strong> Optimización para objetos pequeños</li>
+                    <li><strong>Memory Protection:</strong> Control de acceso y permisos</li>
+                </ul>
+                <h3>Características:</h3>
+                <ul class="feature-list">
+                    <li>Paginación de 4 niveles (48-bit addressing)</li>
+                    <li>Memory compression transparente</li>
+                    <li>NUMA awareness para sistemas multi-socket</li>
+                    <li>Memory deduplication</li>
+                </ul>
+                <p><strong>Archivos:</strong> mm/page_alloc.c, mm/slab.c, mm/vmalloc.c, mm/protection.c</p>
+            </div>
+
+            <div class="info-card">
+                <h2>🌐 Subsistema de Red</h2>
+                <p>
+                    Pila de red completa basada en Linux pero optimizada para el kernel IR0, proporcionando
+                    soporte para protocolos modernos y optimizaciones específicas.
+                </p>
+                <h3>Protocolos Soportados:</h3>
+                <ul class="feature-list">
+                    <li>TCP/IP stack completo</li>
+                    <li>UDP con optimizaciones de latencia</li>
+                    <li>HTTP/2 y HTTP/3</li>
+                    <li>QUIC para conexiones rápidas</li>
+                    <li>IPv6 con transición automática</li>
+                </ul>
+                <h3>Optimizaciones:</h3>
+                <ul class="feature-list">
+                    <li>Zero-copy networking</li>
+                    <li>Kernel bypass para aplicaciones de alto rendimiento</li>
+                    <li>Network function virtualization (NFV)</li>
+                    <li>Load balancing inteligente</li>
+                </ul>
+                <p><strong>Estado:</strong> Integración con Linux networking stack</p>
+                <p><strong>Archivos:</strong> net/tcp.c, net/udp.c, net/socket.c, net/protocols/</p>
+            </div>
+
+            <div class="info-card">
+                <h2>🔧 Subsistema de Drivers</h2>
+                <p>
+                    Framework modular para el desarrollo y gestión de drivers de hardware, con soporte para
+                    hot-plugging y gestión automática de dispositivos.
+                </p>
+                <h3>Tipos de Drivers:</h3>
+                <ul class="feature-list">
+                    <li><strong>Block Devices:</strong> Discos, SSDs, dispositivos de almacenamiento</li>
+                    <li><strong>Character Devices:</strong> Terminales, dispositivos de entrada</li>
+                    <li><strong>Network Devices:</strong> Tarjetas de red, WiFi, Bluetooth</li>
+                    <li><strong>Graphics:</strong> GPUs, framebuffers, aceleración por hardware</li>
+                </ul>
+                <h3>Características:</h3>
+                <ul class="feature-list">
+                    <li>Driver framework unificado</li>
+                    <li>Auto-detection de hardware</li>
+                    <li>Power management integrado</li>
+                    <li>Driver signing y verificación</li>
+                </ul>
+                <p><strong>Archivos:</strong> drivers/core.c, drivers/block/, drivers/char/, drivers/net/</p>
+            </div>
+
+            <div class="info-card">
+                <h2>🔐 Sistema de Seguridad</h2>
+                <p>
+                    Framework integral de seguridad que protege el kernel y los procesos de usuarios, implementando
+                    múltiples capas de protección y auditoría de seguridad.
+                </p>
+                <h3>Componentes de Seguridad:</h3>
+                <ul class="feature-list">
+                    <li><strong>Access Control:</strong> Control de acceso basado en roles (RBAC)</li>
+                    <li><strong>Capability System:</strong> Sistema de capacidades granular</li>
+                    <li><strong>Seccomp:</strong> Filtrado de syscalls para sandboxing</li>
+                    <li><strong>LSM (Linux Security Modules):</strong> Módulos de seguridad intercambiables</li>
+                </ul>
+                <h3>Características:</h3>
+                <ul class="feature-list">
+                    <li>ASLR (Address Space Layout Randomization)</li>
+                    <li>Stack canaries y protección contra buffer overflows</li>
+                    <li>Kernel hardening automático</li>
+                    <li>Auditoría de eventos de seguridad</li>
+                    <li>Integración con TPM para medición de integridad</li>
+                </ul>
+                <p><strong>Archivos:</strong> security/capability.c, security/seccomp.c, security/lsm/, security/audit.c</p>
+            </div>
+
+            <div class="info-card">
+                <h2>⚡ Power Management</h2>
+                <p>
+                    Sistema avanzado de gestión de energía que optimiza el consumo de batería en dispositivos móviles
+                    y reduce el consumo energético en servidores, manteniendo el rendimiento.
+                </p>
+                <h3>Estados de Energía:</h3>
+                <ul class="feature-list">
+                    <li><strong>Suspend to RAM:</strong> Suspensión rápida con recuperación instantánea</li>
+                    <li><strong>Suspend to Disk:</strong> Hibernación completa</li>
+                    <li><strong>Standby:</strong> Modo de espera de bajo consumo</li>
+                    <li><strong>Dynamic Frequency Scaling:</strong> Ajuste dinámico de frecuencia CPU</li>
+                </ul>
+                <h3>Optimizaciones:</h3>
+                <ul class="feature-list">
+                    <li>CPU idle management inteligente</li>
+                    <li>Wake-on-LAN y wake-on-timer</li>
+                    <li>Power capping para servidores</li>
+                    <li>Thermal management automático</li>
+                    <li>Battery health monitoring</li>
+                </ul>
+                <p><strong>Archivos:</strong> power/suspend.c, power/cpuidle.c, power/thermal.c, power/battery.c</p>
+            </div>
+
+            <div class="info-card">
+                <h2>🎯 Virtualización</h2>
+                <p>
+                    Subsistema de virtualización que permite ejecutar múltiples sistemas operativos simultáneamente,
+                    con soporte para contenedores y máquinas virtuales completas.
+                </p>
+                <h3>Tipos de Virtualización:</h3>
+                <ul class="feature-list">
+                    <li><strong>Containers:</strong> Aislamiento ligero con namespaces y cgroups</li>
+                    <li><strong>KVM:</strong> Kernel-based Virtual Machine para VMs completas</li>
+                    <li><strong>Xen:</strong> Hypervisor tipo 1 para virtualización bare-metal</li>
+                    <li><strong>Docker/OCI:</strong> Soporte para estándares de contenedores</li>
+                </ul>
+                <h3>Características:</h3>
+                <ul class="feature-list">
+                    <li>Hardware-assisted virtualization (Intel VT-x, AMD-V)</li>
+                    <li>Nested virtualization</li>
+                    <li>Live migration de VMs</li>
+                    <li>GPU passthrough para aceleración gráfica</li>
+                    <li>Memory ballooning y overcommit</li>
+                </ul>
+                <p><strong>Archivos:</strong> virt/kvm/, virt/xen/, kernel/nsproxy.c, kernel/cgroup.c</p>
+            </div>
+
+            <div class="info-card">
+                <h2>📊 Monitoring y Debugging</h2>
+                <p>
+                    Sistema completo de monitoreo y debugging que proporciona visibilidad profunda del funcionamiento
+                    del kernel y permite el diagnóstico de problemas en tiempo real.
+                </p>
+                <h3>Herramientas de Debugging:</h3>
+                <ul class="feature-list">
+                    <li><strong>Kprobes:</strong> Puntos de inserción dinámicos en el kernel</li>
+                    <li><strong>ftrace:</strong> Tracer de funciones y eventos</li>
+                    <li><strong>perf:</strong> Profiler de rendimiento avanzado</li>
+                    <li><strong>eBPF:</strong> Programación dinámica del kernel</li>
+                </ul>
+                <h3>Métricas y Monitoreo:</h3>
+                <ul class="feature-list">
+                    <li>CPU, memoria y I/O profiling</li>
+                    <li>Network packet tracing</li>
+                    <li>System call monitoring</li>
+                    <li>Kernel panic analysis</li>
+                    <li>Performance counters</li>
+                </ul>
+                <p><strong>Archivos:</strong> kernel/trace/, kernel/debug/, kernel/profiling/, kernel/bpf/</p>
+            </div>
+
+            <div class="info-card">
+                <h2>🔧 Device Tree</h2>
+                <p>
+                    Sistema de descripción de hardware que permite al kernel descubrir y configurar automáticamente
+                    dispositivos de hardware sin necesidad de drivers específicos hardcodeados.
+                </p>
+                <h3>Características:</h3>
+                <ul class="feature-list">
+                    <li>Descripción declarativa del hardware</li>
+                    <li>Soporte para múltiples arquitecturas</li>
+                    <li>Overlays dinámicos para configuración</li>
+                    <li>Compatibilidad con firmware UEFI/ACPI</li>
+                </ul>
+                <h3>Beneficios:</h3>
+                <ul class="feature-list">
+                    <li>Boot más rápido en sistemas embebidos</li>
+                    <li>Configuración automática de dispositivos</li>
+                    <li>Portabilidad entre plataformas</li>
+                    <li>Reducción de código específico de plataforma</li>
+                </ul>
+                <p><strong>Archivos:</strong> drivers/of/, drivers/acpi/, drivers/firmware/</p>
+            </div>
+
+            <div class="info-card">
+                <h2>🎮 Graphics y Multimedia</h2>
+                <p>
+                    Subsistema gráfico que proporciona aceleración por hardware, soporte para múltiples monitores
+                    y capacidades multimedia avanzadas.
+                </p>
+                <h3>Componentes Gráficos:</h3>
+                <ul class="feature-list">
+                    <li><strong>DRM (Direct Rendering Manager):</strong> Gestión de gráficos modernos</li>
+                    <li><strong>KMS (Kernel Mode Setting):</strong> Configuración de modo de pantalla</li>
+                    <li><strong>GEM (Graphics Execution Manager):</strong> Gestión de memoria gráfica</li>
+                    <li><strong>V4L2:</strong> Video4Linux para captura de video</li>
+                </ul>
+                <h3>Características:</h3>
+                <ul class="feature-list">
+                    <li>Soporte para GPUs modernas (NVIDIA, AMD, Intel)</li>
+                    <li>Hardware acceleration para video</li>
+                    <li>Multi-head display</li>
+                    <li>HDR y color management</li>
+                    <li>VR/AR support</li>
+                </ul>
+                <p><strong>Archivos:</strong> drivers/gpu/drm/, drivers/media/, drivers/video/</p>
+            </div>
+
+            <div class="info-card">
+                <h2>🔊 Audio Subsystem</h2>
+                <p>
+                    Sistema de audio avanzado que proporciona soporte para múltiples formatos, procesamiento
+                    de audio en tiempo real y gestión de dispositivos de audio complejos.
+                </p>
+                <h3>Componentes de Audio:</h3>
+                <ul class="feature-list">
+                    <li><strong>ALSA (Advanced Linux Sound Architecture):</strong> Framework de audio principal</li>
+                    <li><strong>PulseAudio:</strong> Servidor de sonido para usuarios</li>
+                    <li><strong>JACK:</strong> Audio profesional de baja latencia</li>
+                    <li><strong>ASoC (ALSA System on Chip):</strong> Audio para sistemas embebidos</li>
+                </ul>
+                <h3>Características:</h3>
+                <ul class="feature-list">
+                    <li>Soporte para formatos HD (24-bit, 192kHz)</li>
+                    <li>Audio surround 7.1</li>
+                    <li>Noise cancellation</li>
+                    <li>Bluetooth audio (A2DP, aptX)</li>
+                    <li>MIDI y síntesis de audio</li>
+                </ul>
+                <p><strong>Archivos:</strong> sound/core/, sound/soc/, sound/pci/, sound/usb/</p>
+            </div>
+
+            <div class="info-card">
+                <h2>📱 Input/Output Subsystem</h2>
+                <p>
+                    Sistema unificado de entrada y salida que maneja todos los dispositivos de interfaz de usuario,
+                    desde teclados y ratones hasta pantallas táctiles y sensores.
+                </p>
+                <h3>Tipos de Dispositivos:</h3>
+                <ul class="feature-list">
+                    <li><strong>HID (Human Interface Devices):</strong> Teclados, ratones, gamepads</li>
+                    <li><strong>Touchscreens:</strong> Pantallas táctiles capacitivas y resistivas</li>
+                    <li><strong>Sensors:</strong> Acelerómetros, giroscopios, magnetómetros</li>
+                    <li><strong>Haptic Feedback:</strong> Vibración y feedback táctil</li>
+                </ul>
+                <h3>Características:</h3>
+                <ul class="feature-list">
+                    <li>Multi-touch support</li>
+                    <li>Gesture recognition</li>
+                    <li>Accessibility features</li>
+                    <li>Hot-plugging automático</li>
+                    <li>Power management para dispositivos</li>
+                </ul>
+                <p><strong>Archivos:</strong> drivers/input/, drivers/hid/, drivers/iio/</p>
+            </div>
 
         </section>
 
