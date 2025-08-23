@@ -40,8 +40,43 @@
             }
         });
 
+        // Función para cambiar modo oscuro
+        function toggleDarkMode() {
+            const body = document.body;
+            const darkModeBtn = document.getElementById('darkModeBtn');
+            
+            if (body.classList.contains('dark-mode')) {
+                // Cambiar a modo claro
+                body.classList.remove('dark-mode');
+                darkModeBtn.textContent = '🌙';
+                darkModeBtn.classList.remove('active');
+                localStorage.setItem('darkMode', 'false');
+            } else {
+                // Cambiar a modo oscuro
+                body.classList.add('dark-mode');
+                darkModeBtn.textContent = '☀️';
+                darkModeBtn.classList.add('active');
+                localStorage.setItem('darkMode', 'true');
+            }
+        }
+
+        // Función para cargar preferencia de modo oscuro
+        function loadDarkModePreference() {
+            const darkMode = localStorage.getItem('darkMode');
+            const darkModeBtn = document.getElementById('darkModeBtn');
+            
+            if (darkMode === 'true') {
+                document.body.classList.add('dark-mode');
+                darkModeBtn.textContent = '☀️';
+                darkModeBtn.classList.add('active');
+            }
+        }
+
         // Inicialización cuando se carga la página
         document.addEventListener('DOMContentLoaded', function() {
             // Asegurar que la primera sección esté visible
             showSection('overview');
+            
+            // Cargar preferencia de modo oscuro
+            loadDarkModePreference();
         });
