@@ -231,6 +231,22 @@
        color: #aaa;
    }
 
+   body.dark-mode .branch-title {
+       color: #e0e0e0;
+   }
+
+   body.dark-mode .branch-card p {
+       color: #e0e0e0;
+   }
+
+   body.dark-mode .branch-card h3 {
+       color: #fff;
+   }
+
+   body.dark-mode .branch-card .feature-list li {
+       color: #e0e0e0;
+   }
+
    .download-btn {
        background: #17a2b8;
        color: white;
@@ -360,7 +376,7 @@
 
    .status-development {
        background-color: #000000;
-       color: #333;
+       color: #ffffff;
    } 
     .status-feat 
     {
@@ -398,6 +414,184 @@
        padding: 2rem;
        margin: 2rem 0;
        text-align: center;
+   }
+
+   /* Kernel Architecture Diagram */
+   .kernel-architecture {
+       display: flex;
+       flex-direction: column;
+       gap: 1rem;
+       margin: 2rem 0;
+       max-width: 800px;
+       margin-left: auto;
+       margin-right: auto;
+   }
+
+   .layer {
+       border-radius: 8px;
+       padding: 1.5rem;
+       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+       transition: all 0.3s ease;
+   }
+
+   .layer:hover {
+       transform: translateY(-2px);
+       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+   }
+
+   .layer-title {
+       font-size: 1.2rem;
+       font-weight: 700;
+       margin-bottom: 1rem;
+       text-align: center;
+   }
+
+   .components {
+       display: flex;
+       flex-wrap: wrap;
+       gap: 0.8rem;
+       justify-content: center;
+   }
+
+   .component {
+       background: rgba(255, 255, 255, 0.9);
+       padding: 0.5rem 1rem;
+       border-radius: 20px;
+       font-size: 0.9rem;
+       font-weight: 500;
+       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+   }
+
+   /* User Space */
+   .user-space {
+       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+       color: white;
+   }
+
+       .user-space .component {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+
+
+    /* Kernel Space */
+    .kernel-space {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+
+   .kernel-components {
+       display: grid;
+       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+       gap: 1rem;
+   }
+
+   .kernel-section {
+       background: rgba(255, 255, 255, 0.1);
+       border-radius: 6px;
+       padding: 1rem;
+       border: 1px solid rgba(255, 255, 255, 0.2);
+   }
+
+   .section-title {
+       font-size: 1rem;
+       font-weight: 600;
+       margin-bottom: 0.8rem;
+       text-align: center;
+       color: white;
+   }
+
+       .kernel-section .component {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    /* Compatibility Section within Kernel */
+    .compatibility-section {
+        background: rgba(255, 193, 7, 0.2) !important;
+        border: 1px solid rgba(255, 193, 7, 0.4) !important;
+    }
+
+    .compatibility-section .component {
+        background: rgba(255, 193, 7, 0.3) !important;
+        color: white;
+        border: 1px solid rgba(255, 193, 7, 0.5) !important;
+    }
+
+    /* Hardware */
+    .hardware {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+
+   .hardware .component {
+       background: rgba(255, 255, 255, 0.2);
+       color: white;
+       border: 1px solid rgba(255, 255, 255, 0.3);
+   }
+
+   /* Legend */
+   .architecture-legend {
+       display: flex;
+       justify-content: center;
+       gap: 2rem;
+       margin-top: 2rem;
+       flex-wrap: wrap;
+   }
+
+   .legend-item {
+       display: flex;
+       align-items: center;
+       gap: 0.5rem;
+       font-size: 0.9rem;
+   }
+
+   .legend-color {
+       width: 20px;
+       height: 20px;
+       border-radius: 4px;
+       border: 2px solid #fff;
+       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+   }
+
+       .user-space-color {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+
+
+    .kernel-space-color {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .hardware-color {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+   /* Dark mode support for architecture diagram */
+   body.dark-mode .architecture-box {
+       background: #2d2d2d;
+       border-color: #555;
+   }
+
+   body.dark-mode .component {
+       background: rgba(0, 0, 0, 0.3);
+       color: #e0e0e0;
+   }
+
+   body.dark-mode .kernel-section {
+       background: rgba(0, 0, 0, 0.2);
+       border-color: rgba(255, 255, 255, 0.1);
+   }
+
+   body.dark-mode .kernel-section .component {
+       background: rgba(0, 0, 0, 0.3);
+       color: #e0e0e0;
    }
 
    .layer {

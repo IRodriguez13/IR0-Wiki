@@ -119,7 +119,85 @@
             <h1 class="titulo-principal">Arquitectura del Sistema</h1>
 
             <div class="architecture-box">
-                <img src="Assets/scheme-core.png" alt="ir0-arch" srcset="">
+                <h3>Diagrama de Arquitectura del Kernel IR0</h3>
+                <div class="kernel-architecture">
+                    <!-- User Space -->
+                    <div class="layer user-space">
+                        <div class="layer-title">User Space</div>
+                        <div class="components">
+                            <div class="component">Applications</div>
+                            <div class="component">GNU Tools</div>
+                            <div class="component">POSIX Libraries</div>
+                            <div class="component">System Calls</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Kernel Space -->
+                    <div class="layer kernel-space">
+                        <div class="layer-title">Kernel Space (IR0)</div>
+                        <div class="kernel-components">
+                            <!-- System Interface -->
+                            <div class="kernel-section system-interface">
+                                <div class="section-title">System Interface</div>
+                                <div class="component">POSIX Syscalls</div>
+                                <div class="component">Process Management</div>
+                                <div class="component">Memory Management</div>
+                            </div>
+                            
+                            <!-- Core Subsystems -->
+                            <div class="kernel-section core-subsystems">
+                                <div class="section-title">Core Subsystems</div>
+                                <div class="component">Scheduler (IR0)</div>
+                                <div class="component">Filesystem (IR0)</div>
+                                <div class="component">Network Stack (Linux)</div>
+                                <div class="component">Device Drivers (Mixed)</div>
+                            </div>
+                            
+                            <!-- Linux Compatibility -->
+                            <div class="kernel-section compatibility-section">
+                                <div class="section-title">Linux Compatibility</div>
+                                <div class="component">Syscall Mapping</div>
+                                <div class="component">Container Support</div>
+                                <div class="component">Driver Compatibility</div>
+                            </div>
+                            
+                            <!-- Hardware Abstraction -->
+                            <div class="kernel-section hardware-abstraction">
+                                <div class="section-title">Hardware Abstraction</div>
+                                <div class="component">Interrupt Handler</div>
+                                <div class="component">Memory Manager</div>
+                                <div class="component">I/O Manager</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Hardware -->
+                    <div class="layer hardware">
+                        <div class="layer-title">Hardware</div>
+                        <div class="components">
+                            <div class="component">CPU (x86-64)</div>
+                            <div class="component">Memory (RAM)</div>
+                            <div class="component">Storage (SSD/HDD)</div>
+                            <div class="component">Network Cards</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Legend -->
+                <div class="architecture-legend">
+                    <div class="legend-item">
+                        <div class="legend-color user-space-color"></div>
+                        <span>User Space - Herramientas GNU y aplicaciones</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color kernel-space-color"></div>
+                        <span>Kernel Space (IR0) - Núcleo propio con compatibilidad Linux</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color hardware-color"></div>
+                        <span>Hardware - Componentes físicos</span>
+                    </div>
+                </div>
             </div>
             <div class="info-card">
                 <h2>Arquitectura y "Filosofía" del proyecto</h2>
