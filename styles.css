@@ -79,7 +79,7 @@
    }
 
    .translate-btn {
-       background: #007bff;
+       background: #222324;
        color: white;
        border: none;
        padding: 0.5rem 1rem;
@@ -90,7 +90,7 @@
    }
 
    .translate-btn:hover {
-       background: #0056b3;
+       background: #18191a;
        transform: translateY(-1px);
    }
 
@@ -130,7 +130,7 @@
    }
 
    .language-option.active {
-       background-color: #007bff;
+       background-color: #27292b;
        color: white;
    }
 
@@ -151,7 +151,7 @@
    }
 
    .dark-mode-btn.active {
-       background: #ffc107;
+       background: #181200;
        color: #333;
    }
 
@@ -504,7 +504,7 @@
    }
 
        .kernel-section .component {
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(0, 0, 0, 0.15);
         color: white;
         border: 1px solid rgba(255, 255, 255, 0.2);
         margin-bottom: 0.5rem;
@@ -513,14 +513,14 @@
 
     /* Compatibility Section within Kernel */
     .compatibility-section {
-        background: rgba(255, 193, 7, 0.2) !important;
-        border: 1px solid rgba(255, 193, 7, 0.4) !important;
+        background: rgba(255, 255, 255, 0.027) !important;
+        border: 1px solid rgba(0, 0, 0, 0.4) !important;
     }
 
     .compatibility-section .component {
-        background: rgba(255, 193, 7, 0.3) !important;
+        background: rgba(0, 0, 0, 0.15) !important;
         color: white;
-        border: 1px solid rgba(255, 193, 7, 0.5) !important;
+        border: 1px solid rgba(17, 13, 1, 0.5) !important;
     }
 
     /* Hardware */
