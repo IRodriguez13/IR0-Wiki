@@ -9,7 +9,8 @@
     <title>IR0 - Kernel - Wiki</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&family=Ubuntu+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&family=Ubuntu+Mono&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -26,7 +27,7 @@
                 <li><a href="#architecture" class="nav-link" onclick="showSection('architecture')">Arquitectura</a></li>
                 <li><a href="#branches" class="nav-link" onclick="showSection('branches')">Ramas</a></li>
                 <li><a href="#development" class="nav-link" onclick="showSection('development')">Desarrollo</a></li>
-                <li><a href="#panic" class="nav-link" onclick="showSection('panic')">Subsistemas</a></li>
+                <li><a href="#subsystems" class="nav-link" onclick="showSection('subsystems')">Subsistemas</a></li>
                 <li><a href="#overview" class="nav-link" onclick="showSection('descarga')">Descarga</a></li>
                 <li class="language-dropdown">
                     <button class="translate-btn" onclick="toggleLanguageMenu()">🌐 ES</button>
@@ -80,39 +81,43 @@
                     pero entiendo que eso es al largo <i>(larguísimo)</i> plazo.
                     <br>
                     <br>
-                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank" rel="noopener noreferrer">Repo de GtiHub
+                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank" rel="noopener noreferrer">Repo
+                        de GtiHub
                         <br>
 
-                    <a href="https://discord.gg/XZ84aPXtxh" target="_blank" rel="noopener noreferrer">Discord community</a>
+                        <a href="https://discord.gg/XZ84aPXtxh" target="_blank" rel="noopener noreferrer">Discord
+                            community</a>
                 </p>
             </div>
 
 
             <div class="info-card">
-                <h2>Características Principales y las futuras</h2>
+                <h2>Características Principales Implementadas</h2>
                 <ul class="feature-list">
-                    <li>Kernel monolítico para arquitectura x86-64</li>
-                    <li>Gestión de memoria con paging en esas dos arquitecturas</li>
-                    <li>Manejo de interrupciones y excepciones</li>
-                    <li>Bootloader personalizado (Sólo en x86 y segúramente migre todas las arquitecturas a GRUB)</li>
-                    <li>El código ensamblador que uso es en sintaxis de <a
-                            href="https://cs.lmu.edu/~ray/notes/nasmtutorial/" target="_blank"
-                            rel="noopener noreferrer">Intel Netwide Assembler (nasm)</a>.</li>
-                    <li>Filesystem propio basado en EXT con optimización con bbdd vectorial en espacio de usuario</li>
-                    <li>Pila de red y <a href="https://opensource.com/article/22/12/linux-abi" target="_blank"
-                            rel="noopener noreferrer">ABI</a> prestados de Linux (Son millones de líneas de código que
-                        no pienso escribir solo)</li>
-                    <li>Syscalls propias y algunas mapeadas de Linux</li>
-                    <li>Algunos drivers para manejo de hardware mínimo.</li>
+                    <li>✅ Kernel monolítico modular para arquitectura x86-64</li>
+                    <li>✅ Gestión completa de memoria virtual con paginación (MMU)</li>
+                    <li>✅ Sistema completo de interrupciones y excepciones (64 vectores IDT)</li>
+                    <li>✅ Planificador CFS (Completely Fair Scheduler) con Red-Black Tree</li>
+                    <li>✅ Sistema de procesos completo con fork(), exit(), waitpid()</li>
+                    <li>✅ 23 syscalls implementadas (desde básicas hasta gestión de memoria)</li>
+                    <li>✅ Filesystem MINIX completo con VFS (Virtual File System)</li>
+                    <li>✅ Drivers de hardware: PS/2 (teclado/mouse), ATA/IDE, Sound Blaster 16, VGA</li>
+                    <li>✅ Shell interactivo en Ring 3 con comandos integrados</li>
+                    <li>✅ LibC freestanding con printf(), malloc(), free()</li>
+                    <li>✅ Sistema de compilación multi-objetivo (Desktop/Server/IoT/Embedded)</li>
+                    <li>🔄 Pila de red TCP/IP básica (en desarrollo - usando librería IoT)</li>
+                    <li>🔄 Soporte para contenedores (en desarrollo)</li>
                 </ul>
             </div>
 
             <div class="info-card">
                 <h2>Estado del Proyecto</h2>
-                <p><strong>Versión:</strong> no versionado aún (pero vamos a decir pre-release por ahora.)<br>
-                    <strong>Arquitectura:</strong> x86-64 (i386)<br>
+                <p><strong>Versión:</strong> v0.0.1 pre-release candidate 1<br>
+                    <strong>Arquitectura:</strong> x86-64 (primaria), x86-32 (experimental), ARM (en desarrollo)<br>
                     <strong>Bootloader:</strong> GRUB<br>
-                    <strong>Sintaxis ASM:</strong> Intel
+                    <strong>Licencia:</strong> GNU GPL v3.0<br>
+                    <strong>Tipo:</strong> Kernel Monolítico Modular<br>
+                    <strong>Sintaxis ASM:</strong> Intel (NASM)
                 </p>
             </div>
         </section>
@@ -125,79 +130,99 @@
                 <div class="kernel-architecture">
                     <!-- User Space -->
                     <div class="layer user-space">
-                        <div class="layer-title">User Space</div>
+                        <div class="layer-title">User Space (Ring 3)</div>
                         <div class="components">
-                            <div class="component">Applications</div>
-                            <div class="component">GNU Tools</div>
-                            <div class="component">POSIX Libraries</div>
-                            <div class="component">System Calls</div>
+                            <div class="component">Shell Interactivo</div>
+                            <div class="component">LibC (IR0)</div>
+                            <div class="component">Programas Usuario</div>
+                            <div class="component">ELF Loader</div>
                         </div>
                     </div>
-                    
+
                     <!-- Kernel Space -->
                     <div class="layer kernel-space">
-                        <div class="layer-title">Kernel Space (IR0)</div>
+                        <div class="layer-title">Kernel Space (Ring 0) - IR0</div>
                         <div class="kernel-components">
                             <!-- System Interface -->
                             <div class="kernel-section system-interface">
-                                <div class="section-title">System Interface</div>
-                                <div class="component">POSIX Syscalls</div>
-                                <div class="component">Process Management</div>
-                                <div class="component">Memory Management</div>
+                                <div class="section-title">Interfaz del Sistema</div>
+                                <div class="component">23 Syscalls (IR0)</div>
+                                <div class="component">INT 0x80 Handler</div>
+                                <div class="component">Init System (PID 1)</div>
                             </div>
-                            
-                            <!-- Core Subsystems -->
+
+                            <!-- Process & Memory -->
                             <div class="kernel-section core-subsystems">
-                                <div class="section-title">Core Subsystems</div>
-                                <div class="component">Scheduler (IR0)</div>
-                                <div class="component">Filesystem (IR0)</div>
-                                <div class="component">Network Stack (Linux)</div>
-                                <div class="component">Device Drivers (Mixed)</div>
+                                <div class="section-title">Procesos y Memoria</div>
+                                <div class="component">CFS Scheduler</div>
+                                <div class="component">Virtual Memory (MMU)</div>
+                                <div class="component">Heap Allocator</div>
+                                <div class="component">Process Manager</div>
                             </div>
-                            
-                            <!-- Linux Compatibility -->
+
+                            <!-- File System -->
                             <div class="kernel-section compatibility-section">
-                                <div class="section-title">Linux Compatibility</div>
-                                <div class="component">Syscall Mapping</div>
-                                <div class="component">Container Support</div>
-                                <div class="component">Driver Compatibility</div>
+                                <div class="section-title">Sistema de Archivos</div>
+                                <div class="component">VFS Layer</div>
+                                <div class="component">MINIX Filesystem</div>
+                                <div class="component">File Operations</div>
                             </div>
-                            
-                            <!-- Hardware Abstraction -->
+
+                            <!-- Hardware Drivers -->
                             <div class="kernel-section hardware-abstraction">
-                                <div class="section-title">Hardware Abstraction</div>
-                                <div class="component">Interrupt Handler</div>
-                                <div class="component">Memory Manager</div>
-                                <div class="component">I/O Manager</div>
+                                <div class="section-title">Drivers de Hardware</div>
+                                <div class="component">PS/2 (Teclado/Mouse)</div>
+                                <div class="component">ATA/IDE Storage</div>
+                                <div class="component">Sound Blaster 16</div>
+                                <div class="component">VGA/VBE Video</div>
+                            </div>
+
+                            <!-- Interrupts & Timers -->
+                            <div class="kernel-section system-interface">
+                                <div class="section-title">Interrupciones y Timers</div>
+                                <div class="component">IDT (64 vectores)</div>
+                                <div class="component">PIC Remapping</div>
+                                <div class="component">Timer Cascade</div>
+                                <div class="component">DMA Controller</div>
+                            </div>
+
+                            <!-- Network (Planned) -->
+                            <div class="kernel-section core-subsystems">
+                                <div class="section-title">Red (En Desarrollo)</div>
+                                <div class="component">TCP/IP Básico (IoT)</div>
+                                <div class="component">Socket Interface</div>
+                                <div class="component">Ethernet Drivers</div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Hardware -->
                     <div class="layer hardware">
                         <div class="layer-title">Hardware</div>
                         <div class="components">
-                            <div class="component">CPU (x86-64-ARM)</div>
-                            <div class="component">Memory (RAM)</div>
-                            <div class="component">Storage (SSD/HDD)</div>
-                            <div class="component">Network Cards</div>
+                            <div class="component">CPU x86-64</div>
+                            <div class="component">RAM (MMU)</div>
+                            <div class="component">ATA/IDE Disks</div>
+                            <div class="component">PS/2 Devices</div>
+                            <div class="component">Sound Blaster</div>
+                            <div class="component">VGA/VBE</div>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Legend -->
                 <div class="architecture-legend">
                     <div class="legend-item">
                         <div class="legend-color user-space-color"></div>
-                        <span>User Space - Herramientas GNU y aplicaciones</span>
+                        <span>User Space (Ring 3) - Shell, LibC y programas de usuario</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-color kernel-space-color"></div>
-                        <span>Kernel Space (IR0) - Núcleo propio con compatibilidad Linux</span>
+                        <span>Kernel Space (Ring 0) - Núcleo IR0 monolítico modular</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-color hardware-color"></div>
-                        <span>Hardware - Componentes físicos</span>
+                        <span>Hardware - Componentes físicos soportados</span>
                     </div>
                 </div>
             </div>
@@ -264,53 +289,35 @@
                         rel="noopener noreferrer">RING 0</a> es únicamente para el kernel. Todo lo que venga del RING 3
                     se comunica con <i>syscalls()</i>, fin del comunicado.
                 </p>
-                <h2>Qué le pido prestado a Linux?</h2>
+                <h2>Enfoque de Red: Básico pero Funcional</h2>
                 <p>
-                    Si pretendo hacer que IR0 funcione como soporte para servidores (backends, juegos, etc), que pueda
-                    correr docker y kubernetes (al menos) y que, en algún momento,
-                    pueda funcionar como base para IoT, necesito tener en primer lugar <strong>soporte de red, con sus
-                        drivers, soporte de protocolos de red modernos</strong> mas <strong>todos los algoritmos que
-                        implementan internamente</strong>.
+                    Para que IR0 funcione como soporte para servidores básicos y aplicaciones IoT, necesito
+                    <strong>soporte de red fundamental</strong> pero sin la complejidad masiva del stack completo de
+                    Linux.
                     <br><br>
                     En el Kernel Linux son mas o menos <i>1.500.000</i> de líneas de código <strong>SÓLO LA PILA DE RED
-                        COMPLETA</strong>.
-                    <br>
-                    Literal, si quisiera levantarla de cero, a lo mejor pasaría una década y no estaría lista. No me
-                    siento tan zarpado la verdad.
+                        COMPLETA</strong>. En lugar de intentar portar todo eso, he decidido usar un enfoque más
+                    pragmático:
                     <br><br>
-                    Te muestro como sería lo que necesito de la pila de red:
-                    <br><br>
-                    <img src="/Assets/deepseek_mermaid_20250808_234e4e.png" alt="chiquita la pilita de red" srcset=""
-                        style="width: 50%;">
-                    <br>
-                    <small><i>Entiédase hardware como los componentes de tu <a
-                                href="https://es.wikipedia.org/wiki/Placa_base" target="_blank"
-                                rel="noopener noreferrer"></a>MOBO</i> que hablan con el kernel.
-                        Aparte, acá se ve clarito como el kernel intermedia entre el hard y el soft.</small>
-                    <br><br>
+                    <strong>Implementación básica con librería IoT:</strong>
+                <ul class="feature-list">
+                    <li>Stack TCP/IP ligero y funcional</li>
+                    <li>Soporte para conectividad básica de red</li>
+                    <li>Interfaz de sockets simplificada</li>
+                    <li>Drivers Ethernet esenciales</li>
+                    <li>Enfoque minimalista que mantiene el kernel manejable</li>
+                </ul>
+                Esto me permite tener funcionalidad de red sin agregar millones de líneas de código al kernel.
 
-                    El mismo asunto tenemos con el <strong>soporte para contenedores</strong>. Acá el tema es un toque
-                    más tranqui porque son un par menos de líneas de código en total: <i>unas 300.000 líneas</i>
-                    pero igual, como pasa con la pila de red, son dos proyectos totalmente aparte.
-                    <br> <br>
-                    Mas o menos esto es lo que requiere docker para andar, desde la app con su runtime, hasta sus
-                    accesos en el kernel.
-                    <br><br>
-                    <img src="/Assets/docker.png" alt="" srcset="" style="width: 101%;">
-                    <br>
-                    <small>Fijate que docker necesita levantar literalmente un file system virtual, además de limitar la
-                        cpu, acceder a RAM, tener una interfaz de red privada, usa los namespaces para aislar del
-                        entorno su contenido, etc.
-                    </small>
-                    <br>
-                <h2>Cómo lo voy a resolver?</h2>
-                Bueno, si escribir la pila red y el soporte de contenedores no es trivial, integrarlos fuera de su
-                entorno tampoco lo es, pero es mas humano que diagramar, implementar y testear.
-                <br><br>
-                Muy seguramente me toque mapear las syscalls que espera esa parte de Linux al estilo <a
-                    href="https://es.wikipedia.org/wiki/Wine" target="_blank" rel="noopener noreferrer">Wine/Proton</a>,
-                o copiarles algunas de las que usan
-                nativamente si me sirven después.
+                <h2>Ventajas del Enfoque Básico</h2>
+                Este enfoque con librería IoT tiene varias ventajas:
+                <ul class="feature-list">
+                    <li>Mantiene el kernel ligero y manejable</li>
+                    <li>Reduce significativamente la complejidad del código</li>
+                    <li>Permite funcionalidad de red sin millones de líneas adicionales</li>
+                    <li>Es más fácil de debuggear y mantener</li>
+                    <li>Suficiente para casos de uso básicos y IoT</li>
+                </ul>
                 </p>
 
             </div>
@@ -458,6 +465,401 @@
 
         </section>
 
+        <section id="subsystems" class="section">
+            <h1 class="titulo-principal">Subsistemas del Kernel IR0</h1>
+
+            <div class="info-card">
+                <h2>Estado del Proyecto</h2>
+                <p><strong>Versión:</strong> v0.0.01 pre-release candidate 1<br>
+                    <strong>Arquitectura:</strong> x86-64 (primaria), x86-32 (experimental), ARM (en desarrollo)<br>
+                    <strong>Licencia:</strong> GNU GPL v3.0<br>
+                    <strong>Tipo:</strong> Kernel Monolítico Modular
+                </p>
+            </div>
+
+            <div class="info-card">
+                <h2>🏗️ Arquitectura Central</h2>
+                <h3>✅ Arquitectura del Kernel</h3>
+                <ul class="feature-list">
+                    <li>Diseño monolítico modular con abstracción HAL</li>
+                    <li>Sistema de compilación multi-objetivo (Desktop/Server/IoT/Embedded)</li>
+                    <li>Separación Ring 0 (kernel) / Ring 3 (usuario)</li>
+                    <li>Soporte primario x86-64 con framework multi-arquitectura</li>
+                    <li>Entorno C freestanding con libc personalizada</li>
+                </ul>
+
+                <h3>✅ Sistema de Arranque</h3>
+                <ul class="feature-list">
+                    <li>Cumplimiento de especificación multiboot de GRUB</li>
+                    <li>Inicialización de modo largo x86-64</li>
+                    <li>Configuración GDT (Global Descriptor Table)</li>
+                    <li>Configuración TSS (Task State Segment)</li>
+                    <li>IDT (Interrupt Descriptor Table) con 64 entradas</li>
+                </ul>
+
+                <h3>✅ Gestión de Memoria</h3>
+                <ul class="feature-list">
+                    <li>Memoria virtual con paginación (MMU)</li>
+                    <li>Asignador de heap del kernel (simple + avanzado en desarrollo)</li>
+                    <li>Protección de memoria (aislamiento Ring 0/3)</li>
+                    <li>Layout de memoria: Kernel (1MB-8MB), Heap (8MB-32MB), Usuario (1GB+)</li>
+                    <li>Manejo de fallos de página con lectura de dirección CR2</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>⚙️ Gestión de Procesos</h2>
+                <h3>✅ Sistema de Procesos</h3>
+                <ul class="feature-list">
+                    <li>Gestión completa del ciclo de vida de procesos</li>
+                    <li>Estados de proceso: READY, RUNNING, BLOCKED, ZOMBIE</li>
+                    <li>Asignación de PID comenzando desde PID 1</li>
+                    <li>Creación de procesos con syscall fork()</li>
+                    <li>Terminación de procesos con syscall exit()</li>
+                    <li>Relaciones padre-hijo con waitpid()</li>
+                </ul>
+
+                <h3>✅ Planificador</h3>
+                <ul class="feature-list">
+                    <li>Implementación CFS (Completely Fair Scheduler)</li>
+                    <li>Cola de ejecución Red-Black Tree para operaciones O(log n)</li>
+                    <li>Seguimiento de tiempo virtual (vruntime) para equidad</li>
+                    <li>Soporte de valores nice (-20 a +19)</li>
+                    <li>Multitarea preemptiva con integración de timer</li>
+                    <li>Cambio de contexto en ensamblador x86-64 optimizado</li>
+                </ul>
+
+                <h3>✅ Sistema Init</h3>
+                <ul class="feature-list">
+                    <li>Proceso init PID 1 (mini-systemd)</li>
+                    <li>Gestión de servicios y respawn</li>
+                    <li>Cambio a modo usuario desde kernel</li>
+                    <li>Gestión de servicios shell</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>🔧 Llamadas al Sistema</h2>
+                <h3>✅ Interfaz de Syscalls (23 syscalls implementadas)</h3>
+                <div class="code-block">
+                    <pre>SYS_EXIT(0)         - Terminación de proceso
+SYS_WRITE(1)        - Escribir a descriptor de archivo
+SYS_READ(2)         - Leer de descriptor de archivo
+SYS_GETPID(3)       - Obtener ID de proceso
+SYS_GETPPID(4)      - Obtener ID de proceso padre
+SYS_LS(5)           - Listar contenidos de directorio
+SYS_MKDIR(6)        - Crear directorio
+SYS_PS(7)           - Mostrar lista de procesos
+SYS_WRITE_FILE(8)   - Escribir archivo al filesystem
+SYS_CAT(9)          - Mostrar contenidos de archivo
+SYS_TOUCH(10)       - Crear archivo vacío
+SYS_RM(11)          - Eliminar archivo
+SYS_FORK(12)        - Crear proceso hijo
+SYS_WAITPID(13)     - Esperar proceso hijo
+SYS_RMDIR(40)       - Eliminar directorio
+SYS_MALLOC_TEST(50) - Test de asignación de memoria
+SYS_BRK(51)         - Cambiar break del heap
+SYS_SBRK(52)        - Incrementar break del heap
+SYS_MMAP(53)        - Mapeo de memoria
+SYS_MUNMAP(54)      - Desmapear memoria
+SYS_MPROTECT(55)    - Cambiar protección de memoria
+SYS_EXEC(56)        - Ejecutar programa</pre>
+                </div>
+
+                <h3>✅ Mecanismo de Syscalls</h3>
+                <ul class="feature-list">
+                    <li>Interfaz de interrupción de software INT 0x80</li>
+                    <li>Paso de parámetros basado en registros</li>
+                    <li>Transición modo kernel/usuario</li>
+                    <li>Manejo de errores y valores de retorno</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>⚡ Sistema de Interrupciones</h2>
+                <h3>✅ Manejo de Interrupciones</h3>
+                <ul class="feature-list">
+                    <li>Configuración completa IDT con 64 vectores de interrupción</li>
+                    <li>Remapeo PIC (Programmable Interrupt Controller)</li>
+                    <li>ISR (Interrupt Service Routines) en ensamblador</li>
+                    <li>Manejo IRQ para dispositivos de hardware</li>
+                    <li>Integración de interrupción de timer</li>
+                    <li>Interrupción de teclado (IRQ 1)</li>
+                    <li>Interrupción de mouse (IRQ 12)</li>
+                    <li>Interrupción de audio (IRQ 5)</li>
+                </ul>
+
+                <h3>✅ Manejo de Excepciones</h3>
+                <ul class="feature-list">
+                    <li>Manejador de fallos de página con lectura de dirección CR2</li>
+                    <li>Manejo de fallo de protección general</li>
+                    <li>Excepción de división por cero</li>
+                    <li>Excepción de código de operación inválido</li>
+                    <li>Manejo de fallo de pila</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>🖥️ Controladores de Hardware</h2>
+                <h3>✅ Dispositivos de Entrada</h3>
+                <ul class="feature-list">
+                    <li>Driver de teclado PS/2 con buffer circular</li>
+                    <li>Driver de mouse PS/2 con soporte 3/5 botones + rueda de desplazamiento</li>
+                    <li>Detección de tipo de mouse (estándar/rueda/5 botones)</li>
+                    <li>Tasas de muestreo y resolución configurables</li>
+                </ul>
+
+                <h3>✅ Dispositivos de Almacenamiento</h3>
+                <ul class="feature-list">
+                    <li>Driver de disco duro ATA/IDE</li>
+                    <li>Soporte CD-ROM</li>
+                    <li>Operaciones básicas de E/S de disco</li>
+                    <li>Lectura/escritura basada en sectores</li>
+                </ul>
+
+                <h3>✅ Sistema de Audio</h3>
+                <ul class="feature-list">
+                    <li>Driver Sound Blaster 16</li>
+                    <li>Soporte de audio 8-bit/16-bit</li>
+                    <li>Reproducción Mono/Estéreo</li>
+                    <li>Transferencia de audio basada en DMA (canales 1 y 5)</li>
+                    <li>Control de volumen (master y PCM)</li>
+                    <li>Configuración de tasa de muestreo</li>
+                    <li>Detección de formato de audio</li>
+                </ul>
+
+                <h3>✅ Sistema de Video</h3>
+                <ul class="feature-list">
+                    <li>Modo texto VGA (80x25)</li>
+                    <li>Soporte gráfico VBE (VESA BIOS Extensions)</li>
+                    <li>Acceso a framebuffer</li>
+                    <li>Primitivas gráficas básicas</li>
+                </ul>
+
+                <h3>✅ Comunicación Serie</h3>
+                <ul class="feature-list">
+                    <li>Drivers de puerto serie COM1/COM2</li>
+                    <li>Salida de debug vía serie</li>
+                    <li>Tasas de baudios configurables</li>
+                    <li>Manejo de interrupciones serie</li>
+                </ul>
+
+                <h3>✅ Sistemas de Timer</h3>
+                <ul class="feature-list">
+                    <li>PIT (Programmable Interval Timer)</li>
+                    <li>RTC (Real Time Clock)</li>
+                    <li>HPET (High Precision Event Timer)</li>
+                    <li>LAPIC (Local APIC Timer)</li>
+                    <li>Abstracción de sistema de reloj unificado</li>
+                    <li>Cascada de timer con selección del mejor timer disponible</li>
+                </ul>
+
+                <h3>✅ Controlador DMA</h3>
+                <ul class="feature-list">
+                    <li>Soporte DMA de 8 canales (0-7)</li>
+                    <li>Modos de transferencia 8-bit y 16-bit</li>
+                    <li>Integración DMA de audio</li>
+                    <li>Control de habilitación/deshabilitación de canales</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>📁 Sistema de Archivos</h2>
+                <h3>✅ Sistema de Archivos Virtual (VFS)</h3>
+                <ul class="feature-list">
+                    <li>Capa de abstracción de filesystem unificada</li>
+                    <li>Framework de soporte para múltiples filesystems</li>
+                    <li>Operaciones estándar de archivo (open, read, write, close)</li>
+                    <li>Operaciones de directorio (mkdir, rmdir, ls)</li>
+                    <li>Manejo de metadatos de archivo</li>
+                </ul>
+
+                <h3>✅ Filesystem MINIX</h3>
+                <ul class="feature-list">
+                    <li>Implementación completa de filesystem MINIX</li>
+                    <li>Almacenamiento de archivos basado en inodos</li>
+                    <li>Soporte de estructura de directorios</li>
+                    <li>Creación, eliminación y modificación de archivos</li>
+                    <li>Integrado con capa VFS</li>
+                </ul>
+
+                <h3>✅ Operaciones de Archivo</h3>
+                <ul class="feature-list">
+                    <li>Creación de archivos (touch)</li>
+                    <li>Eliminación de archivos (rm)</li>
+                    <li>Creación de directorios (mkdir)</li>
+                    <li>Eliminación de directorios (rmdir)</li>
+                    <li>Visualización de contenido de archivos (cat)</li>
+                    <li>Listado de directorios (ls)</li>
+                    <li>Capacidades de escritura de archivos</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>👤 Espacio de Usuario</h2>
+                <h3>✅ Biblioteca C (LibC)</h3>
+                <ul class="feature-list">
+                    <li>Implementación de biblioteca C freestanding</li>
+                    <li>Headers estándar: stdio.h, stdlib.h, unistd.h, stdint.h, stddef.h</li>
+                    <li>Funciones de E/S: printf(), puts(), putchar()</li>
+                    <li>Funciones de memoria: malloc(), free()</li>
+                    <li>Funciones de proceso: exit(), getpid()</li>
+                    <li>Wrappers de llamadas al sistema</li>
+                </ul>
+
+                <h3>✅ Implementación de Printf</h3>
+                <ul class="feature-list">
+                    <li>Especificadores de formato: %d (enteros), %s (strings), %c (caracteres)</li>
+                    <li>Soporte de argumentos variables</li>
+                    <li>Salida a stdout</li>
+                </ul>
+
+                <h3>✅ Programas de Usuario</h3>
+                <ul class="feature-list">
+                    <li>Implementación del comando echo</li>
+                    <li>Integración shell para programas de usuario</li>
+                    <li>Cargador ELF (implementación básica)</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>🐚 Sistema Shell</h2>
+                <h3>✅ Shell Interactivo</h3>
+                <ul class="feature-list">
+                    <li>Interfaz de línea de comandos en Ring 3 (modo usuario)</li>
+                    <li>Comandos integrados: ls, ps, cat, mkdir, rmdir, touch, rm, fork, clear, help, exit, malloc,
+                        sbrk, exec</li>
+                </ul>
+
+                <h3>✅ Características del Shell</h3>
+                <ul class="feature-list">
+                    <li>Análisis y ejecución de comandos</li>
+                    <li>Integración de gestión de procesos</li>
+                    <li>Soporte de operaciones de filesystem</li>
+                    <li>Testing de gestión de memoria</li>
+                    <li>Manejo de errores y retroalimentación</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>🌐 Sistema de Red</h2>
+                <h3>🔄 Stack TCP/IP Básico (En Desarrollo)</h3>
+                <ul class="feature-list">
+                    <li>Implementación básica usando librería IoT ligera</li>
+                    <li>Soporte TCP/IP fundamental para conectividad</li>
+                    <li>Interfaz de sockets simplificada</li>
+                    <li>Framework de drivers Ethernet básico</li>
+                    <li>Utilidad ping planificada</li>
+                    <li>Enfoque minimalista para reducir complejidad</li>
+                </ul>
+                <p><small><strong>Nota:</strong> Se optó por una implementación básica con librería IoT en lugar de
+                        portar el stack completo de Linux (1.5M líneas) para mantener el kernel ligero y
+                        manejable.</small></p>
+            </div>
+
+            <div class="info-card">
+                <h2>🔧 Sistema de Compilación</h2>
+                <h3>✅ Compilación Multi-Objetivo</h3>
+                <ul class="feature-list">
+                    <li>Objetivo Desktop (características completas, heap 256MB, 1024 procesos)</li>
+                    <li>Objetivo Server (networking optimizado, heap 1GB, 4096 procesos)</li>
+                    <li>Objetivo IoT (gestión de energía, heap 16MB, 64 procesos)</li>
+                    <li>Objetivo Embedded (características mínimas, heap 4MB, 16 procesos)</li>
+                </ul>
+
+                <h3>✅ Multi-Arquitectura</h3>
+                <ul class="feature-list">
+                    <li>Soporte de producción x86-64</li>
+                    <li>Soporte experimental x86-32</li>
+                    <li>Framework de desarrollo ARM</li>
+                    <li>Capa de abstracción de arquitectura (HAL)</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>⚠️ Limitaciones Actuales</h2>
+                <h3>❌ No Implementado Aún</h3>
+                <ul class="feature-list">
+                    <li>Soporte SMP (Symmetric Multiprocessing)</li>
+                    <li>Módulos dinámicos del kernel</li>
+                    <li>IPC avanzado (pipes, colas de mensajes)</li>
+                    <li>Stack de red (TCP/IP)</li>
+                    <li>Soporte USB</li>
+                    <li>GUI/Gestor de ventanas avanzado</li>
+                    <li>Manejo de señales</li>
+                    <li>Memoria copy-on-write</li>
+                    <li>Soporte de memoria swap</li>
+                    <li>Características avanzadas de filesystem (ext2/3/4)</li>
+                </ul>
+
+                <h3>⚠️ Problemas Conocidos</h3>
+                <ul class="feature-list">
+                    <li>El cambio de contexto de fork() necesita refinamiento</li>
+                    <li>Funcionalidad limitada del cargador ELF</li>
+                    <li>No hay recolección de procesos zombie en init</li>
+                    <li>Asignador de memoria básico (versiones avanzadas en desarrollo)</li>
+                    <li>Soporte de una sola CPU únicamente</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>📊 Especificaciones Técnicas</h2>
+                <h3>Layout de Memoria</h3>
+                <div class="code-block">
+                    <pre>Espacio Kernel: 0x100000 - 0x800000 (1MB-8MB)
+Espacio Heap:   0x800000 - 0x2000000 (8MB-32MB, 24MB total)
+Espacio Usuario: 0x40000000+ (1GB+)</pre>
+                </div>
+
+                <h3>Métricas de Rendimiento</h3>
+                <ul class="feature-list">
+                    <li>Tiempo de cambio de contexto: ~microsegundos (optimizado en ensamblador)</li>
+                    <li>Complejidad del planificador: O(log n) con Red-Black Tree</li>
+                    <li>Asignación de memoria: O(1) para asignador simple</li>
+                    <li>Latencia de interrupción: Mínima con ISRs optimizados</li>
+                </ul>
+
+                <h3>Límites de Recursos (Objetivo Desktop)</h3>
+                <ul class="feature-list">
+                    <li>Procesos máximos: 1024</li>
+                    <li>Threads máximos: 4096</li>
+                    <li>Tamaño de heap: 256MB</li>
+                    <li>Quantum del planificador: 10ms</li>
+                    <li>Tamaño de buffer E/S: 64KB</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>🎯 Hoja de Ruta</h2>
+                <h3>Corto Plazo (Próximo Release)</h3>
+                <ul class="feature-list">
+                    <li>Arreglar problemas de cambio de contexto de fork()</li>
+                    <li>Implementar recolección adecuada de zombies</li>
+                    <li>Integrar stack TCP/IP básico con librería IoT</li>
+                    <li>Mejorar cargador ELF</li>
+                    <li>Agregar framework USB</li>
+                </ul>
+
+                <h3>Mediano Plazo</h3>
+                <ul class="feature-list">
+                    <li>Soporte SMP</li>
+                    <li>Sistema GUI avanzado</li>
+                    <li>Expansión del networking básico (más protocolos, optimizaciones)</li>
+                    <li>Módulos dinámicos del kernel</li>
+                    <li>Mecanismos IPC avanzados</li>
+                </ul>
+
+                <h3>Largo Plazo</h3>
+                <ul class="feature-list">
+                    <li>Soporte de aplicaciones nativas (Doom, GCC, Bash)</li>
+                    <li>Compatibilidad POSIX completa</li>
+                    <li>Soporte avanzado de filesystem</li>
+                    <li>Mejoras de abstracción de hardware</li>
+                    <li>Optimizaciones de rendimiento</li>
+                </ul>
+            </div>
+        </section>
+
         <section id="development" class="section">
             <h1 class="titulo-guia">Guía de Desarrollo</h1>
 
@@ -497,7 +899,7 @@
                     podés dar mantenimiento
                     recurrente al subsistema, <strong>dejarlo bien documentado</strong>.</li>
                 <br>
-                    De igual forma, <strong>no hay que ser un experto para contribuir al kernel. Simplemente con tener ganas
+                De igual forma, <strong>no hay que ser un experto para contribuir al kernel. Simplemente con tener ganas
                     de
                     aprender/estudiar sobre lo que vayas a contribuir es más que suficiente</strong>.
 
@@ -556,7 +958,7 @@
                 <br>
                 <li>Así manejo los encabezados (o la mayoría):</li>
                 <br><br>
-                <img src="/Assets/encabezado.png" alt="" srcset="">
+                <img src="/Assets/header.png" alt="" srcset="" style="width: 50%;">
                 <br>
                 <i>Los comentarios grandes van por lo general en éstos .h y en los fuente hacemos acotaciones.</i>
             </div>
@@ -576,18 +978,19 @@
             </div>
         </section>
 
-        
+
         <section id="panic" class="section">
             <h1 class="titulo-guia">Subsistemas del Kernel</h1>
             <div class="code-block">
                 <p>
-                    <strong>-</strong> En esta sección se detallan los principales subsistemas que componen el kernel IR0,
+                    <strong>-</strong> En esta sección se detallan los principales subsistemas que componen el kernel
+                    IR0,
                     su estado actual de desarrollo y las características técnicas de cada uno.
                     <br>
                     <br>
                     La mejor forma de entender el funcionamiento interno es revisando el código fuente en el
-                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank"
-                        rel="noopener noreferrer" class="link-repo">Repositorio de GitHub</a>.
+                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank" rel="noopener noreferrer"
+                        class="link-repo">Repositorio de GitHub</a>.
                 </p>
             </div>
 
@@ -634,7 +1037,8 @@
                 </ul>
                 <h3>Innovaciones:</h3>
                 <ul class="feature-list">
-                    <li>Integración con <a href="https://github.com/victor-base/libvictor" target="_blank" rel="noopener noreferrer">libvictor</a> para búsquedas semánticas</li>
+                    <li>Integración con <a href="https://github.com/victor-base/libvictor" target="_blank"
+                            rel="noopener noreferrer">libvictor</a> para búsquedas semánticas</li>
                     <li>Cache inteligente basado en patrones de acceso</li>
                     <li>Soporte para metadata extendida</li>
                     <li>Encriptación a nivel de archivo</li>
@@ -651,7 +1055,8 @@
                 </p>
                 <h3>Componentes Principales:</h3>
                 <ul class="feature-list">
-                    <li><strong>IDT (Interrupt Descriptor Table):</strong> Tabla de 256 entradas para mapear interrupciones</li>
+                    <li><strong>IDT (Interrupt Descriptor Table):</strong> Tabla de 256 entradas para mapear
+                        interrupciones</li>
                     <li><strong>ISR (Interrupt Service Routines):</strong> Handlers optimizados en ensamblador</li>
                     <li><strong>Exception Handler:</strong> Manejo de excepciones del procesador</li>
                     <li><strong>IRQ Manager:</strong> Gestión de interrupciones de hardware</li>
@@ -663,7 +1068,8 @@
                     <li>Deferred interrupt processing</li>
                     <li>Interrupt coalescing para optimización</li>
                 </ul>
-                <p><strong>Archivos:</strong> interrupt/idt.c, interrupt/interrupt.asm, interrupt/isr_handlers.c, interrupt/irq.c</p>
+                <p><strong>Archivos:</strong> interrupt/idt.c, interrupt/interrupt.asm, interrupt/isr_handlers.c,
+                    interrupt/irq.c</p>
             </div>
 
             <div class="info-card">
@@ -782,7 +1188,8 @@
                     <li>Auditoría de eventos de seguridad</li>
                     <li>Integración con TPM para medición de integridad</li>
                 </ul>
-                <p><strong>Archivos:</strong> security/capability.c, security/seccomp.c, security/lsm/, security/audit.c</p>
+                <p><strong>Archivos:</strong> security/capability.c, security/seccomp.c, security/lsm/, security/audit.c
+                </p>
             </div>
 
             <div class="info-card">
@@ -962,7 +1369,7 @@
                     <li>La descarga del binario del kernel se expondrá en esta sección cuando salga la primer versión
                         estable de la rama <strong>mainline</strong>.</li>
                 </p>
-                
+
             </div>
         </section>
     </div>

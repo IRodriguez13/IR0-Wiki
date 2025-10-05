@@ -26,7 +26,7 @@
                 <li><a href="#architecture" class="nav-link" onclick="showSection('architecture')">Architecture</a></li>
                 <li><a href="#branches" class="nav-link" onclick="showSection('branches')">Branches</a></li>
                 <li><a href="#development" class="nav-link" onclick="showSection('development')">Development</a></li>
-                <li><a href="#panic" class="nav-link" onclick="showSection('panic')">Subsystems</a></li>
+                <li><a href="#subsystems" class="nav-link" onclick="showSection('subsystems')">Subsystems</a></li>
                 <li><a href="#overview" class="nav-link" onclick="showSection('descarga')">Download</a></li>
                 <li class="language-dropdown">
                     <button class="translate-btn" onclick="toggleLanguageMenu()">🌐 EN</button>
@@ -81,30 +81,32 @@
             </div>
 
             <div class="info-card">
-                <h2>Main Features and Future Ones</h2>
+                <h2>Main Implemented Features</h2>
                 <ul class="feature-list">
-                    <li>Monolithic kernel for x86-64 architecture</li>
-                    <li>Memory management with paging in those two architectures</li>
-                    <li>Interrupt and exception handling</li>
-                    <li>Custom bootloader (Only in x86 and I'll probably migrate all architectures to GRUB)</li>
-                    <li>The assembly code I use is in syntax of <a
-                            href="https://cs.lmu.edu/~ray/notes/nasmtutorial/" target="_blank"
-                            rel="noopener noreferrer">Intel Netwide Assembler (nasm)</a>.</li>
-                    <li>Own filesystem based on EXT with vectorial database optimization in user space</li>
-                    <li>Network stack and <a href="https://opensource.com/article/22/12/linux-abi" target="_blank"
-                            rel="noopener noreferrer">ABI</a> borrowed from Linux (They are millions of lines of code that
-                        I don't plan to write alone)</li>
-                    <li>Own syscalls and some mapped from Linux</li>
-                    <li>Some drivers for minimal hardware handling.</li>
+                    <li>✅ Monolithic modular kernel for x86-64 architecture</li>
+                    <li>✅ Complete virtual memory management with paging (MMU)</li>
+                    <li>✅ Complete interrupt and exception system (64 IDT vectors)</li>
+                    <li>✅ CFS (Completely Fair Scheduler) with Red-Black Tree</li>
+                    <li>✅ Complete process system with fork(), exit(), waitpid()</li>
+                    <li>✅ 23 implemented syscalls (from basic to memory management)</li>
+                    <li>✅ Complete MINIX filesystem with VFS (Virtual File System)</li>
+                    <li>✅ Hardware drivers: PS/2 (keyboard/mouse), ATA/IDE, Sound Blaster 16, VGA</li>
+                    <li>✅ Interactive shell in Ring 3 with built-in commands</li>
+                    <li>✅ Freestanding LibC with printf(), malloc(), free()</li>
+                    <li>✅ Multi-target build system (Desktop/Server/IoT/Embedded)</li>
+                    <li>🔄 Basic TCP/IP network stack (in development - using IoT library)</li>
+                    <li>🔄 Container support (in development)</li>
                 </ul>
             </div>
 
             <div class="info-card">
                 <h2>Project Status</h2>
-                <p><strong>Version:</strong> not yet versioned (but let's say pre-release for now.)<br>
-                    <strong>Architecture:</strong> x86-64 (i386)<br>
+                <p><strong>Version:</strong> v0.0.1 pre-release candidate 1<br>
+                    <strong>Architecture:</strong> x86-64 (primary), x86-32 (experimental), ARM (in development)<br>
                     <strong>Bootloader:</strong> GRUB<br>
-                    <strong>ASM Syntax:</strong> Intel
+                    <strong>License:</strong> GNU GPL v3.0<br>
+                    <strong>Type:</strong> Monolithic Modular Kernel<br>
+                    <strong>ASM Syntax:</strong> Intel (NASM)
                 </p>
             </div>
         </section>
@@ -117,50 +119,68 @@
                 <div class="kernel-architecture">
                     <!-- User Space -->
                     <div class="layer user-space">
-                        <div class="layer-title">User Space</div>
+                        <div class="layer-title">User Space (Ring 3)</div>
                         <div class="components">
-                            <div class="component">Applications</div>
-                            <div class="component">GNU Tools</div>
-                            <div class="component">POSIX Libraries</div>
-                            <div class="component">System Calls</div>
+                            <div class="component">Interactive Shell</div>
+                            <div class="component">LibC (IR0)</div>
+                            <div class="component">User Programs</div>
+                            <div class="component">ELF Loader</div>
                         </div>
                     </div>
                     
                     <!-- Kernel Space -->
                     <div class="layer kernel-space">
-                        <div class="layer-title">Kernel Space (IR0)</div>
+                        <div class="layer-title">Kernel Space (Ring 0) - IR0</div>
                         <div class="kernel-components">
                             <!-- System Interface -->
                             <div class="kernel-section system-interface">
                                 <div class="section-title">System Interface</div>
-                                <div class="component">POSIX Syscalls</div>
-                                <div class="component">Process Management</div>
-                                <div class="component">Memory Management</div>
+                                <div class="component">23 Syscalls (IR0)</div>
+                                <div class="component">INT 0x80 Handler</div>
+                                <div class="component">Init System (PID 1)</div>
                             </div>
                             
-                            <!-- Core Subsystems -->
+                            <!-- Process & Memory -->
                             <div class="kernel-section core-subsystems">
-                                <div class="section-title">Core Subsystems</div>
-                                <div class="component">Scheduler (IR0)</div>
-                                <div class="component">Filesystem (IR0)</div>
-                                <div class="component">Network Stack (Linux)</div>
-                                <div class="component">Device Drivers (Mixed)</div>
+                                <div class="section-title">Process & Memory</div>
+                                <div class="component">CFS Scheduler</div>
+                                <div class="component">Virtual Memory (MMU)</div>
+                                <div class="component">Heap Allocator</div>
+                                <div class="component">Process Manager</div>
                             </div>
                             
-                            <!-- Linux Compatibility -->
+                            <!-- File System -->
                             <div class="kernel-section compatibility-section">
-                                <div class="section-title">Linux Compatibility</div>
-                                <div class="component">Syscall Mapping</div>
-                                <div class="component">Container Support</div>
-                                <div class="component">Driver Compatibility</div>
+                                <div class="section-title">File System</div>
+                                <div class="component">VFS Layer</div>
+                                <div class="component">MINIX Filesystem</div>
+                                <div class="component">File Operations</div>
                             </div>
                             
-                            <!-- Hardware Abstraction -->
+                            <!-- Hardware Drivers -->
                             <div class="kernel-section hardware-abstraction">
-                                <div class="section-title">Hardware Abstraction</div>
-                                <div class="component">Interrupt Handler</div>
-                                <div class="component">Memory Manager</div>
-                                <div class="component">I/O Manager</div>
+                                <div class="section-title">Hardware Drivers</div>
+                                <div class="component">PS/2 (Keyboard/Mouse)</div>
+                                <div class="component">ATA/IDE Storage</div>
+                                <div class="component">Sound Blaster 16</div>
+                                <div class="component">VGA/VBE Video</div>
+                            </div>
+
+                            <!-- Interrupts & Timers -->
+                            <div class="kernel-section system-interface">
+                                <div class="section-title">Interrupts & Timers</div>
+                                <div class="component">IDT (64 vectors)</div>
+                                <div class="component">PIC Remapping</div>
+                                <div class="component">Timer Cascade</div>
+                                <div class="component">DMA Controller</div>
+                            </div>
+
+                            <!-- Network (Planned) -->
+                            <div class="kernel-section core-subsystems">
+                                <div class="section-title">Network (In Development)</div>
+                                <div class="component">Basic TCP/IP (IoT)</div>
+                                <div class="component">Socket Interface</div>
+                                <div class="component">Ethernet Drivers</div>
                             </div>
                         </div>
                     </div>
@@ -169,10 +189,12 @@
                     <div class="layer hardware">
                         <div class="layer-title">Hardware</div>
                         <div class="components">
-                            <div class="component">CPU (x86-64-ARM)</div>
-                            <div class="component">Memory (RAM)</div>
-                            <div class="component">Storage (SSD/HDD)</div>
-                            <div class="component">Network Cards</div>
+                            <div class="component">CPU x86-64</div>
+                            <div class="component">RAM (MMU)</div>
+                            <div class="component">ATA/IDE Disks</div>
+                            <div class="component">PS/2 Devices</div>
+                            <div class="component">Sound Blaster</div>
+                            <div class="component">VGA/VBE</div>
                         </div>
                     </div>
                 </div>
@@ -181,15 +203,15 @@
                 <div class="architecture-legend">
                     <div class="legend-item">
                         <div class="legend-color user-space-color"></div>
-                        <span>User Space - GNU tools and applications</span>
+                        <span>User Space (Ring 3) - Shell, LibC and user programs</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-color kernel-space-color"></div>
-                        <span>Kernel Space (IR0) - Own kernel with Linux compatibility</span>
+                        <span>Kernel Space (Ring 0) - IR0 monolithic modular kernel</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-color hardware-color"></div>
-                        <span>Hardware - Physical components</span>
+                        <span>Hardware - Supported physical components</span>
                     </div>
                 </div>
             </div>
@@ -250,43 +272,32 @@
                         rel="noopener noreferrer">RING 0</a> is only for the kernel. Everything that comes from RING 3
                     communicates with <i>syscalls()</i>, end of statement.
                 </p>
-                <h2>What do I borrow from Linux?</h2>
+                <h2>Network Approach: Basic but Functional</h2>
                 <p>
-                    If I intend to make IR0 work as support for servers (backends, games, etc), that can run docker and kubernetes (at least) and that, at some point,
-                    can work as a base for IoT, I need to have first of all <strong>network support, with its drivers, support for modern network protocols</strong> plus <strong>all the algorithms that
-                        they implement internally</strong>.
+                    For IR0 to work as support for basic servers and IoT applications, I need 
+                    <strong>fundamental network support</strong> but without the massive complexity of Linux's complete stack.
                     <br><br>
-                    In the Linux Kernel there are more or less <i>1,500,000</i> lines of code <strong>ONLY THE COMPLETE NETWORK STACK</strong>.
-                    <br>
-                    Literally, if I wanted to build it from scratch, maybe it would take a decade and it wouldn't be ready. I don't feel so crazy really.
+                    In the Linux Kernel there are more or less <i>1,500,000</i> lines of code <strong>ONLY THE COMPLETE NETWORK STACK</strong>. Instead of trying to port all of that, I've decided to use a more pragmatic approach:
                     <br><br>
-                    I'll show you what I need from the network stack:
-                    <br><br>
-                    <img src="/Assets/deepseek_mermaid_20250808_234e4e.png" alt="chiquita la pilita de red" srcset=""
-                        style="width: 50%;">
-                    <br>
-                    <small><i>Understand hardware as the components of your <a
-                                href="https://es.wikipedia.org/wiki/Placa_base" target="_blank"
-                                rel="noopener noreferrer"></a>MOBO</i> that talk to the kernel.
-                        Besides, here you can see clearly how the kernel mediates between hard and soft.</small>
-                    <br><br>
+                    <strong>Basic implementation with IoT library:</strong>
+                    <ul class="feature-list">
+                        <li>Lightweight and functional TCP/IP stack</li>
+                        <li>Support for basic network connectivity</li>
+                        <li>Simplified socket interface</li>
+                        <li>Essential Ethernet drivers</li>
+                        <li>Minimalist approach that keeps the kernel manageable</li>
+                    </ul>
+                    This allows me to have network functionality without adding millions of lines of code to the kernel.
 
-                    We have the same issue with <strong>container support</strong>. Here the issue is a bit calmer because there are a couple less lines of code in total: <i>some 300,000 lines</i>
-                    but still, as happens with the network stack, they are two completely separate projects.
-                    <br> <br>
-                    More or less this is what docker requires to work, from the app with its runtime, to its accesses in the kernel.
-                    <br><br>
-                    <img src="/Assets/docker.png" alt="" srcset="" style="width: 101%;">
-                    <br>
-                    <small>Notice that docker needs to start literally a virtual file system, besides limiting the cpu, access RAM, have a private network interface, uses namespaces to isolate its content from the environment, etc.
-                    </small>
-                    <br>
-                <h2>How am I going to solve it?</h2>
-                Well, if writing the network stack and container support is not trivial, integrating them outside their environment isn't either, but it's more human than diagramming, implementing and testing.
-                <br><br>
-                I'll most likely have to map the syscalls that that part of Linux expects in <a
-                    href="https://es.wikipedia.org/wiki/Wine" target="_blank" rel="noopener noreferrer">Wine/Proton</a> style,
-                or copy some of the ones they use natively if they serve me later.
+                <h2>Advantages of the Basic Approach</h2>
+                This approach with IoT library has several advantages:
+                <ul class="feature-list">
+                    <li>Keeps the kernel lightweight and manageable</li>
+                    <li>Significantly reduces code complexity</li>
+                    <li>Allows network functionality without millions of additional lines</li>
+                    <li>Easier to debug and maintain</li>
+                    <li>Sufficient for basic use cases and IoT</li>
+                </ul>
                 </p>
 
             </div>
@@ -418,6 +429,397 @@
 
         </section>
 
+        <section id="subsystems" class="section">
+            <h1 class="titulo-principal">IR0 Kernel Subsystems</h1>
+            
+            <div class="info-card">
+                <h2>Project Status</h2>
+                <p><strong>Version:</strong> v0.0.01 pre-release candidate 1<br>
+                   <strong>Architecture:</strong> x86-64 (primary), x86-32 (experimental), ARM (in development)<br>
+                   <strong>License:</strong> GNU GPL v3.0<br>
+                   <strong>Type:</strong> Monolithic Modular Kernel</p>
+            </div>
+
+            <div class="info-card">
+                <h2>🏗️ Core Architecture</h2>
+                <h3>✅ Kernel Architecture</h3>
+                <ul class="feature-list">
+                    <li>Monolithic modular design with HAL abstraction</li>
+                    <li>Multi-target build system (Desktop/Server/IoT/Embedded)</li>
+                    <li>Ring 0 (kernel) / Ring 3 (user) separation</li>
+                    <li>x86-64 primary support with multi-arch framework</li>
+                    <li>Freestanding C environment with custom libc</li>
+                </ul>
+
+                <h3>✅ Boot System</h3>
+                <ul class="feature-list">
+                    <li>GRUB multiboot specification compliance</li>
+                    <li>x86-64 long mode initialization</li>
+                    <li>GDT (Global Descriptor Table) setup</li>
+                    <li>TSS (Task State Segment) configuration</li>
+                    <li>IDT (Interrupt Descriptor Table) with 64 entries</li>
+                </ul>
+
+                <h3>✅ Memory Management</h3>
+                <ul class="feature-list">
+                    <li>Virtual memory with paging (MMU)</li>
+                    <li>Kernel heap allocator (simple + advanced WIP)</li>
+                    <li>Memory protection (Ring 0/3 isolation)</li>
+                    <li>Memory layout: Kernel (1MB-8MB), Heap (8MB-32MB), User (1GB+)</li>
+                    <li>Page fault handling with CR2 fault address reading</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>⚙️ Process Management</h2>
+                <h3>✅ Process System</h3>
+                <ul class="feature-list">
+                    <li>Complete process lifecycle management</li>
+                    <li>Process states: READY, RUNNING, BLOCKED, ZOMBIE</li>
+                    <li>PID assignment starting from PID 1</li>
+                    <li>Process creation with fork() syscall</li>
+                    <li>Process termination with exit() syscall</li>
+                    <li>Parent-child relationships with waitpid()</li>
+                </ul>
+
+                <h3>✅ Scheduler</h3>
+                <ul class="feature-list">
+                    <li>CFS (Completely Fair Scheduler) implementation</li>
+                    <li>Red-Black Tree runqueue for O(log n) operations</li>
+                    <li>Virtual runtime (vruntime) tracking for fairness</li>
+                    <li>Nice values support (-20 to +19)</li>
+                    <li>Preemptive multitasking with timer integration</li>
+                    <li>Context switching in optimized x86-64 assembly</li>
+                </ul>
+
+                <h3>✅ Init System</h3>
+                <ul class="feature-list">
+                    <li>PID 1 init process (mini-systemd)</li>
+                    <li>Service management and respawning</li>
+                    <li>User mode switching from kernel</li>
+                    <li>Shell service management</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>🔧 System Calls</h2>
+                <h3>✅ Syscall Interface (23 syscalls implemented)</h3>
+                <div class="code-block">
+                    <pre>SYS_EXIT(0)         - Process termination
+SYS_WRITE(1)        - Write to file descriptor
+SYS_READ(2)         - Read from file descriptor
+SYS_GETPID(3)       - Get process ID
+SYS_GETPPID(4)      - Get parent process ID
+SYS_LS(5)           - List directory contents
+SYS_MKDIR(6)        - Create directory
+SYS_PS(7)           - Show process list
+SYS_WRITE_FILE(8)   - Write file to filesystem
+SYS_CAT(9)          - Display file contents
+SYS_TOUCH(10)       - Create empty file
+SYS_RM(11)          - Remove file
+SYS_FORK(12)        - Create child process
+SYS_WAITPID(13)     - Wait for child process
+SYS_RMDIR(40)       - Remove directory
+SYS_MALLOC_TEST(50) - Memory allocation test
+SYS_BRK(51)         - Change heap break
+SYS_SBRK(52)        - Increment heap break
+SYS_MMAP(53)        - Memory mapping
+SYS_MUNMAP(54)      - Unmap memory
+SYS_MPROTECT(55)    - Change memory protection
+SYS_EXEC(56)        - Execute program</pre>
+                </div>
+
+                <h3>✅ Syscall Mechanism</h3>
+                <ul class="feature-list">
+                    <li>INT 0x80 software interrupt interface</li>
+                    <li>Register-based parameter passing</li>
+                    <li>Kernel/user mode transition</li>
+                    <li>Error handling and return values</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>⚡ Interrupt System</h2>
+                <h3>✅ Interrupt Handling</h3>
+                <ul class="feature-list">
+                    <li>Complete IDT setup with 64 interrupt vectors</li>
+                    <li>PIC (Programmable Interrupt Controller) remapping</li>
+                    <li>ISR (Interrupt Service Routines) in assembly</li>
+                    <li>IRQ handling for hardware devices</li>
+                    <li>Timer interrupt integration</li>
+                    <li>Keyboard interrupt (IRQ 1)</li>
+                    <li>Mouse interrupt (IRQ 12)</li>
+                    <li>Audio interrupt (IRQ 5)</li>
+                </ul>
+
+                <h3>✅ Exception Handling</h3>
+                <ul class="feature-list">
+                    <li>Page fault handler with CR2 address reading</li>
+                    <li>General protection fault handling</li>
+                    <li>Division by zero exception</li>
+                    <li>Invalid opcode exception</li>
+                    <li>Stack fault handling</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>🖥️ Hardware Drivers</h2>
+                <h3>✅ Input Devices</h3>
+                <ul class="feature-list">
+                    <li>PS/2 Keyboard driver with circular buffer</li>
+                    <li>PS/2 Mouse driver with 3/5 button + scroll wheel support</li>
+                    <li>Mouse type detection (standard/wheel/5-button)</li>
+                    <li>Configurable sample rates and resolution</li>
+                </ul>
+
+                <h3>✅ Storage Devices</h3>
+                <ul class="feature-list">
+                    <li>ATA/IDE hard disk driver</li>
+                    <li>CD-ROM support</li>
+                    <li>Basic disk I/O operations</li>
+                    <li>Sector-based read/write</li>
+                </ul>
+
+                <h3>✅ Audio System</h3>
+                <ul class="feature-list">
+                    <li>Sound Blaster 16 driver</li>
+                    <li>8-bit/16-bit audio support</li>
+                    <li>Mono/Stereo playback</li>
+                    <li>DMA-based audio transfer (channels 1 and 5)</li>
+                    <li>Volume control (master and PCM)</li>
+                    <li>Sample rate configuration</li>
+                    <li>Audio format detection</li>
+                </ul>
+
+                <h3>✅ Video System</h3>
+                <ul class="feature-list">
+                    <li>VGA text mode (80x25)</li>
+                    <li>VBE (VESA BIOS Extensions) graphics support</li>
+                    <li>Framebuffer access</li>
+                    <li>Basic graphics primitives</li>
+                </ul>
+
+                <h3>✅ Serial Communication</h3>
+                <ul class="feature-list">
+                    <li>COM1/COM2 serial port drivers</li>
+                    <li>Debug output via serial</li>
+                    <li>Configurable baud rates</li>
+                    <li>Serial interrupt handling</li>
+                </ul>
+
+                <h3>✅ Timer Systems</h3>
+                <ul class="feature-list">
+                    <li>PIT (Programmable Interval Timer)</li>
+                    <li>RTC (Real Time Clock)</li>
+                    <li>HPET (High Precision Event Timer)</li>
+                    <li>LAPIC (Local APIC Timer)</li>
+                    <li>Unified clock system abstraction</li>
+                    <li>Timer cascade with best available timer selection</li>
+                </ul>
+
+                <h3>✅ DMA Controller</h3>
+                <ul class="feature-list">
+                    <li>8-channel DMA support (0-7)</li>
+                    <li>8-bit and 16-bit transfer modes</li>
+                    <li>Audio DMA integration</li>
+                    <li>Channel enable/disable control</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>📁 File System</h2>
+                <h3>✅ Virtual File System (VFS)</h3>
+                <ul class="feature-list">
+                    <li>Unified filesystem abstraction layer</li>
+                    <li>Multiple filesystem support framework</li>
+                    <li>Standard file operations (open, read, write, close)</li>
+                    <li>Directory operations (mkdir, rmdir, ls)</li>
+                    <li>File metadata handling</li>
+                </ul>
+
+                <h3>✅ MINIX Filesystem</h3>
+                <ul class="feature-list">
+                    <li>Complete MINIX filesystem implementation</li>
+                    <li>Inode-based file storage</li>
+                    <li>Directory structure support</li>
+                    <li>File creation, deletion, and modification</li>
+                    <li>Integrated with VFS layer</li>
+                </ul>
+
+                <h3>✅ File Operations</h3>
+                <ul class="feature-list">
+                    <li>File creation (touch)</li>
+                    <li>File deletion (rm)</li>
+                    <li>Directory creation (mkdir)</li>
+                    <li>Directory removal (rmdir)</li>
+                    <li>File content display (cat)</li>
+                    <li>Directory listing (ls)</li>
+                    <li>File writing capabilities</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>👤 User Space</h2>
+                <h3>✅ C Library (LibC)</h3>
+                <ul class="feature-list">
+                    <li>Freestanding C library implementation</li>
+                    <li>Standard headers: stdio.h, stdlib.h, unistd.h, stdint.h, stddef.h</li>
+                    <li>I/O functions: printf(), puts(), putchar()</li>
+                    <li>Memory functions: malloc(), free()</li>
+                    <li>Process functions: exit(), getpid()</li>
+                    <li>System call wrappers</li>
+                </ul>
+
+                <h3>✅ Printf Implementation</h3>
+                <ul class="feature-list">
+                    <li>Format specifiers: %d (integers), %s (strings), %c (characters)</li>
+                    <li>Variable argument support</li>
+                    <li>Output to stdout</li>
+                </ul>
+
+                <h3>✅ User Programs</h3>
+                <ul class="feature-list">
+                    <li>Echo command implementation</li>
+                    <li>Shell integration for user programs</li>
+                    <li>ELF loader (basic implementation)</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>🐚 Shell System</h2>
+                <h3>✅ Interactive Shell</h3>
+                <ul class="feature-list">
+                    <li>Command-line interface in Ring 3 (user mode)</li>
+                    <li>Built-in commands: ls, ps, cat, mkdir, rmdir, touch, rm, fork, clear, help, exit, malloc, sbrk, exec</li>
+                </ul>
+
+                <h3>✅ Shell Features</h3>
+                <ul class="feature-list">
+                    <li>Command parsing and execution</li>
+                    <li>Process management integration</li>
+                    <li>Filesystem operation support</li>
+                    <li>Memory management testing</li>
+                    <li>Error handling and feedback</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>🌐 Network System</h2>
+                <h3>🔄 Basic TCP/IP Stack (In Development)</h3>
+                <ul class="feature-list">
+                    <li>Basic implementation using lightweight IoT library</li>
+                    <li>Fundamental TCP/IP support for connectivity</li>
+                    <li>Simplified socket interface</li>
+                    <li>Basic Ethernet driver framework</li>
+                    <li>Ping utility planned</li>
+                    <li>Minimalist approach to reduce complexity</li>
+                </ul>
+                <p><small><strong>Note:</strong> Opted for a basic implementation with IoT library instead of porting Linux's complete stack (1.5M lines) to keep the kernel lightweight and manageable.</small></p>
+            </div>
+
+            <div class="info-card">
+                <h2>🔧 Build System</h2>
+                <h3>✅ Multi-Target Build</h3>
+                <ul class="feature-list">
+                    <li>Desktop target (full features, 256MB heap, 1024 processes)</li>
+                    <li>Server target (optimized networking, 1GB heap, 4096 processes)</li>
+                    <li>IoT target (power management, 16MB heap, 64 processes)</li>
+                    <li>Embedded target (minimal features, 4MB heap, 16 processes)</li>
+                </ul>
+
+                <h3>✅ Multi-Architecture</h3>
+                <ul class="feature-list">
+                    <li>x86-64 production support</li>
+                    <li>x86-32 experimental support</li>
+                    <li>ARM development framework</li>
+                    <li>Architecture abstraction layer (HAL)</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>⚠️ Current Limitations</h2>
+                <h3>❌ Not Yet Implemented</h3>
+                <ul class="feature-list">
+                    <li>SMP (Symmetric Multiprocessing) support</li>
+                    <li>Dynamic kernel modules</li>
+                    <li>Advanced IPC (pipes, message queues)</li>
+                    <li>Network stack (TCP/IP)</li>
+                    <li>USB support</li>
+                    <li>Advanced GUI/Window manager</li>
+                    <li>Signal handling</li>
+                    <li>Copy-on-write memory</li>
+                    <li>Swap memory support</li>
+                    <li>Advanced filesystem features (ext2/3/4)</li>
+                </ul>
+
+                <h3>⚠️ Known Issues</h3>
+                <ul class="feature-list">
+                    <li>Fork() context switching needs refinement</li>
+                    <li>Limited ELF loader functionality</li>
+                    <li>No zombie process reaping in init</li>
+                    <li>Basic memory allocator (advanced versions in development)</li>
+                    <li>Single CPU support only</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>📊 Technical Specifications</h2>
+                <h3>Memory Layout</h3>
+                <div class="code-block">
+                    <pre>Kernel Space: 0x100000 - 0x800000 (1MB-8MB)
+Heap Space:   0x800000 - 0x2000000 (8MB-32MB, 24MB total)
+User Space:   0x40000000+ (1GB+)</pre>
+                </div>
+
+                <h3>Performance Metrics</h3>
+                <ul class="feature-list">
+                    <li>Context switch time: ~microseconds (assembly optimized)</li>
+                    <li>Scheduler complexity: O(log n) with Red-Black Tree</li>
+                    <li>Memory allocation: O(1) for simple allocator</li>
+                    <li>Interrupt latency: Minimal with optimized ISRs</li>
+                </ul>
+
+                <h3>Resource Limits (Desktop Target)</h3>
+                <ul class="feature-list">
+                    <li>Maximum processes: 1024</li>
+                    <li>Maximum threads: 4096</li>
+                    <li>Heap size: 256MB</li>
+                    <li>Scheduler quantum: 10ms</li>
+                    <li>I/O buffer size: 64KB</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>🎯 Roadmap</h2>
+                <h3>Short Term (Next Release)</h3>
+                <ul class="feature-list">
+                    <li>Fix fork() context switching issues</li>
+                    <li>Implement proper zombie reaping</li>
+                    <li>Integrate basic TCP/IP stack with IoT library</li>
+                    <li>Improve ELF loader</li>
+                    <li>Add USB framework</li>
+                </ul>
+
+                <h3>Medium Term</h3>
+                <ul class="feature-list">
+                    <li>SMP support</li>
+                    <li>Advanced GUI system</li>
+                    <li>Basic networking expansion (more protocols, optimizations)</li>
+                    <li>Dynamic kernel modules</li>
+                    <li>Advanced IPC mechanisms</li>
+                </ul>
+
+                <h3>Long Term</h3>
+                <ul class="feature-list">
+                    <li>Native application support (Doom, GCC, Bash)</li>
+                    <li>Complete POSIX compatibility</li>
+                    <li>Advanced filesystem support</li>
+                    <li>Hardware abstraction improvements</li>
+                    <li>Performance optimizations</li>
+                </ul>
+            </div>
+        </section>
+
         <section id="development" class="section">
             <h1 class="titulo-guia">Development Guide</h1>
 
@@ -501,7 +903,7 @@
                 <br>
                 <li>This is how I handle headers (or most):</li>
                 <br><br>
-                <img src="/Assets/encabezado.png" alt="" srcset="">
+                <img src="/Assets/header.png" alt="" srcset="">
                 <br>
                 <i>Large comments usually go in these .h and in the source we make notes.</i>
             </div>
