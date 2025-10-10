@@ -1,39 +1,39 @@
 <!DOCTYPE html>
-<html lang="es">
-<!-- Si estás leyendo esto, primero ya te dije que no estoy usando ningún framework de moda hipster como React, next, nest, lo que sea. A lo sumo Blazor. -->
+<html lang="en">
+<!-- If you're reading this, first I already told you that I'm not using any trendy hipster framework like React, next, nest, whatever. At most Blazor. -->
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/Assets/cuatro-nucleos.png" type="image/x-icon">
-    <title>IR0 - Kernel - Wiki</title>
+    <title>IR0 Kernel - Wiki</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&family=Ubuntu+Mono&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&family=Ubuntu+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
     <script src="main.js"></script>
+    <script src="loc.js"></script>
 
     <nav class="navbar">
         <div class="nav-container">
-            <div class="logo"><a href="index.html" target="_blank" rel="noopener noreferrer"
-                    style="text-decoration: none; color: white;">IR0 - Wiki</a></div>
+            <div class="logo"><a href="index_en.html" target="_blank" rel="noopener noreferrer"
+                    style="text-decoration: none; color: white;">IR0 Wiki</a></div>
             <ul class="nav-menu">
-                <li><a href="#overview" class="nav-link active" onclick="showSection('overview')">Inicio</a></li>
-                <li><a href="#architecture" class="nav-link" onclick="showSection('architecture')">Arquitectura</a></li>
-                <li><a href="#branches" class="nav-link" onclick="showSection('branches')">Ramas</a></li>
-                <li><a href="#development" class="nav-link" onclick="showSection('development')">Desarrollo</a></li>
-                <li><a href="#subsystems" class="nav-link" onclick="showSection('subsystems')">Subsistemas</a></li>
-                <li><a href="#overview" class="nav-link" onclick="showSection('descarga')">Descarga</a></li>
+                <li><a href="#overview" class="nav-link active" onclick="showSection('overview')">Home</a></li>
+                <li><a href="#architecture" class="nav-link" onclick="showSection('architecture')">Architecture</a></li>
+                <li><a href="#branches" class="nav-link" onclick="showSection('branches')">Branches</a></li>
+                <li><a href="#development" class="nav-link" onclick="showSection('development')">Development</a></li>
+                <li><a href="#subsystems" class="nav-link" onclick="showSection('subsystems')">Subsystems</a></li>
+                <li><a href="#overview" class="nav-link" onclick="showSection('descarga')">Download</a></li>
                 <li class="language-dropdown">
-                    <button class="translate-btn" onclick="toggleLanguageMenu()">🌐 ES</button>
+                    <button class="translate-btn" onclick="toggleLanguageMenu()">🌐 EN</button>
                     <div class="language-menu" id="languageMenu">
-                        <a href="index.html" class="language-option active">🇪🇸 Español</a>
-                        <a href="index_en.html" class="language-option">🇺🇸 English</a>
+                        <a href="index_es.html" class="language-option">🇪🇸 Español</a>
+                        <a href="index.html" class="language-option active">🇺🇸 English</a>
                     </div>
                 </li>
                 <li><button id="darkModeBtn" class="dark-mode-btn" onclick="toggleDarkMode()">🌙</button></li>
@@ -43,135 +43,132 @@
 
     <div class="container">
         <section id="overview" class="section active">
-            <h1 class="titulo-principal">IR0 - Kernel - Overview</h1>
+            <h1 class="titulo-principal">IR0 Kernel - Overview</h1>
 
             <div class="info-card">
                 <p>
-                    El propósito de esta "wiki", documentación web, guía, como le digas, es usarla como ayuda-memoria
-                    personal
-                    para el desarrollo del kernel.
-                    No tiene que ser una página ultra estética, pero me estoy esforzando para que no se note que la hice
-                    con html, css y js vanilla como la de <a href="https://docs.kernel.org/" target="_blank"
-                        rel="noopener noreferrer">algún proyecto aficionado</a>
-                    que anda por ahí. <br> <br>
-                    Un kernel de sistema operativo mínimamente funcional (todo el <a
+                    The purpose of this "wiki", web documentation, guide, however you call it, is to use it as a personal memory aid
+                    for kernel development.
+                    It doesn't have to be an ultra-aesthetic page, but I'm trying hard so it doesn't show that I made it
+                    with vanilla html, css and js like some amateur project
+                    that's out there. <br> <br>
+                    A minimally functional operating system kernel (all the <a
                         href="https://en.wikipedia.org/wiki/User_space_and_kernel_space" target="_blank"
-                        rel="noopener noreferrer">Kernel Space</a> más un user space mínimo)
-                    puede andar fácilmente en las <strong>15.000</strong> líneas de código por lo que, como verás;
-                    es humanamente imposible memorizar y comprender todo el flujo del kernel por mí mismo. Además son
-                    muchos subsistemas complejos trabajando a bajo nivel juntos para intermediar entre hardware y
-                    software.
+                        rel="noopener noreferrer">Kernel Space</a> plus a minimal user space)
+                    can easily run in <strong>15,000</strong> lines of code, so as you'll see;
+                    it's humanly impossible to memorize and understand the entire kernel flow by myself. Besides, there are many complex subsystems working together at a low level to mediate between hardware and software.
                 </p>
             </div>
 
+            <div class="info-card">
+                <p id="loc">
+                </p>
+                <p><small>This calculation is automatic and is done through an API that counts the number of lines of code that the kernel has (only .c, .h and .asm)</small></p>
+                
+            </div>
 
             <div class="info-card">
-                <h2>¿Qué es IR0?</h2>
+                <h2>What is IR0?</h2>
                 <p>
-                    <strong>IR0</strong> es un <strong>kernel de sistema operativo multipropósito</strong> desarrollado
-                    desde cero para arquitectura
-                    <strong>x86-64</strong> escrito principalmente en <strong>C</strong> y <strong>ASM</strong> (Aunque
-                    no tengo ningún problema en incluir código de otros lenguajes especializados en performance como
-                    <strong>Cpp</strong> o <strong>Rust</strong>).
+                    <strong>IR0</strong> is a <strong>multipurpose operating system kernel</strong> developed
+                    from scratch for <strong>x86-64</strong> architecture written primarily in <strong>C</strong> and <strong>ASM</strong> (Although
+                    I have no problem including code from other specialized languages in performance such as
+                    <strong>Cpp</strong> or <strong>Rust</strong>).
                     <br>
-                    Lo estoy creando para aprender más sobre sistemas operativos y poder usarlo como materia
-                    prima para otro proyecto que replica a <a href="https://learn.microsoft.com/es-es/windows/wsl/about"
-                        target="_blank" rel="noopener noreferrer">WSL2</a> pero con mi propio kernel.
-                    No descarto escalarlo lo suficiente como para hacerlo usable en servidores mínimos o incluso IoT,
-                    pero entiendo que eso es al largo <i>(larguísimo)</i> plazo.
+                    I'm creating it to learn more about operating systems and be able to use it as raw material
+                    for another project that replicates <a href="https://learn.microsoft.com/es-es/windows/wsl/about"
+                        target="_blank" rel="noopener noreferrer">WSL2</a> but with my own kernel.
+                    I don't rule out scaling it enough to make it usable in minimal servers or even IoT,
+                    but I understand that's in the very long term.
                     <br>
                     <br>
-                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank" rel="noopener noreferrer">Repo
-                        de GtiHub
+                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank" rel="noopener noreferrer">This
+                        is its GitHub Repository.</a>
                         <br>
-
-                        <a href="https://discord.gg/XZ84aPXtxh" target="_blank" rel="noopener noreferrer">Discord
-                            community</a>
-                </p>
+                    <a href="https://discord.gg/XZ84aPXtxh" target="_blank" rel="noopener noreferrer">Discord community</a>                </p>
             </div>
 
-
             <div class="info-card">
-                <h2>Características Principales Implementadas</h2>
+                <h2>Main Implemented Features</h2>
                 <ul class="feature-list">
-                    <li>✅ Kernel monolítico modular para arquitectura x86-64</li>
-                    <li>✅ Gestión completa de memoria virtual con paginación (MMU)</li>
-                    <li>✅ Sistema completo de interrupciones y excepciones (64 vectores IDT)</li>
-                    <li>✅ Planificador CFS (Completely Fair Scheduler) con Red-Black Tree</li>
-                    <li>✅ Sistema de procesos completo con fork(), exit(), waitpid()</li>
-                    <li>✅ 23 syscalls implementadas (desde básicas hasta gestión de memoria)</li>
-                    <li>✅ Filesystem MINIX completo con VFS (Virtual File System)</li>
-                    <li>✅ Drivers de hardware: PS/2 (teclado/mouse), ATA/IDE, Sound Blaster 16, VGA</li>
-                    <li>✅ Shell interactivo en Ring 3 con comandos integrados</li>
-                    <li>✅ LibC freestanding con printf(), malloc(), free()</li>
-                    <li>✅ Sistema de compilación multi-objetivo (Desktop/Server/IoT/Embedded)</li>
-                    <li>🔄 Pila de red TCP/IP básica (en desarrollo - usando librería IoT)</li>
-                    <li>🔄 Soporte para contenedores (en desarrollo)</li>
+                    <li>✅ Monolithic modular kernel for x86-64 architecture</li>
+                    <li>✅ Complete virtual memory management with paging (MMU)</li>
+                    <li>✅ Complete interrupt and exception system (64 IDT vectors)</li>
+                    <li>✅ CFS (Completely Fair Scheduler) with Red-Black Tree</li>
+                    <li>✅ Complete process system with fork(), exit(), waitpid()</li>
+                    <li>✅ 23 implemented syscalls (from basic to memory management)</li>
+                    <li>✅ Complete MINIX filesystem with VFS (Virtual File System)</li>
+                    <li>✅ Hardware drivers: PS/2 (keyboard/mouse), ATA/IDE, Sound Blaster 16, VGA</li>
+                    <li>✅ Interactive shell in Ring 3 with built-in commands</li>
+                    <li>✅ Freestanding LibC with printf(), malloc(), free()</li>
+                    <li>✅ Multi-target build system (Desktop/Server/IoT/Embedded)</li>
+                    <li>🔄 Basic TCP/IP network stack (in development - using IoT library)</li>
+                    <li>🔄 Container support (in development)</li>
                 </ul>
             </div>
 
             <div class="info-card">
-                <h2>Estado del Proyecto</h2>
-                <p><strong>Versión:</strong> v0.0.1 pre-release candidate 1<br>
-                    <strong>Arquitectura:</strong> x86-64 (primaria), x86-32 (experimental), ARM (en desarrollo)<br>
+                <h2>Project Status</h2>
+                <p><strong>Version:</strong> v0.0.1 pre-release candidate 1<br>
+                    <strong>Architecture:</strong> x86-64 (primary), x86-32 (experimental), ARM (in development)<br>
                     <strong>Bootloader:</strong> GRUB<br>
-                    <strong>Licencia:</strong> GNU GPL v3.0<br>
-                    <strong>Tipo:</strong> Kernel Monolítico Modular<br>
-                    <strong>Sintaxis ASM:</strong> Intel (NASM)
+                    <strong>License:</strong> GNU GPL v3.0<br>
+                    <strong>Type:</strong> Monolithic Modular Kernel<br>
+                    <strong>ASM Syntax:</strong> Intel (NASM)
                 </p>
             </div>
         </section>
 
         <section id="architecture" class="section">
-            <h1 class="titulo-principal">Arquitectura del Sistema</h1>
+            <h1 class="titulo-principal">System Architecture</h1>
 
             <div class="architecture-box">
-                <h3>Diagrama de Arquitectura del Kernel IR0</h3>
+                <h3>IR0 Kernel Architecture Diagram</h3>
                 <div class="kernel-architecture">
                     <!-- User Space -->
                     <div class="layer user-space">
                         <div class="layer-title">User Space (Ring 3)</div>
                         <div class="components">
-                            <div class="component">Shell Interactivo</div>
+                            <div class="component">Interactive Shell</div>
                             <div class="component">LibC (IR0)</div>
-                            <div class="component">Programas Usuario</div>
+                            <div class="component">User Programs</div>
                             <div class="component">ELF Loader</div>
                         </div>
                     </div>
-
+                    
                     <!-- Kernel Space -->
                     <div class="layer kernel-space">
                         <div class="layer-title">Kernel Space (Ring 0) - IR0</div>
                         <div class="kernel-components">
                             <!-- System Interface -->
                             <div class="kernel-section system-interface">
-                                <div class="section-title">Interfaz del Sistema</div>
+                                <div class="section-title">System Interface</div>
                                 <div class="component">23 Syscalls (IR0)</div>
                                 <div class="component">INT 0x80 Handler</div>
                                 <div class="component">Init System (PID 1)</div>
                             </div>
-
+                            
                             <!-- Process & Memory -->
                             <div class="kernel-section core-subsystems">
-                                <div class="section-title">Procesos y Memoria</div>
+                                <div class="section-title">Process & Memory</div>
                                 <div class="component">CFS Scheduler</div>
                                 <div class="component">Virtual Memory (MMU)</div>
                                 <div class="component">Heap Allocator</div>
                                 <div class="component">Process Manager</div>
                             </div>
-
+                            
                             <!-- File System -->
                             <div class="kernel-section compatibility-section">
-                                <div class="section-title">Sistema de Archivos</div>
+                                <div class="section-title">File System</div>
                                 <div class="component">VFS Layer</div>
                                 <div class="component">MINIX Filesystem</div>
                                 <div class="component">File Operations</div>
                             </div>
-
+                            
                             <!-- Hardware Drivers -->
                             <div class="kernel-section hardware-abstraction">
-                                <div class="section-title">Drivers de Hardware</div>
-                                <div class="component">PS/2 (Teclado/Mouse)</div>
+                                <div class="section-title">Hardware Drivers</div>
+                                <div class="component">PS/2 (Keyboard/Mouse)</div>
                                 <div class="component">ATA/IDE Storage</div>
                                 <div class="component">Sound Blaster 16</div>
                                 <div class="component">VGA/VBE Video</div>
@@ -179,8 +176,8 @@
 
                             <!-- Interrupts & Timers -->
                             <div class="kernel-section system-interface">
-                                <div class="section-title">Interrupciones y Timers</div>
-                                <div class="component">IDT (64 vectores)</div>
+                                <div class="section-title">Interrupts & Timers</div>
+                                <div class="component">IDT (64 vectors)</div>
                                 <div class="component">PIC Remapping</div>
                                 <div class="component">Timer Cascade</div>
                                 <div class="component">DMA Controller</div>
@@ -188,14 +185,14 @@
 
                             <!-- Network (Planned) -->
                             <div class="kernel-section core-subsystems">
-                                <div class="section-title">Red (En Desarrollo)</div>
-                                <div class="component">TCP/IP Básico (IoT)</div>
+                                <div class="section-title">Network (In Development)</div>
+                                <div class="component">Basic TCP/IP (IoT)</div>
                                 <div class="component">Socket Interface</div>
                                 <div class="component">Ethernet Drivers</div>
                             </div>
                         </div>
                     </div>
-
+                    
                     <!-- Hardware -->
                     <div class="layer hardware">
                         <div class="layer-title">Hardware</div>
@@ -209,126 +206,116 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <!-- Legend -->
                 <div class="architecture-legend">
                     <div class="legend-item">
                         <div class="legend-color user-space-color"></div>
-                        <span>User Space (Ring 3) - Shell, LibC y programas de usuario</span>
+                        <span>User Space (Ring 3) - Shell, LibC and user programs</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-color kernel-space-color"></div>
-                        <span>Kernel Space (Ring 0) - Núcleo IR0 monolítico modular</span>
+                        <span>Kernel Space (Ring 0) - IR0 monolithic modular kernel</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-color hardware-color"></div>
-                        <span>Hardware - Componentes físicos soportados</span>
+                        <span>Hardware - Supported physical components</span>
                     </div>
                 </div>
             </div>
             <div class="info-card">
-                <h2>Arquitectura y "Filosofía" del proyecto</h2>
+                <h2>Architecture and "Philosophy" of the project</h2>
                 <p>
-                    A diferencia de kernels como <a href="https://en.wikipedia.org/wiki/Windows_NT" target="_blank"
-                        rel="noopener noreferrer">kernel NT (Híbrido)</a> de Microsoft, <a
+                    Unlike kernels such as <a href="https://en.wikipedia.org/wiki/Windows_NT" target="_blank"
+                        rel="noopener noreferrer">Microsoft's NT kernel (Hybrid)</a>, <a
                         href="https://www.redox-os.org/" target="_blank" rel="noopener noreferrer">Redox-OS
                         (Microkernel)</a>,
-                    o el mismo <a href="https://es.wikipedia.org/wiki/MINIX" target="_blank"
-                        rel="noopener noreferrer">MINIX kernel (microkernel)</a>, IR0 se basa en una arquitectura más
-                    similar a la que tiene Linux, que es monolítico.
+                    or the same <a href="https://es.wikipedia.org/wiki/MINIX" target="_blank"
+                        rel="noopener noreferrer">MINIX kernel (microkernel)</a>, IR0 is based on a more similar architecture
+                    to what Linux has, which is monolithic.
                     <br>
 
-                    Sin embargo, mi argumento principal es el del rendimiento. Entiendo que alguien podría venir y
-                    señalar que, como todo monolito, si un subcomponente se rompe, se cae todo el sistema <small>(y
-                        tendría razón)</small>
-                    pero lo que respondo a eso es que <i>"¿De qué me sirve a mí que el kernel soporte seguir sin
-                        filesystem si no puedo hacer nada práctico sin él?"</i>, es decir, no tiene sentido que el
+                    However, my main argument is that of performance. I understand that someone could come and
+                    point out that, like any monolith, if a subcomponent breaks, the entire system crashes <small>(and
+                        they would be right)</small>
+                    but what I respond to that is <i>"What good does it do me that the kernel supports continuing without
+                        filesystem if I can't do anything practical without it?"</i>, that is, it doesn't make sense that the
                     kernel
-                    continúe funcionando <strong>sin uno de sus componentes clave corriendo</strong>. <br><br>
+                    continues functioning <strong>without one of its key components running</strong>. <br><br>
 
-                    Por eso no veo mejor alternativa (por ahora) que el patrón <a
+                    That's why I don't see a better alternative (for now) than the <a
                         href="https://es.wikipedia.org/wiki/N%C3%BAcleo_monol%C3%ADtico" target="_blank"
-                        rel="noopener noreferrer">monolítico</a>. Y además me ahorra el tener que interconectar
-                    subsistemas clave entre sí con IPC, lo que impacta de una en el rendimiento del Sistema Operativo.
-                    No es
-                    perfecto, pero es estable. No es del todo trazable y requiere escalar de a poco, pero si escala bien
-                    rinde mucho. <br>
+                        rel="noopener noreferrer">monolithic</a> pattern. And it also saves me from having to interconnect
+                    key subsystems with each other via IPC, which impacts performance of the Operating System. It's not
+                    perfect, but it's stable. It's not entirely traceable and requires scaling little by little, but if it scales well it performs a lot. <br>
 
                     <br>
-                    Sin embargo yo también tengo desacuerdos con la <a
+                    However, I also have disagreements with the <a
                         href="https://es.wikipedia.org/wiki/Filosof%C3%ADa_de_Unix" target="_blank"
-                        rel="noopener noreferrer">filosofía UNIX</a>. Ellos (entre otras cosas y de forma resumidísima)
-                    consideran
-                    que si algo falla, <i>que falle bien</i>. Lo que en términos kernelísticos sería: <i>Si se rompe el
-                        scheduler, Panic() directo. Si tenés corrupción en memoria (en espacio de kernel),
+                        rel="noopener noreferrer">UNIX philosophy</a>. They (among other things and very briefly)
+                    consider
+                    that if something fails, <i>let it fail well</i>. Which in kernel terms would be: <i>If the scheduler breaks, Panic() directly. If you have memory corruption (in kernel space),
                         Panic.</i><br>
-                    Y no es que lo cuestiono por que sí, simplemente pregunto (aunque sin soluciones todavía) <i>"¿Por
-                        qué no rescatar el sistema en tiempo de Panic()?, o por lo menos hacer el intento"</i>. <br>
-                    Mas allá del punto filosófico y para resumir, el kernel es monolítico porque es más performante y
-                    siento que las piezas clave del núcleo deben <strong>trabajar sin overhead</strong>. <br>
-                    Sin embargo, si en el futuro necesitara integrar algún subsistema específico de forma híbrida,
-                    seguramente sería pragmático.
+                    And it's not that I question it for no reason, I simply ask (although without solutions yet) <i>"Why not rescue the system during Panic()?, or at least try"</i>. <br>
+                    Beyond the philosophical point and to summarize, the kernel is monolithic because it's more performant and
+                    I feel that the key pieces of the kernel must <strong>work without overhead</strong>. <br>
+                    However, if in the future I needed to integrate some specific subsystem in a hybrid way,
+                    I would surely be pragmatic.
                 </p>
-                <h2>El Kernel Space es sagrado</h2>
+                <h2>Kernel Space is sacred</h2>
                 <p>
-                    Yo sé que hablo como si IR0 fuera usado por miles de personas y toda la historia, pero me voy a dar
-                    el lujo de opinar al respecto.
-                    <br>Entonces, el punto es que el kernel space <strong>tiene que ser sólo habitable por subsistemas
-                        que trabajen en ese Entorno</strong>,
-                    nada mas. <br>
-                    Entiendo que hayan ciertos <a
+                    I know I talk as if IR0 were used by thousands of people and all the history, but I'm going to give myself the luxury of opining
+                    about it.
+                    <br>So, the point is that kernel space <strong>has to be only habitable by subsystems
+                        that work in that Environment</strong>,
+                    nothing else. <br>
+                    I understand that there are certain <a
                         href="https://www.reddit.com/r/riotgames/comments/1gxhfmh/the_future_of_riot_vanguard_and_kernel_level/"
-                        target="_blank" rel="noopener noreferrer">fabricantes preocupados por la seguridad de sus
-                        clientes</a> que,
-                    casualmente, tienen acceso a <i>toda interrupción que el usuario haga (saben qué teclas presionás,
-                        el tiempo de tu sesión cada vez que prendés la compu, etc.)</i> Y todo eso porque tienen
-                    software funcionando en el <a href="https://en.wikipedia.org/wiki/User_space_and_kernel_space"
-                        target="_blank" rel="noopener noreferrer">kernel space</a> con todos los privilegios que eso
-                    implica.
+                        target="_blank" rel="noopener noreferrer">manufacturers concerned about their clients' security</a> who,
+                    coincidentally, have access to <i>every interruption that the user makes (they know what keys you press,
+                        your session time every time you turn on the computer, etc.)</i> And all that because they have
+                    software running in the <a href="https://en.wikipedia.org/wiki/User_space_and_kernel_space"
+                        target="_blank" rel="noopener noreferrer">kernel space</a> with all the privileges that implies.
                     <br> <a href="https://en.wikipedia.org/wiki/Protection_ring" target="_blank"
-                        rel="noopener noreferrer">RING 0</a> es únicamente para el kernel. Todo lo que venga del RING 3
-                    se comunica con <i>syscalls()</i>, fin del comunicado.
+                        rel="noopener noreferrer">RING 0</a> is only for the kernel. Everything that comes from RING 3
+                    communicates with <i>syscalls()</i>, end of statement.
                 </p>
-                <h2>Enfoque de Red: Básico pero Funcional</h2>
+                <h2>Network Approach: Basic but Functional</h2>
                 <p>
-                    Para que IR0 funcione como soporte para servidores básicos y aplicaciones IoT, necesito
-                    <strong>soporte de red fundamental</strong> pero sin la complejidad masiva del stack completo de
-                    Linux.
+                    For IR0 to work as support for basic servers and IoT applications, I need 
+                    <strong>fundamental network support</strong> but without the massive complexity of Linux's complete stack.
                     <br><br>
-                    En el Kernel Linux son mas o menos <i>1.500.000</i> de líneas de código <strong>SÓLO LA PILA DE RED
-                        COMPLETA</strong>. En lugar de intentar portar todo eso, he decidido usar un enfoque más
-                    pragmático:
+                    In the Linux Kernel there are more or less <i>1,500,000</i> lines of code <strong>ONLY THE COMPLETE NETWORK STACK</strong>. Instead of trying to port all of that, I've decided to use a more pragmatic approach:
                     <br><br>
-                    <strong>Implementación básica con librería IoT:</strong>
-                <ul class="feature-list">
-                    <li>Stack TCP/IP ligero y funcional</li>
-                    <li>Soporte para conectividad básica de red</li>
-                    <li>Interfaz de sockets simplificada</li>
-                    <li>Drivers Ethernet esenciales</li>
-                    <li>Enfoque minimalista que mantiene el kernel manejable</li>
-                </ul>
-                Esto me permite tener funcionalidad de red sin agregar millones de líneas de código al kernel.
+                    <strong>Basic implementation with IoT library:</strong>
+                    <ul class="feature-list">
+                        <li>Lightweight and functional TCP/IP stack</li>
+                        <li>Support for basic network connectivity</li>
+                        <li>Simplified socket interface</li>
+                        <li>Essential Ethernet drivers</li>
+                        <li>Minimalist approach that keeps the kernel manageable</li>
+                    </ul>
+                    This allows me to have network functionality without adding millions of lines of code to the kernel.
 
-                <h2>Ventajas del Enfoque Básico</h2>
-                Este enfoque con librería IoT tiene varias ventajas:
+                <h2>Advantages of the Basic Approach</h2>
+                This approach with IoT library has several advantages:
                 <ul class="feature-list">
-                    <li>Mantiene el kernel ligero y manejable</li>
-                    <li>Reduce significativamente la complejidad del código</li>
-                    <li>Permite funcionalidad de red sin millones de líneas adicionales</li>
-                    <li>Es más fácil de debuggear y mantener</li>
-                    <li>Suficiente para casos de uso básicos y IoT</li>
+                    <li>Keeps the kernel lightweight and manageable</li>
+                    <li>Significantly reduces code complexity</li>
+                    <li>Allows network functionality without millions of additional lines</li>
+                    <li>Easier to debug and maintain</li>
+                    <li>Sufficient for basic use cases and IoT</li>
                 </ul>
                 </p>
 
             </div>
 
-
             <div class="info-card">
-                <h2>Estructura de Directorios</h2>
+                <h2>Directory Structure</h2>
                 <p>
-                    Cómo la estructura de archivos puede cambiar constantemente, prefiero que la consultes en el
+                    How the file structure can change constantly, I prefer you consult it in the
                     <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank"
-                        rel="noopener noreferrer">Repositorio de GitHub</a>.
+                        rel="noopener noreferrer">GitHub Repository</a>.
                 </p>
 
             </div>
@@ -336,26 +323,25 @@
         </section>
 
         <section id="branches" class="section">
-            <h1 class="titulo-principal">Gestión de Ramas</h1>
+            <h1 class="titulo-principal">Branch Management</h1>
             <div class="info-card">
-                <h2>Flujo de Trabajo con Git</h2>
+                <h2>Git Workflow</h2>
                 <div class="code-block">
-                    <article>Como es la primera vez que escribo un proyecto de este calibre, lo que busco
-                        es que el Workflow para el desarrollo del kernel sea
-                        lo mas limpio, predecible y escalable posible.
+                    <article>Since it's the first time I write a project of this caliber, what I'm looking for
+                        is that the Workflow for kernel development be
+                        as clean, predictable and scalable as possible.
                         <br>
                         <br>
-                        Para eso uso 3 ramas de git principales en el
-                        proceso: mainline, dev y feature (que aunque feature no está en el repositorio, es la que se usa
-                        como convención para
-                        integrar código nuevo).
-                        Donde sólo <strong>mainline</strong> y <strong>dev</strong> son las únicas 2 <i>ramas
-                            upstream</i>.
+                        For that I use 3 main git branches in the
+                        process: mainline, dev and feature (which although feature is not in the repository, it's the one used as convention for
+                        integrating new code).
+                        Where only <strong>mainline</strong> and <strong>dev</strong> are the only 2 <i>upstream
+                            branches</i>.
                         <br>
                         <br>
-                        <strong>experimental</strong> es una rama
-                        divergente a <strong>dev</strong>, y <strong>feature</strong> es la rama que se crea para enviar
-                        contribuciones.
+                        <strong>experimental</strong> is a branch
+                        divergent to <strong>dev</strong>, and <strong>feature</strong> is the branch that is created to send
+                        contributions.
                     </article>
                 </div>
             </div>
@@ -365,17 +351,14 @@
                 <div class="branch-card">
                     <div class="branch-title">mainline</div>
                     <div class="status-badge status-stable">STABLE</div>
-                    <p><strong>-</strong> Rama principal con código estable y testeado.</p>
+                    <p><strong>-</strong> Main branch with stable and tested code.</p>
 
-                    <h3>Características</h3>
+                    <h3>Characteristics</h3>
                     <ul class="feature-list">
-                        <li>Solo código probado y funcional</li>
-                        <li>Documentación completa</li>
-                        <li>Mi base para rc's.</li>
-                        <li><strong>mainline es sagrada</strong>, ya que este rama <strong>tiene que compilar y bootear
-                                siempre</strong>. Es la mas
-                            estable de las
-                            dos ramas upstream.
+                        <li>Only tested and functional code</li>
+                        <li>Complete documentation</li>
+                        <li>My base for rc's.</li>
+                        <li><strong>mainline is sacred</strong>, since this branch <strong>has to compile and boot always</strong>. It's the most stable of the two upstream branches.
                         </li>
                     </ul>
 
@@ -384,39 +367,35 @@
                 <div class="branch-card">
                     <div class="branch-title">dev</div>
                     <div class="status-badge status-development">STAGING</div>
-                    <p><strong>-</strong> Rama de desarrollo activo donde se implementan y testean nuevas
-                        features.
+                    <p><strong>-</strong> Active development branch where new features are implemented and tested.
                     </p>
 
-                    <h3>Características:</h3>
+                    <h3>Characteristics:</h3>
                     <ul class="feature-list">
-                        <li>Es el espejo de <strong>mainline</strong>.</li>
-                        <li>Lo que se mergee acá no tiene por qué pasar a <strong>mainline</strong>.</li>
-                        <li>Nuevas features en desarrollo que me convencieron de feature</li>
-                        <li>Parches de código, refactors y optimizaciones</li>
-                        <li>Puede contener bugs temporales que se resuelven sí o sí en esta rama.</li>
+                        <li>It's the mirror of <strong>mainline</strong>.</li>
+                        <li>What gets merged here doesn't have to go to <strong>mainline</strong>.</li>
+                        <li>New features in development that convinced me of feature</li>
+                        <li>Code patches, refactors and optimizations</li>
+                        <li>It can contain temporary bugs that are resolved one way or another in this branch.</li>
                     </ul>
 
                 </div>
-
-
 
                 <!-- feat BRANCH -->
                 <div class="branch-card">
                     <div class="branch-title">feature</div>
                     <div class="status-badge status-feat">DEVELOPMENT</div>
                     <p><strong>-</strong>
-                        La agrego porque es la rama donde se crean feats que despues pasan al upstream
-                        mergeando a <strong>dev</strong> . Es la más inestable de todas porque es donde se integra
-                        código nuevo que también debe ser testeado y revisado antes de llegar a merge.
+                        I add it because it's the branch where feats are created that later go to upstream
+                        merging to <strong>dev</strong>. It's the most unstable of all because it's where new code is integrated that must also be tested and reviewed before reaching merge.
                     </p>
 
-                    <h3>Características:</h3>
+                    <h3>Characteristics:</h3>
                     <ul class="feature-list">
-                        <li>Acá es donde yo empiezo a implementar nuevas funcionalidades o parches</li>
-                        <li>Es la primera que se debuggea.</li>
-                        <li>Es la que crearías cuando forkeás el repo.</li>
-                        <li>Se espera que compile antes de pasar a <strong>dev</strong>.</li>
+                        <li>This is where I start to implement new functionalities or patches</li>
+                        <li>It's the first one that gets debugged.</li>
+                        <li>It's the one you would create when you fork the repo.</li>
+                        <li>It's expected to compile before going to <strong>dev</strong>.</li>
                     </ul>
                 </div>
                 <!-- exp BRANCH -->
@@ -425,951 +404,916 @@
                     <div class="branch-title">experimental</div>
                     <div class="status-badge status-exp">MISC</div>
                     <p><strong>-</strong>
-                        En esta rama, se integran features lo suficientemente inestables como para terminar en
+                        In this branch, features are integrated unstable enough to end up in
                         <strong>mainline</strong>
-                        pero que pueden tener potencial a futuro.
+                        but that may have potential in the future.
                     </p>
 
-                    <h3>Características:</h3>
+                    <h3>Characteristics:</h3>
                     <ul class="feature-list">
-                        <li>Es una rama de pruebas puras, no tiene nada que ver con las ramas upstream estables</li>
-                        <li>Acá caen las features y experimentos que no llegan al <strong>mainline</strong></li>
-                        <li>Cosas que no se prueban en sistemas operativos o ideas nuevas</li>
-                        <li>No es tan importante la estabilidad en esta rama</li>
-                        <li>Si se testean lo suficiente sin romper nada, pueden o no mergear a mainline primero
-                            pasando por <strong>dev</strong> de nuevo.
+                        <li>It's a pure testing branch, it has nothing to do with stable upstream branches</li>
+                        <li>Here fall the features and experiments that don't reach <strong>mainline</strong></li>
+                        <li>Things that aren't tested in operating systems or new ideas</li>
+                        <li>Stability is not so important in this branch</li>
+                        <li>If they are tested enough without breaking anything, they may or may not merge to mainline first
+                            passing through <strong>dev</strong> again.
                         </li>
                     </ul>
                 </div>
 
             </div>
 
-
             <div class="info-card">
-                <h2>Cómo es el merging desde feature hasta mainline?</h2>
+                <h2>How is merging from feature to mainline?</h2>
 
                 <article>
-                    Básicamente, vos creás tu mejora/optmización <strong>desde un fork del repo con una rama
-                        nueva</strong> que va a ser algo como <i>"feature/fix-scheduler"</i> por ejemplo. <br>
-                    Después, <strong>hacés PR a la rama dev del upstream (no al mainline)</strong> y se hace la revisión
-                    y el merge en dado caso. <br>
-                    El merge a mainline depende de <strong>cuán alineado con el proyecto considere que es la
-                        feature</strong>. <br>
-                    Ni siquiera algunas de mis propias implementaciones las mergearía directo al mainline por esta misma
-                    razón.
+                    Basically, you create your improvement/optimization <strong>from a fork of the repo with a new branch</strong> that will be something like <i>"feature/fix-scheduler"</i> for example. <br>
+                    Then, <strong>you make PR to the upstream dev branch (not to mainline)</strong> and the review and merge is done if applicable. <br>
+                    The merge to mainline depends on <strong>how aligned with the project I consider the feature is</strong>. <br>
+                    Not even some of my own implementations would I merge directly to mainline for this same reason.
                 </article>
 
             </div>
 
-
-
         </section>
 
         <section id="subsystems" class="section">
-            <h1 class="titulo-principal">Subsistemas del Kernel IR0</h1>
-
+            <h1 class="titulo-principal">IR0 Kernel Subsystems</h1>
+            
             <div class="info-card">
-                <h2>Estado del Proyecto</h2>
-                <p><strong>Versión:</strong> v0.0.01 pre-release candidate 1<br>
-                    <strong>Arquitectura:</strong> x86-64 (primaria), x86-32 (experimental), ARM (en desarrollo)<br>
-                    <strong>Licencia:</strong> GNU GPL v3.0<br>
-                    <strong>Tipo:</strong> Kernel Monolítico Modular
-                </p>
+                <h2>Project Status</h2>
+                <p><strong>Version:</strong> v0.0.01 pre-release candidate 1<br>
+                   <strong>Architecture:</strong> x86-64 (primary), x86-32 (experimental), ARM (in development)<br>
+                   <strong>License:</strong> GNU GPL v3.0<br>
+                   <strong>Type:</strong> Monolithic Modular Kernel</p>
             </div>
 
             <div class="info-card">
-                <h2>🏗️ Arquitectura Central</h2>
-                <h3>✅ Arquitectura del Kernel</h3>
+                <h2>🏗️ Core Architecture</h2>
+                <h3>✅ Kernel Architecture</h3>
                 <ul class="feature-list">
-                    <li>Diseño monolítico modular con abstracción HAL</li>
-                    <li>Sistema de compilación multi-objetivo (Desktop/Server/IoT/Embedded)</li>
-                    <li>Separación Ring 0 (kernel) / Ring 3 (usuario)</li>
-                    <li>Soporte primario x86-64 con framework multi-arquitectura</li>
-                    <li>Entorno C freestanding con libc personalizada</li>
+                    <li>Monolithic modular design with HAL abstraction</li>
+                    <li>Multi-target build system (Desktop/Server/IoT/Embedded)</li>
+                    <li>Ring 0 (kernel) / Ring 3 (user) separation</li>
+                    <li>x86-64 primary support with multi-arch framework</li>
+                    <li>Freestanding C environment with custom libc</li>
                 </ul>
 
-                <h3>✅ Sistema de Arranque</h3>
+                <h3>✅ Boot System</h3>
                 <ul class="feature-list">
-                    <li>Cumplimiento de especificación multiboot de GRUB</li>
-                    <li>Inicialización de modo largo x86-64</li>
-                    <li>Configuración GDT (Global Descriptor Table)</li>
-                    <li>Configuración TSS (Task State Segment)</li>
-                    <li>IDT (Interrupt Descriptor Table) con 64 entradas</li>
+                    <li>GRUB multiboot specification compliance</li>
+                    <li>x86-64 long mode initialization</li>
+                    <li>GDT (Global Descriptor Table) setup</li>
+                    <li>TSS (Task State Segment) configuration</li>
+                    <li>IDT (Interrupt Descriptor Table) with 64 entries</li>
                 </ul>
 
-                <h3>✅ Gestión de Memoria</h3>
+                <h3>✅ Memory Management</h3>
                 <ul class="feature-list">
-                    <li>Memoria virtual con paginación (MMU)</li>
-                    <li>Asignador de heap del kernel (simple + avanzado en desarrollo)</li>
-                    <li>Protección de memoria (aislamiento Ring 0/3)</li>
-                    <li>Layout de memoria: Kernel (1MB-8MB), Heap (8MB-32MB), Usuario (1GB+)</li>
-                    <li>Manejo de fallos de página con lectura de dirección CR2</li>
-                </ul>
-            </div>
-
-            <div class="info-card">
-                <h2>⚙️ Gestión de Procesos</h2>
-                <h3>✅ Sistema de Procesos</h3>
-                <ul class="feature-list">
-                    <li>Gestión completa del ciclo de vida de procesos</li>
-                    <li>Estados de proceso: READY, RUNNING, BLOCKED, ZOMBIE</li>
-                    <li>Asignación de PID comenzando desde PID 1</li>
-                    <li>Creación de procesos con syscall fork()</li>
-                    <li>Terminación de procesos con syscall exit()</li>
-                    <li>Relaciones padre-hijo con waitpid()</li>
-                </ul>
-
-                <h3>✅ Planificador</h3>
-                <ul class="feature-list">
-                    <li>Implementación CFS (Completely Fair Scheduler)</li>
-                    <li>Cola de ejecución Red-Black Tree para operaciones O(log n)</li>
-                    <li>Seguimiento de tiempo virtual (vruntime) para equidad</li>
-                    <li>Soporte de valores nice (-20 a +19)</li>
-                    <li>Multitarea preemptiva con integración de timer</li>
-                    <li>Cambio de contexto en ensamblador x86-64 optimizado</li>
-                </ul>
-
-                <h3>✅ Sistema Init</h3>
-                <ul class="feature-list">
-                    <li>Proceso init PID 1 (mini-systemd)</li>
-                    <li>Gestión de servicios y respawn</li>
-                    <li>Cambio a modo usuario desde kernel</li>
-                    <li>Gestión de servicios shell</li>
+                    <li>Virtual memory with paging (MMU)</li>
+                    <li>Kernel heap allocator (simple + advanced WIP)</li>
+                    <li>Memory protection (Ring 0/3 isolation)</li>
+                    <li>Memory layout: Kernel (1MB-8MB), Heap (8MB-32MB), User (1GB+)</li>
+                    <li>Page fault handling with CR2 fault address reading</li>
                 </ul>
             </div>
 
             <div class="info-card">
-                <h2>🔧 Llamadas al Sistema</h2>
-                <h3>✅ Interfaz de Syscalls (23 syscalls implementadas)</h3>
+                <h2>⚙️ Process Management</h2>
+                <h3>✅ Process System</h3>
+                <ul class="feature-list">
+                    <li>Complete process lifecycle management</li>
+                    <li>Process states: READY, RUNNING, BLOCKED, ZOMBIE</li>
+                    <li>PID assignment starting from PID 1</li>
+                    <li>Process creation with fork() syscall</li>
+                    <li>Process termination with exit() syscall</li>
+                    <li>Parent-child relationships with waitpid()</li>
+                </ul>
+
+                <h3>✅ Scheduler</h3>
+                <ul class="feature-list">
+                    <li>CFS (Completely Fair Scheduler) implementation</li>
+                    <li>Red-Black Tree runqueue for O(log n) operations</li>
+                    <li>Virtual runtime (vruntime) tracking for fairness</li>
+                    <li>Nice values support (-20 to +19)</li>
+                    <li>Preemptive multitasking with timer integration</li>
+                    <li>Context switching in optimized x86-64 assembly</li>
+                </ul>
+
+                <h3>✅ Init System</h3>
+                <ul class="feature-list">
+                    <li>PID 1 init process (mini-systemd)</li>
+                    <li>Service management and respawning</li>
+                    <li>User mode switching from kernel</li>
+                    <li>Shell service management</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>🔧 System Calls</h2>
+                <h3>✅ Syscall Interface (23 syscalls implemented)</h3>
                 <div class="code-block">
-                    <pre>SYS_EXIT(0)         - Terminación de proceso
-SYS_WRITE(1)        - Escribir a descriptor de archivo
-SYS_READ(2)         - Leer de descriptor de archivo
-SYS_GETPID(3)       - Obtener ID de proceso
-SYS_GETPPID(4)      - Obtener ID de proceso padre
-SYS_LS(5)           - Listar contenidos de directorio
-SYS_MKDIR(6)        - Crear directorio
-SYS_PS(7)           - Mostrar lista de procesos
-SYS_WRITE_FILE(8)   - Escribir archivo al filesystem
-SYS_CAT(9)          - Mostrar contenidos de archivo
-SYS_TOUCH(10)       - Crear archivo vacío
-SYS_RM(11)          - Eliminar archivo
-SYS_FORK(12)        - Crear proceso hijo
-SYS_WAITPID(13)     - Esperar proceso hijo
-SYS_RMDIR(40)       - Eliminar directorio
-SYS_MALLOC_TEST(50) - Test de asignación de memoria
-SYS_BRK(51)         - Cambiar break del heap
-SYS_SBRK(52)        - Incrementar break del heap
-SYS_MMAP(53)        - Mapeo de memoria
-SYS_MUNMAP(54)      - Desmapear memoria
-SYS_MPROTECT(55)    - Cambiar protección de memoria
-SYS_EXEC(56)        - Ejecutar programa</pre>
+                    <pre>SYS_EXIT(0)         - Process termination
+SYS_WRITE(1)        - Write to file descriptor
+SYS_READ(2)         - Read from file descriptor
+SYS_GETPID(3)       - Get process ID
+SYS_GETPPID(4)      - Get parent process ID
+SYS_LS(5)           - List directory contents
+SYS_MKDIR(6)        - Create directory
+SYS_PS(7)           - Show process list
+SYS_WRITE_FILE(8)   - Write file to filesystem
+SYS_CAT(9)          - Display file contents
+SYS_TOUCH(10)       - Create empty file
+SYS_RM(11)          - Remove file
+SYS_FORK(12)        - Create child process
+SYS_WAITPID(13)     - Wait for child process
+SYS_RMDIR(40)       - Remove directory
+SYS_MALLOC_TEST(50) - Memory allocation test
+SYS_BRK(51)         - Change heap break
+SYS_SBRK(52)        - Increment heap break
+SYS_MMAP(53)        - Memory mapping
+SYS_MUNMAP(54)      - Unmap memory
+SYS_MPROTECT(55)    - Change memory protection
+SYS_EXEC(56)        - Execute program</pre>
                 </div>
 
-                <h3>✅ Mecanismo de Syscalls</h3>
+                <h3>✅ Syscall Mechanism</h3>
                 <ul class="feature-list">
-                    <li>Interfaz de interrupción de software INT 0x80</li>
-                    <li>Paso de parámetros basado en registros</li>
-                    <li>Transición modo kernel/usuario</li>
-                    <li>Manejo de errores y valores de retorno</li>
+                    <li>INT 0x80 software interrupt interface</li>
+                    <li>Register-based parameter passing</li>
+                    <li>Kernel/user mode transition</li>
+                    <li>Error handling and return values</li>
                 </ul>
             </div>
 
             <div class="info-card">
-                <h2>⚡ Sistema de Interrupciones</h2>
-                <h3>✅ Manejo de Interrupciones</h3>
+                <h2>⚡ Interrupt System</h2>
+                <h3>✅ Interrupt Handling</h3>
                 <ul class="feature-list">
-                    <li>Configuración completa IDT con 64 vectores de interrupción</li>
-                    <li>Remapeo PIC (Programmable Interrupt Controller)</li>
-                    <li>ISR (Interrupt Service Routines) en ensamblador</li>
-                    <li>Manejo IRQ para dispositivos de hardware</li>
-                    <li>Integración de interrupción de timer</li>
-                    <li>Interrupción de teclado (IRQ 1)</li>
-                    <li>Interrupción de mouse (IRQ 12)</li>
-                    <li>Interrupción de audio (IRQ 5)</li>
+                    <li>Complete IDT setup with 64 interrupt vectors</li>
+                    <li>PIC (Programmable Interrupt Controller) remapping</li>
+                    <li>ISR (Interrupt Service Routines) in assembly</li>
+                    <li>IRQ handling for hardware devices</li>
+                    <li>Timer interrupt integration</li>
+                    <li>Keyboard interrupt (IRQ 1)</li>
+                    <li>Mouse interrupt (IRQ 12)</li>
+                    <li>Audio interrupt (IRQ 5)</li>
                 </ul>
 
-                <h3>✅ Manejo de Excepciones</h3>
+                <h3>✅ Exception Handling</h3>
                 <ul class="feature-list">
-                    <li>Manejador de fallos de página con lectura de dirección CR2</li>
-                    <li>Manejo de fallo de protección general</li>
-                    <li>Excepción de división por cero</li>
-                    <li>Excepción de código de operación inválido</li>
-                    <li>Manejo de fallo de pila</li>
+                    <li>Page fault handler with CR2 address reading</li>
+                    <li>General protection fault handling</li>
+                    <li>Division by zero exception</li>
+                    <li>Invalid opcode exception</li>
+                    <li>Stack fault handling</li>
                 </ul>
             </div>
 
             <div class="info-card">
-                <h2>🖥️ Controladores de Hardware</h2>
-                <h3>✅ Dispositivos de Entrada</h3>
+                <h2>🖥️ Hardware Drivers</h2>
+                <h3>✅ Input Devices</h3>
                 <ul class="feature-list">
-                    <li>Driver de teclado PS/2 con buffer circular</li>
-                    <li>Driver de mouse PS/2 con soporte 3/5 botones + rueda de desplazamiento</li>
-                    <li>Detección de tipo de mouse (estándar/rueda/5 botones)</li>
-                    <li>Tasas de muestreo y resolución configurables</li>
+                    <li>PS/2 Keyboard driver with circular buffer</li>
+                    <li>PS/2 Mouse driver with 3/5 button + scroll wheel support</li>
+                    <li>Mouse type detection (standard/wheel/5-button)</li>
+                    <li>Configurable sample rates and resolution</li>
                 </ul>
 
-                <h3>✅ Dispositivos de Almacenamiento</h3>
+                <h3>✅ Storage Devices</h3>
                 <ul class="feature-list">
-                    <li>Driver de disco duro ATA/IDE</li>
-                    <li>Soporte CD-ROM</li>
-                    <li>Operaciones básicas de E/S de disco</li>
-                    <li>Lectura/escritura basada en sectores</li>
+                    <li>ATA/IDE hard disk driver</li>
+                    <li>CD-ROM support</li>
+                    <li>Basic disk I/O operations</li>
+                    <li>Sector-based read/write</li>
                 </ul>
 
-                <h3>✅ Sistema de Audio</h3>
+                <h3>✅ Audio System</h3>
                 <ul class="feature-list">
-                    <li>Driver Sound Blaster 16</li>
-                    <li>Soporte de audio 8-bit/16-bit</li>
-                    <li>Reproducción Mono/Estéreo</li>
-                    <li>Transferencia de audio basada en DMA (canales 1 y 5)</li>
-                    <li>Control de volumen (master y PCM)</li>
-                    <li>Configuración de tasa de muestreo</li>
-                    <li>Detección de formato de audio</li>
+                    <li>Sound Blaster 16 driver</li>
+                    <li>8-bit/16-bit audio support</li>
+                    <li>Mono/Stereo playback</li>
+                    <li>DMA-based audio transfer (channels 1 and 5)</li>
+                    <li>Volume control (master and PCM)</li>
+                    <li>Sample rate configuration</li>
+                    <li>Audio format detection</li>
                 </ul>
 
-                <h3>✅ Sistema de Video</h3>
+                <h3>✅ Video System</h3>
                 <ul class="feature-list">
-                    <li>Modo texto VGA (80x25)</li>
-                    <li>Soporte gráfico VBE (VESA BIOS Extensions)</li>
-                    <li>Acceso a framebuffer</li>
-                    <li>Primitivas gráficas básicas</li>
+                    <li>VGA text mode (80x25)</li>
+                    <li>VBE (VESA BIOS Extensions) graphics support</li>
+                    <li>Framebuffer access</li>
+                    <li>Basic graphics primitives</li>
                 </ul>
 
-                <h3>✅ Comunicación Serie</h3>
+                <h3>✅ Serial Communication</h3>
                 <ul class="feature-list">
-                    <li>Drivers de puerto serie COM1/COM2</li>
-                    <li>Salida de debug vía serie</li>
-                    <li>Tasas de baudios configurables</li>
-                    <li>Manejo de interrupciones serie</li>
+                    <li>COM1/COM2 serial port drivers</li>
+                    <li>Debug output via serial</li>
+                    <li>Configurable baud rates</li>
+                    <li>Serial interrupt handling</li>
                 </ul>
 
-                <h3>✅ Sistemas de Timer</h3>
+                <h3>✅ Timer Systems</h3>
                 <ul class="feature-list">
                     <li>PIT (Programmable Interval Timer)</li>
                     <li>RTC (Real Time Clock)</li>
                     <li>HPET (High Precision Event Timer)</li>
                     <li>LAPIC (Local APIC Timer)</li>
-                    <li>Abstracción de sistema de reloj unificado</li>
-                    <li>Cascada de timer con selección del mejor timer disponible</li>
+                    <li>Unified clock system abstraction</li>
+                    <li>Timer cascade with best available timer selection</li>
                 </ul>
 
-                <h3>✅ Controlador DMA</h3>
+                <h3>✅ DMA Controller</h3>
                 <ul class="feature-list">
-                    <li>Soporte DMA de 8 canales (0-7)</li>
-                    <li>Modos de transferencia 8-bit y 16-bit</li>
-                    <li>Integración DMA de audio</li>
-                    <li>Control de habilitación/deshabilitación de canales</li>
+                    <li>8-channel DMA support (0-7)</li>
+                    <li>8-bit and 16-bit transfer modes</li>
+                    <li>Audio DMA integration</li>
+                    <li>Channel enable/disable control</li>
                 </ul>
             </div>
 
             <div class="info-card">
-                <h2>📁 Sistema de Archivos</h2>
-                <h3>✅ Sistema de Archivos Virtual (VFS)</h3>
+                <h2>📁 File System</h2>
+                <h3>✅ Virtual File System (VFS)</h3>
                 <ul class="feature-list">
-                    <li>Capa de abstracción de filesystem unificada</li>
-                    <li>Framework de soporte para múltiples filesystems</li>
-                    <li>Operaciones estándar de archivo (open, read, write, close)</li>
-                    <li>Operaciones de directorio (mkdir, rmdir, ls)</li>
-                    <li>Manejo de metadatos de archivo</li>
+                    <li>Unified filesystem abstraction layer</li>
+                    <li>Multiple filesystem support framework</li>
+                    <li>Standard file operations (open, read, write, close)</li>
+                    <li>Directory operations (mkdir, rmdir, ls)</li>
+                    <li>File metadata handling</li>
                 </ul>
 
-                <h3>✅ Filesystem MINIX</h3>
+                <h3>✅ MINIX Filesystem</h3>
                 <ul class="feature-list">
-                    <li>Implementación completa de filesystem MINIX</li>
-                    <li>Almacenamiento de archivos basado en inodos</li>
-                    <li>Soporte de estructura de directorios</li>
-                    <li>Creación, eliminación y modificación de archivos</li>
-                    <li>Integrado con capa VFS</li>
+                    <li>Complete MINIX filesystem implementation</li>
+                    <li>Inode-based file storage</li>
+                    <li>Directory structure support</li>
+                    <li>File creation, deletion, and modification</li>
+                    <li>Integrated with VFS layer</li>
                 </ul>
 
-                <h3>✅ Operaciones de Archivo</h3>
+                <h3>✅ File Operations</h3>
                 <ul class="feature-list">
-                    <li>Creación de archivos (touch)</li>
-                    <li>Eliminación de archivos (rm)</li>
-                    <li>Creación de directorios (mkdir)</li>
-                    <li>Eliminación de directorios (rmdir)</li>
-                    <li>Visualización de contenido de archivos (cat)</li>
-                    <li>Listado de directorios (ls)</li>
-                    <li>Capacidades de escritura de archivos</li>
-                </ul>
-            </div>
-
-            <div class="info-card">
-                <h2>👤 Espacio de Usuario</h2>
-                <h3>✅ Biblioteca C (LibC)</h3>
-                <ul class="feature-list">
-                    <li>Implementación de biblioteca C freestanding</li>
-                    <li>Headers estándar: stdio.h, stdlib.h, unistd.h, stdint.h, stddef.h</li>
-                    <li>Funciones de E/S: printf(), puts(), putchar()</li>
-                    <li>Funciones de memoria: malloc(), free()</li>
-                    <li>Funciones de proceso: exit(), getpid()</li>
-                    <li>Wrappers de llamadas al sistema</li>
-                </ul>
-
-                <h3>✅ Implementación de Printf</h3>
-                <ul class="feature-list">
-                    <li>Especificadores de formato: %d (enteros), %s (strings), %c (caracteres)</li>
-                    <li>Soporte de argumentos variables</li>
-                    <li>Salida a stdout</li>
-                </ul>
-
-                <h3>✅ Programas de Usuario</h3>
-                <ul class="feature-list">
-                    <li>Implementación del comando echo</li>
-                    <li>Integración shell para programas de usuario</li>
-                    <li>Cargador ELF (implementación básica)</li>
+                    <li>File creation (touch)</li>
+                    <li>File deletion (rm)</li>
+                    <li>Directory creation (mkdir)</li>
+                    <li>Directory removal (rmdir)</li>
+                    <li>File content display (cat)</li>
+                    <li>Directory listing (ls)</li>
+                    <li>File writing capabilities</li>
                 </ul>
             </div>
 
             <div class="info-card">
-                <h2>🐚 Sistema Shell</h2>
-                <h3>✅ Shell Interactivo</h3>
+                <h2>👤 User Space</h2>
+                <h3>✅ C Library (LibC)</h3>
                 <ul class="feature-list">
-                    <li>Interfaz de línea de comandos en Ring 3 (modo usuario)</li>
-                    <li>Comandos integrados: ls, ps, cat, mkdir, rmdir, touch, rm, fork, clear, help, exit, malloc,
-                        sbrk, exec</li>
+                    <li>Freestanding C library implementation</li>
+                    <li>Standard headers: stdio.h, stdlib.h, unistd.h, stdint.h, stddef.h</li>
+                    <li>I/O functions: printf(), puts(), putchar()</li>
+                    <li>Memory functions: malloc(), free()</li>
+                    <li>Process functions: exit(), getpid()</li>
+                    <li>System call wrappers</li>
                 </ul>
 
-                <h3>✅ Características del Shell</h3>
+                <h3>✅ Printf Implementation</h3>
                 <ul class="feature-list">
-                    <li>Análisis y ejecución de comandos</li>
-                    <li>Integración de gestión de procesos</li>
-                    <li>Soporte de operaciones de filesystem</li>
-                    <li>Testing de gestión de memoria</li>
-                    <li>Manejo de errores y retroalimentación</li>
-                </ul>
-            </div>
-
-            <div class="info-card">
-                <h2>🌐 Sistema de Red</h2>
-                <h3>🔄 Stack TCP/IP Básico (En Desarrollo)</h3>
-                <ul class="feature-list">
-                    <li>Implementación básica usando librería IoT ligera</li>
-                    <li>Soporte TCP/IP fundamental para conectividad</li>
-                    <li>Interfaz de sockets simplificada</li>
-                    <li>Framework de drivers Ethernet básico</li>
-                    <li>Utilidad ping planificada</li>
-                    <li>Enfoque minimalista para reducir complejidad</li>
-                </ul>
-                <p><small><strong>Nota:</strong> Se optó por una implementación básica con librería IoT en lugar de
-                        portar el stack completo de Linux (1.5M líneas) para mantener el kernel ligero y
-                        manejable.</small></p>
-            </div>
-
-            <div class="info-card">
-                <h2>🔧 Sistema de Compilación</h2>
-                <h3>✅ Compilación Multi-Objetivo</h3>
-                <ul class="feature-list">
-                    <li>Objetivo Desktop (características completas, heap 256MB, 1024 procesos)</li>
-                    <li>Objetivo Server (networking optimizado, heap 1GB, 4096 procesos)</li>
-                    <li>Objetivo IoT (gestión de energía, heap 16MB, 64 procesos)</li>
-                    <li>Objetivo Embedded (características mínimas, heap 4MB, 16 procesos)</li>
+                    <li>Format specifiers: %d (integers), %s (strings), %c (characters)</li>
+                    <li>Variable argument support</li>
+                    <li>Output to stdout</li>
                 </ul>
 
-                <h3>✅ Multi-Arquitectura</h3>
+                <h3>✅ User Programs</h3>
                 <ul class="feature-list">
-                    <li>Soporte de producción x86-64</li>
-                    <li>Soporte experimental x86-32</li>
-                    <li>Framework de desarrollo ARM</li>
-                    <li>Capa de abstracción de arquitectura (HAL)</li>
+                    <li>Echo command implementation</li>
+                    <li>Shell integration for user programs</li>
+                    <li>ELF loader (basic implementation)</li>
                 </ul>
             </div>
 
             <div class="info-card">
-                <h2>⚠️ Limitaciones Actuales</h2>
-                <h3>❌ No Implementado Aún</h3>
+                <h2>🐚 Shell System</h2>
+                <h3>✅ Interactive Shell</h3>
                 <ul class="feature-list">
-                    <li>Soporte SMP (Symmetric Multiprocessing)</li>
-                    <li>Módulos dinámicos del kernel</li>
-                    <li>IPC avanzado (pipes, colas de mensajes)</li>
-                    <li>Stack de red (TCP/IP)</li>
-                    <li>Soporte USB</li>
-                    <li>GUI/Gestor de ventanas avanzado</li>
-                    <li>Manejo de señales</li>
-                    <li>Memoria copy-on-write</li>
-                    <li>Soporte de memoria swap</li>
-                    <li>Características avanzadas de filesystem (ext2/3/4)</li>
+                    <li>Command-line interface in Ring 3 (user mode)</li>
+                    <li>Built-in commands: ls, ps, cat, mkdir, rmdir, touch, rm, fork, clear, help, exit, malloc, sbrk, exec</li>
                 </ul>
 
-                <h3>⚠️ Problemas Conocidos</h3>
+                <h3>✅ Shell Features</h3>
                 <ul class="feature-list">
-                    <li>El cambio de contexto de fork() necesita refinamiento</li>
-                    <li>Funcionalidad limitada del cargador ELF</li>
-                    <li>No hay recolección de procesos zombie en init</li>
-                    <li>Asignador de memoria básico (versiones avanzadas en desarrollo)</li>
-                    <li>Soporte de una sola CPU únicamente</li>
+                    <li>Command parsing and execution</li>
+                    <li>Process management integration</li>
+                    <li>Filesystem operation support</li>
+                    <li>Memory management testing</li>
+                    <li>Error handling and feedback</li>
                 </ul>
             </div>
 
             <div class="info-card">
-                <h2>📊 Especificaciones Técnicas</h2>
-                <h3>Layout de Memoria</h3>
+                <h2>🌐 Network System</h2>
+                <h3>🔄 Basic TCP/IP Stack (In Development)</h3>
+                <ul class="feature-list">
+                    <li>Basic implementation using lightweight IoT library</li>
+                    <li>Fundamental TCP/IP support for connectivity</li>
+                    <li>Simplified socket interface</li>
+                    <li>Basic Ethernet driver framework</li>
+                    <li>Ping utility planned</li>
+                    <li>Minimalist approach to reduce complexity</li>
+                </ul>
+                <p><small><strong>Note:</strong> Opted for a basic implementation with IoT library instead of porting Linux's complete stack (1.5M lines) to keep the kernel lightweight and manageable.</small></p>
+            </div>
+
+            <div class="info-card">
+                <h2>🔧 Build System</h2>
+                <h3>✅ Multi-Target Build</h3>
+                <ul class="feature-list">
+                    <li>Desktop target (full features, 256MB heap, 1024 processes)</li>
+                    <li>Server target (optimized networking, 1GB heap, 4096 processes)</li>
+                    <li>IoT target (power management, 16MB heap, 64 processes)</li>
+                    <li>Embedded target (minimal features, 4MB heap, 16 processes)</li>
+                </ul>
+
+                <h3>✅ Multi-Architecture</h3>
+                <ul class="feature-list">
+                    <li>x86-64 production support</li>
+                    <li>x86-32 experimental support</li>
+                    <li>ARM development framework</li>
+                    <li>Architecture abstraction layer (HAL)</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>⚠️ Current Limitations</h2>
+                <h3>❌ Not Yet Implemented</h3>
+                <ul class="feature-list">
+                    <li>SMP (Symmetric Multiprocessing) support</li>
+                    <li>Dynamic kernel modules</li>
+                    <li>Advanced IPC (pipes, message queues)</li>
+                    <li>Network stack (TCP/IP)</li>
+                    <li>USB support</li>
+                    <li>Advanced GUI/Window manager</li>
+                    <li>Signal handling</li>
+                    <li>Copy-on-write memory</li>
+                    <li>Swap memory support</li>
+                    <li>Advanced filesystem features (ext2/3/4)</li>
+                </ul>
+
+                <h3>⚠️ Known Issues</h3>
+                <ul class="feature-list">
+                    <li>Fork() context switching needs refinement</li>
+                    <li>Limited ELF loader functionality</li>
+                    <li>No zombie process reaping in init</li>
+                    <li>Basic memory allocator (advanced versions in development)</li>
+                    <li>Single CPU support only</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>📊 Technical Specifications</h2>
+                <h3>Memory Layout</h3>
                 <div class="code-block">
-                    <pre>Espacio Kernel: 0x100000 - 0x800000 (1MB-8MB)
-Espacio Heap:   0x800000 - 0x2000000 (8MB-32MB, 24MB total)
-Espacio Usuario: 0x40000000+ (1GB+)</pre>
+                    <pre>Kernel Space: 0x100000 - 0x800000 (1MB-8MB)
+Heap Space:   0x800000 - 0x2000000 (8MB-32MB, 24MB total)
+User Space:   0x40000000+ (1GB+)</pre>
                 </div>
 
-                <h3>Métricas de Rendimiento</h3>
+                <h3>Performance Metrics</h3>
                 <ul class="feature-list">
-                    <li>Tiempo de cambio de contexto: ~microsegundos (optimizado en ensamblador)</li>
-                    <li>Complejidad del planificador: O(log n) con Red-Black Tree</li>
-                    <li>Asignación de memoria: O(1) para asignador simple</li>
-                    <li>Latencia de interrupción: Mínima con ISRs optimizados</li>
+                    <li>Context switch time: ~microseconds (assembly optimized)</li>
+                    <li>Scheduler complexity: O(log n) with Red-Black Tree</li>
+                    <li>Memory allocation: O(1) for simple allocator</li>
+                    <li>Interrupt latency: Minimal with optimized ISRs</li>
                 </ul>
 
-                <h3>Límites de Recursos (Objetivo Desktop)</h3>
+                <h3>Resource Limits (Desktop Target)</h3>
                 <ul class="feature-list">
-                    <li>Procesos máximos: 1024</li>
-                    <li>Threads máximos: 4096</li>
-                    <li>Tamaño de heap: 256MB</li>
-                    <li>Quantum del planificador: 10ms</li>
-                    <li>Tamaño de buffer E/S: 64KB</li>
+                    <li>Maximum processes: 1024</li>
+                    <li>Maximum threads: 4096</li>
+                    <li>Heap size: 256MB</li>
+                    <li>Scheduler quantum: 10ms</li>
+                    <li>I/O buffer size: 64KB</li>
                 </ul>
             </div>
 
             <div class="info-card">
-                <h2>🎯 Hoja de Ruta</h2>
-                <h3>Corto Plazo (Próximo Release)</h3>
+                <h2>🎯 Roadmap</h2>
+                <h3>Short Term (Next Release)</h3>
                 <ul class="feature-list">
-                    <li>Arreglar problemas de cambio de contexto de fork()</li>
-                    <li>Implementar recolección adecuada de zombies</li>
-                    <li>Integrar stack TCP/IP básico con librería IoT</li>
-                    <li>Mejorar cargador ELF</li>
-                    <li>Agregar framework USB</li>
+                    <li>Fix fork() context switching issues</li>
+                    <li>Implement proper zombie reaping</li>
+                    <li>Integrate basic TCP/IP stack with IoT library</li>
+                    <li>Improve ELF loader</li>
+                    <li>Add USB framework</li>
                 </ul>
 
-                <h3>Mediano Plazo</h3>
+                <h3>Medium Term</h3>
                 <ul class="feature-list">
-                    <li>Soporte SMP</li>
-                    <li>Sistema GUI avanzado</li>
-                    <li>Expansión del networking básico (más protocolos, optimizaciones)</li>
-                    <li>Módulos dinámicos del kernel</li>
-                    <li>Mecanismos IPC avanzados</li>
+                    <li>SMP support</li>
+                    <li>Advanced GUI system</li>
+                    <li>Basic networking expansion (more protocols, optimizations)</li>
+                    <li>Dynamic kernel modules</li>
+                    <li>Advanced IPC mechanisms</li>
                 </ul>
 
-                <h3>Largo Plazo</h3>
+                <h3>Long Term</h3>
                 <ul class="feature-list">
-                    <li>Soporte de aplicaciones nativas (Doom, GCC, Bash)</li>
-                    <li>Compatibilidad POSIX completa</li>
-                    <li>Soporte avanzado de filesystem</li>
-                    <li>Mejoras de abstracción de hardware</li>
-                    <li>Optimizaciones de rendimiento</li>
+                    <li>Native application support (Doom, GCC, Bash)</li>
+                    <li>Complete POSIX compatibility</li>
+                    <li>Advanced filesystem support</li>
+                    <li>Hardware abstraction improvements</li>
+                    <li>Performance optimizations</li>
                 </ul>
             </div>
         </section>
 
         <section id="development" class="section">
-            <h1 class="titulo-guia">Guía de Desarrollo</h1>
+            <h1 class="titulo-guia">Development Guide</h1>
 
             <div class="info-card">
                 <p>
                 <div class="code-block">
-                    <strong>-</strong> Esta sección es por si alguien se interesa en contribuir al proyecto. <strong>No
-                        son
-                        reglas estrictas, son simplemente recomendaciones
-                        para que sea mas llevadero.</strong>
+                    <strong>-</strong> This section is in case someone is interested in contributing to the project. <strong>They are not
+                        strict rules, they are simply recommendations
+                        to make it more bearable.</strong>
                 </div>
                 </p>
-                <h2>¿Qué hay que saber para contribuir?</h2>
-                Más que nada lo siguiente:
-                <li>Saber programación estructurada/funcional/orientada a objetos según sea necesario por el lenguaje.
+                <h2>What do you need to know to contribute?</h2>
+                More than anything the following:
+                <li>Know structured/functional/object-oriented programming as necessary for the language.
                 </li>
-                <li>Conocer C o C++ o Rust.</li>
-                <li>Assembly si contribuís en subsistemas muy pegados al hard, pero recomiendo conocer los básicos para
-                    saber cómo funcionan <i>panic(), boot.asm, etc.</i></li>
-                <li><strong>Conocer cómo funciona un makefile</strong>, como compilar los subsistemas por partes, por
-                    qué
-                    hay que compilar los subsistemas por separado con su propio makefile</li>
-                <li><strong>Herramientas de desarrollo general</strong>: GIT/GitHub, como crear, cambiar, pullear y
-                    lanzar
-                    PR's entre ramas</li>
-                <li><strong>QEMU básico.</strong> Cómo funciona la VM, como se le carga la imagen generada al compilar
-                    el
-                    kernel.</li>
-                <li><strong>Conocer Bash es un plus para los testeos rápidos</strong>, ya que podés iniciar QEMU con un
-                    script sin repetir el comando completo.</li>
-                <li>Comunicación. <strong>Argumentar decisiones sobre las PR's</strong>, debatir sanamente al respecto.
+                <li>Know C or C++ or Rust.</li>
+                <li>Assembly if you contribute to subsystems very close to the hardware, but I recommend knowing the basics to know how <i>panic(), boot.asm, etc.</i> work</li>
+                <li><strong>Know how a makefile works</strong>, how to compile subsystems by parts, why
+                    subsystems have to be compiled separately with their own makefile</li>
+                <li><strong>General development tools</strong>: GIT/GitHub, how to create, change, pull and launch PR's between branches</li>
+                <li><strong>Basic QEMU.</strong> How the VM works, how the generated image is loaded when compiling the kernel.</li>
+                <li><strong>Knowing Bash is a plus for quick testing</strong>, since you can start QEMU with a script without repeating the complete command.</li>
+                <li>Communication. <strong>Argue decisions about PR's</strong>, debate healthily about it.
                 </li>
-                <li>Saber utilizar IA's en general para optimizar el debug y adaptarlo a las convenciones de código.
+                <li>Know how to use AI's in general to optimize debugging and adapt it to code conventions.
                 </li>
-                <li>Saber que, al contribuir, <strong>podés ser manteiner del subsistema al que aportaste</strong>. Y si
-                    no
-                    podés dar mantenimiento
-                    recurrente al subsistema, <strong>dejarlo bien documentado</strong>.</li>
+                <li>Know that, when contributing, <strong>you can be maintainer of the subsystem you contributed to</strong>. And if
+                    you can't provide maintenance recurrent to the subsystem, <strong>leave it well documented</strong>.</li>
                 <br>
-                De igual forma, <strong>no hay que ser un experto para contribuir al kernel. Simplemente con tener ganas
-                    de
-                    aprender/estudiar sobre lo que vayas a contribuir es más que suficiente</strong>.
+                    Similarly, <strong>you don't have to be an expert to contribute to the kernel. Simply with having the desire
+                    to learn/study about what you're going to contribute is more than enough</strong>.
 
-                <h2>Configuración del Entorno</h2>
-                <h3>Dependencias Requeridas:</h3>
-                <li>Básicamente tener instalado: el compilador de C/Cpp (gcc/g++), el compilador de asm (nasm), make
-                    para la
-                    compilación y
-                    QEMU como vm de prueba.
+                <h2>Environment Setup</h2>
+                <h3>Required Dependencies:</h3>
+                <li>Basically have installed: the C/Cpp compiler (gcc/g++), the asm compiler (nasm), make
+                    for compilation and
+                    QEMU as test vm.
                 </li>
-                Te daría los comandos o las webs para instalar, pero chatgpt te lo puede resolver mejor.
+                I would give you the commands or websites to install, but chatgpt can solve it better for you.
                 <br><br>
 
                 <div class="code-block">
-                    <strong>NOTA</strong>: Como este proyecto es un kernel, es <i>Freestanding</i>. Eso quiere decir que
-                    vos
-                    <strong>no podés incluir librerías como
-                        stdio.h para hacer un <code>print(), write()</code>, etc. por que no hay sistema operativo que
-                        responda a esas funciones </strong>. <strong>Vos sos el
-                        sistema operativo</strong>. por eso, en el repo tengo la carpeta de dependencias "includes".
+                    <strong>NOTE</strong>: Since this project is a kernel, it's <i>Freestanding</i>. That means you
+                    <strong>can't include libraries like
+                        stdio.h to do a <code>print(), write()</code>, etc. because there's no operating system that
+                        responds to those functions </strong>. <strong>You are the
+                        operating system</strong>. that's why, in the repo I have the folder of dependencies "includes".
                     </strong>
                 </div>
 
             </div>
             <div class="info-card">
-                <h2>Cómo escribo código?</h2>
-                <h3>Convenciones de Nombres:</h3>
+                <h2>How do I write code?</h2>
+                <h3>Naming Conventions:</h3>
                 <ul class="feature-list">
-                    <li>Funciones: <code>snake_case()</code></li>
+                    <li>Functions: <code>snake_case()</code></li>
                     <li>Macros: <code>UPPER_CASE</code></li>
                     <li>Structs: <code>struct_name_t</code></li>
-                    <li>Variables globales: <code>g_variable_name</code></li>
-                    <li>Constantes: <code>CONSTANT_NAME</code></li>
-                    <li>includes: <code>#INCLUDE -ir0/Lib.h - </code>(se estan migrando a ese formato)</li>
+                    <li>Global variables: <code>g_variable_name</code></li>
+                    <li>Constants: <code>CONSTANT_NAME</code></li>
+                    <li>includes: <code>#INCLUDE -ir0/Lib.h - </code>(are being migrated to that format)</li>
                 </ul>
-                <h3>Comentarios:</h3>
+                <h3>Comments:</h3>
                 <ul class="feature-list">
-                    <li>archivos de encabezado .h de funciones documentadas</li>
-                    <li>Archivos de código fuente con comentarios en algunas funciones, pero mas acotados</li>
-                    <li>Explicación de algoritmos complejos</li>
-                    <li>TO DO's claramente marcados</li>
-                    <li>Referencias a documentación técnica</li>
+                    <li>header files .h of documented functions</li>
+                    <li>Source code files with comments in some functions, but more limited</li>
+                    <li>Explanation of complex algorithms</li>
+                    <li>TO DO's clearly marked</li>
+                    <li>References to technical documentation</li>
                 </ul>
-                <small>Esto es aproximado. Por lo general trato de respetar esas convenciones lo máximo que
-                    puedo.</small>
+                <small>This is approximate. I generally try to respect those conventions as much as I can.</small>
                 <br><br>
-                <li>Algo así sería en este ejemplo una archivo promedio de código fuente:</li>
+                <li>Something like this would be in this example an average source code file:</li>
                 <br>
                 <img src="/Assets/funcion.c.png" alt="" srcset="" style="width: 50%;">
                 <br>
-                <i>Fijate en cómo uso las llaves por debajo del nombre de la funcion y los mismo en condicionales,
-                    bucles,
-                    etc. También como directamente no las uso cuando el condicional tiene una sola línea
-                    o hay cierto nesting.</i>
+                <i>Notice how I use the braces below the function name and the same in conditionals,
+                    loops, etc. Also how I don't use them directly when the conditional has a single line
+                    or there's certain nesting.</i>
                 <br>
                 <br>
-                <li>Así manejo los encabezados (o la mayoría):</li>
+                <li>This is how I handle headers (or most):</li>
                 <br><br>
-                <img src="/Assets/header.png" alt="" srcset="" style="width: 50%;">
+                <img src="/Assets/header.png" alt="" srcset="">
                 <br>
-                <i>Los comentarios grandes van por lo general en éstos .h y en los fuente hacemos acotaciones.</i>
+                <i>Large comments usually go in these .h and in the source we make notes.</i>
             </div>
 
             <div class="info-card">
-                <h2>Cómo compilar (por ahora)</h2>
+                <h2>How to compile (for now)</h2>
                 <div class="code-block">
-                    <li>Tiene que haber un makefile en todos los subsistemas, por lo que se debería poder hacer <i>make
-                            "subsistema"</i></li> <br>
-                    <li>Después, el kernel tiene un makefile general para generar el binario, con su clean respectivo.
-                        Por
-                        ahora se usa así: <i>make all</i></li> <br>
-                    <li>A futuro, seguramente hayan estrategias de compilación que permitan compilar el kernel entero
-                        para
-                        sus distintos usos.</li>
+                    <li>There must be a makefile in all subsystems, so it should be possible to do <i>make
+                            "subsystem"</i></li> <br>
+                    <li>Then, the kernel has a general makefile to generate the binary, with its respective clean.
+                        For now it's used like this: <i>make all</i></li> <br>
+                    <li>In the future, there will surely be compilation strategies that allow compiling the entire kernel
+                        for its different uses.</li>
                 </div>
             </div>
         </section>
 
-
         <section id="panic" class="section">
-            <h1 class="titulo-guia">Subsistemas del Kernel</h1>
+            <h1 class="titulo-guia">Kernel Subsystems</h1>
             <div class="code-block">
                 <p>
-                    <strong>-</strong> En esta sección se detallan los principales subsistemas que componen el kernel
-                    IR0,
-                    su estado actual de desarrollo y las características técnicas de cada uno.
+                    <strong>-</strong> This section details the main subsystems that compose the IR0 kernel,
+                    their current development status and technical characteristics of each one.
                     <br>
                     <br>
-                    La mejor forma de entender el funcionamiento interno es revisando el código fuente en el
-                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank" rel="noopener noreferrer"
-                        class="link-repo">Repositorio de GitHub</a>.
+                    The best way to understand the internal operation is by reviewing the source code in the
+                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank"
+                        rel="noopener noreferrer" class="link-repo">GitHub Repository</a>.
                 </p>
             </div>
 
             <div class="info-card">
-                <h2>🔄 Scheduler (Planificador)</h2>
+                <h2>🔄 Scheduler</h2>
                 <p>
-                    El scheduler es el corazón del sistema de multiprocesamiento. Actualmente implementa un algoritmo
+                    The scheduler is the heart of the multiprocessing system. Currently implements a simple
                     <a href="https://en.wikipedia.org/wiki/Round-robin_scheduling" target="_blank"
-                        rel="noopener noreferrer">Round-Robin</a> simple como fallback, pero el objetivo es migrar a un
-                    scheduler preemptivo con esquema de prioridades similar al CFS (Completely Fair Scheduler) de Linux.
+                        rel="noopener noreferrer">Round-Robin</a> algorithm as fallback, but the goal is to migrate to a
+                    preemptive scheduler with priority scheme similar to Linux's CFS (Completely Fair Scheduler).
                 </p>
-                <h3>Características Actuales:</h3>
+                <h3>Current Features:</h3>
                 <ul class="feature-list">
-                    <li>Algoritmo Round-Robin con quantum fijo</li>
-                    <li>Soporte para múltiples niveles de prioridad</li>
-                    <li>Manejo básico de estados de proceso (Ready, Running, Blocked)</li>
-                    <li>Context switching optimizado en ensamblador</li>
+                    <li>Round-Robin algorithm with fixed quantum</li>
+                    <li>Support for multiple priority levels</li>
+                    <li>Basic process state management (Ready, Running, Blocked)</li>
+                    <li>Optimized context switching in assembly</li>
                 </ul>
-                <h3>Próximas Mejoras:</h3>
+                <h3>Upcoming Improvements:</h3>
                 <ul class="feature-list">
-                    <li>Implementación de scheduler preemptivo</li>
-                    <li>Algoritmo CFS para distribución equitativa de CPU</li>
-                    <li>Soporte para real-time scheduling</li>
-                    <li>Load balancing entre núcleos</li>
+                    <li>Preemptive scheduler implementation</li>
+                    <li>CFS algorithm for fair CPU distribution</li>
+                    <li>Real-time scheduling support</li>
+                    <li>Load balancing between cores</li>
                 </ul>
-                <p><strong>Archivos:</strong> scheduler/scheduler.c, scheduler/task.h, scheduler/switch/switch.asm</p>
+                <p><strong>Files:</strong> scheduler/scheduler.c, scheduler/task.h, scheduler/switch/switch.asm</p>
             </div>
 
             <div class="info-card">
-                <h2>💾 Filesystem (Sistema de Archivos)</h2>
+                <h2>💾 Filesystem</h2>
                 <p>
-                    Sistema de archivos propio basado en <a href="https://es.wikipedia.org/wiki/Ext2" target="_blank"
-                        rel="noopener noreferrer">EXT2</a> pero con innovaciones modernas. La característica distintiva
-                    es la integración de una base de datos vectorial para optimizar las operaciones de búsqueda y
-                    indexación de archivos.
+                    Own filesystem based on <a href="https://es.wikipedia.org/wiki/Ext2" target="_blank"
+                        rel="noopener noreferrer">EXT2</a> but with modern innovations. The distinctive feature
+                    is the integration of a vectorial database to optimize file search and indexing operations.
                 </p>
-                <h3>Características Técnicas:</h3>
+                <h3>Technical Features:</h3>
                 <ul class="feature-list">
-                    <li>Estructura de directorios jerárquica</li>
-                    <li>Soporte para archivos de hasta 2TB</li>
-                    <li>Journaling para recuperación ante fallos</li>
-                    <li>Compresión transparente de archivos</li>
-                    <li>Indexación vectorial para búsquedas rápidas</li>
+                    <li>Hierarchical directory structure</li>
+                    <li>Support for files up to 2TB</li>
+                    <li>Journaling for failure recovery</li>
+                    <li>Transparent file compression</li>
+                    <li>Vectorial indexing for fast searches</li>
                 </ul>
-                <h3>Innovaciones:</h3>
+                <h3>Innovations:</h3>
                 <ul class="feature-list">
-                    <li>Integración con <a href="https://github.com/victor-base/libvictor" target="_blank"
-                            rel="noopener noreferrer">libvictor</a> para búsquedas semánticas</li>
-                    <li>Cache inteligente basado en patrones de acceso</li>
-                    <li>Soporte para metadata extendida</li>
-                    <li>Encriptación a nivel de archivo</li>
+                    <li>Integration with <a href="https://github.com/victor-base/libvictor" target="_blank" rel="noopener noreferrer">libvictor</a> for semantic searches</li>
+                    <li>Intelligent cache based on access patterns</li>
+                    <li>Extended metadata support</li>
+                    <li>File-level encryption</li>
                 </ul>
-                <p><strong>Estado:</strong> En desarrollo activo</p>
-                <p><strong>Archivos:</strong> fs/ext2.c, fs/victor_index.c, fs/journal.c</p>
+                <p><strong>Status:</strong> Active development</p>
+                <p><strong>Files:</strong> fs/ext2.c, fs/victor_index.c, fs/journal.c</p>
             </div>
 
             <div class="info-card">
-                <h2>⚡ Sistema de Interrupciones</h2>
+                <h2>⚡ Interrupt System</h2>
                 <p>
-                    Sistema robusto de manejo de interrupciones y excepciones que garantiza la estabilidad del kernel
-                    y proporciona una interfaz limpia para el manejo de eventos de hardware y software.
+                    Robust interrupt and exception handling system that ensures kernel stability
+                    and provides a clean interface for handling hardware and software events.
                 </p>
-                <h3>Componentes Principales:</h3>
+                <h3>Main Components:</h3>
                 <ul class="feature-list">
-                    <li><strong>IDT (Interrupt Descriptor Table):</strong> Tabla de 256 entradas para mapear
-                        interrupciones</li>
-                    <li><strong>ISR (Interrupt Service Routines):</strong> Handlers optimizados en ensamblador</li>
-                    <li><strong>Exception Handler:</strong> Manejo de excepciones del procesador</li>
-                    <li><strong>IRQ Manager:</strong> Gestión de interrupciones de hardware</li>
+                    <li><strong>IDT (Interrupt Descriptor Table):</strong> 256-entry table for interrupt mapping</li>
+                    <li><strong>ISR (Interrupt Service Routines):</strong> Optimized handlers in assembly</li>
+                    <li><strong>Exception Handler:</strong> Processor exception handling</li>
+                    <li><strong>IRQ Manager:</strong> Hardware interrupt management</li>
                 </ul>
-                <h3>Características:</h3>
+                <h3>Features:</h3>
                 <ul class="feature-list">
-                    <li>Manejo completo de page faults con recovery automático</li>
-                    <li>Interrupciones anidadas con prioridades</li>
+                    <li>Complete page fault handling with automatic recovery</li>
+                    <li>Nested interrupts with priorities</li>
                     <li>Deferred interrupt processing</li>
-                    <li>Interrupt coalescing para optimización</li>
+                    <li>Interrupt coalescing for optimization</li>
                 </ul>
-                <p><strong>Archivos:</strong> interrupt/idt.c, interrupt/interrupt.asm, interrupt/isr_handlers.c,
-                    interrupt/irq.c</p>
+                <p><strong>Files:</strong> interrupt/idt.c, interrupt/interrupt.asm, interrupt/isr_handlers.c, interrupt/irq.c</p>
             </div>
 
             <div class="info-card">
-                <h2>🚀 Subsistema de Arranque</h2>
+                <h2>🚀 Boot Subsystem</h2>
                 <p>
-                    Sistema de inicialización que prepara el entorno para la ejecución del kernel, manejando la
-                    transición desde el bootloader hasta el espacio de usuario.
+                    Initialization system that prepares the environment for kernel execution, handling the
+                    transition from bootloader to user space.
                 </p>
-                <h3>Fases de Arranque:</h3>
+                <h3>Boot Phases:</h3>
                 <ul class="feature-list">
-                    <li><strong>Fase 1:</strong> Inicialización del procesador y modo protegido</li>
-                    <li><strong>Fase 2:</strong> Configuración de paginación y memoria virtual</li>
-                    <li><strong>Fase 3:</strong> Inicialización de subsistemas críticos</li>
-                    <li><strong>Fase 4:</strong> Carga del primer proceso (init)</li>
+                    <li><strong>Phase 1:</strong> Processor initialization and protected mode</li>
+                    <li><strong>Phase 2:</strong> Paging and virtual memory configuration</li>
+                    <li><strong>Phase 3:</strong> Critical subsystems initialization</li>
+                    <li><strong>Phase 4:</strong> First process loading (init)</li>
                 </ul>
-                <h3>Características:</h3>
+                <h3>Features:</h3>
                 <ul class="feature-list">
-                    <li>Soporte para múltiples arquitecturas (x86-64, ARM64)</li>
-                    <li>Bootloader independiente con soporte para UEFI</li>
-                    <li>Recuperación automática ante fallos de arranque</li>
-                    <li>Modo de recuperación integrado</li>
+                    <li>Support for multiple architectures (x86-64, ARM64)</li>
+                    <li>Independent bootloader with UEFI support</li>
+                    <li>Automatic recovery from boot failures</li>
+                    <li>Integrated recovery mode</li>
                 </ul>
-                <img src="/Assets/diag.png" alt="Diagrama de arranque" srcset="" style="width: 100%;">
-                <p><strong>Archivos:</strong> boot/boot.asm, boot/kmain.c, boot/arch.c, boot/kernel_start.c</p>
+                <img src="/Assets/diag.png" alt="Boot diagram" srcset="" style="width: 100%;">
+                <p><strong>Files:</strong> boot/boot.asm, boot/kmain.c, boot/arch.c, boot/kernel_start.c</p>
             </div>
 
             <div class="info-card">
-                <h2>🛡️ Gestión de Memoria</h2>
+                <h2>🛡️ Memory Management</h2>
                 <p>
-                    Sistema avanzado de gestión de memoria que proporciona aislamiento entre procesos, optimización
-                    de rendimiento y protección contra accesos no autorizados.
+                    Advanced memory management system that provides process isolation, performance optimization
+                    and protection against unauthorized access.
                 </p>
-                <h3>Componentes:</h3>
+                <h3>Components:</h3>
                 <ul class="feature-list">
-                    <li><strong>Memory Manager:</strong> Gestión de páginas físicas y virtuales</li>
-                    <li><strong>Page Allocator:</strong> Asignación eficiente de memoria</li>
-                    <li><strong>Slab Allocator:</strong> Optimización para objetos pequeños</li>
-                    <li><strong>Memory Protection:</strong> Control de acceso y permisos</li>
+                    <li><strong>Memory Manager:</strong> Physical and virtual page management</li>
+                    <li><strong>Page Allocator:</strong> Efficient memory allocation</li>
+                    <li><strong>Slab Allocator:</strong> Optimization for small objects</li>
+                    <li><strong>Memory Protection:</strong> Access control and permissions</li>
                 </ul>
-                <h3>Características:</h3>
+                <h3>Features:</h3>
                 <ul class="feature-list">
-                    <li>Paginación de 4 niveles (48-bit addressing)</li>
-                    <li>Memory compression transparente</li>
-                    <li>NUMA awareness para sistemas multi-socket</li>
+                    <li>4-level paging (48-bit addressing)</li>
+                    <li>Transparent memory compression</li>
+                    <li>NUMA awareness for multi-socket systems</li>
                     <li>Memory deduplication</li>
                 </ul>
-                <p><strong>Archivos:</strong> mm/page_alloc.c, mm/slab.c, mm/vmalloc.c, mm/protection.c</p>
+                <p><strong>Files:</strong> mm/page_alloc.c, mm/slab.c, mm/vmalloc.c, mm/protection.c</p>
             </div>
 
             <div class="info-card">
-                <h2>🌐 Subsistema de Red</h2>
+                <h2>🌐 Network Subsystem</h2>
                 <p>
-                    Pila de red completa basada en Linux pero optimizada para el kernel IR0, proporcionando
-                    soporte para protocolos modernos y optimizaciones específicas.
+                    Complete network stack based on Linux but optimized for the IR0 kernel, providing
+                    support for modern protocols and specific optimizations.
                 </p>
-                <h3>Protocolos Soportados:</h3>
+                <h3>Supported Protocols:</h3>
                 <ul class="feature-list">
-                    <li>TCP/IP stack completo</li>
-                    <li>UDP con optimizaciones de latencia</li>
-                    <li>HTTP/2 y HTTP/3</li>
-                    <li>QUIC para conexiones rápidas</li>
-                    <li>IPv6 con transición automática</li>
+                    <li>Complete TCP/IP stack</li>
+                    <li>UDP with latency optimizations</li>
+                    <li>HTTP/2 and HTTP/3</li>
+                    <li>QUIC for fast connections</li>
+                    <li>IPv6 with automatic transition</li>
                 </ul>
-                <h3>Optimizaciones:</h3>
+                <h3>Optimizations:</h3>
                 <ul class="feature-list">
                     <li>Zero-copy networking</li>
-                    <li>Kernel bypass para aplicaciones de alto rendimiento</li>
+                    <li>Kernel bypass for high-performance applications</li>
                     <li>Network function virtualization (NFV)</li>
-                    <li>Load balancing inteligente</li>
+                    <li>Intelligent load balancing</li>
                 </ul>
-                <p><strong>Estado:</strong> Integración con Linux networking stack</p>
-                <p><strong>Archivos:</strong> net/tcp.c, net/udp.c, net/socket.c, net/protocols/</p>
+                <p><strong>Status:</strong> Integration with Linux networking stack</p>
+                <p><strong>Files:</strong> net/tcp.c, net/udp.c, net/socket.c, net/protocols/</p>
             </div>
 
             <div class="info-card">
-                <h2>🔧 Subsistema de Drivers</h2>
+                <h2>🔧 Driver Subsystem</h2>
                 <p>
-                    Framework modular para el desarrollo y gestión de drivers de hardware, con soporte para
-                    hot-plugging y gestión automática de dispositivos.
+                    Modular framework for hardware driver development and management, with support for
+                    hot-plugging and automatic device management.
                 </p>
-                <h3>Tipos de Drivers:</h3>
+                <h3>Driver Types:</h3>
                 <ul class="feature-list">
-                    <li><strong>Block Devices:</strong> Discos, SSDs, dispositivos de almacenamiento</li>
-                    <li><strong>Character Devices:</strong> Terminales, dispositivos de entrada</li>
-                    <li><strong>Network Devices:</strong> Tarjetas de red, WiFi, Bluetooth</li>
-                    <li><strong>Graphics:</strong> GPUs, framebuffers, aceleración por hardware</li>
+                    <li><strong>Block Devices:</strong> Disks, SSDs, storage devices</li>
+                    <li><strong>Character Devices:</strong> Terminals, input devices</li>
+                    <li><strong>Network Devices:</strong> Network cards, WiFi, Bluetooth</li>
+                    <li><strong>Graphics:</strong> GPUs, framebuffers, hardware acceleration</li>
                 </ul>
-                <h3>Características:</h3>
+                <h3>Features:</h3>
                 <ul class="feature-list">
-                    <li>Driver framework unificado</li>
-                    <li>Auto-detection de hardware</li>
-                    <li>Power management integrado</li>
-                    <li>Driver signing y verificación</li>
+                    <li>Unified driver framework</li>
+                    <li>Hardware auto-detection</li>
+                    <li>Integrated power management</li>
+                    <li>Driver signing and verification</li>
                 </ul>
-                <p><strong>Archivos:</strong> drivers/core.c, drivers/block/, drivers/char/, drivers/net/</p>
+                <p><strong>Files:</strong> drivers/core.c, drivers/block/, drivers/char/, drivers/net/</p>
             </div>
 
             <div class="info-card">
-                <h2>🔐 Sistema de Seguridad</h2>
+                <h2>🔐 Security System</h2>
                 <p>
-                    Framework integral de seguridad que protege el kernel y los procesos de usuarios, implementando
-                    múltiples capas de protección y auditoría de seguridad.
+                    Comprehensive security framework that protects the kernel and user processes, implementing
+                    multiple layers of protection and security auditing.
                 </p>
-                <h3>Componentes de Seguridad:</h3>
+                <h3>Security Components:</h3>
                 <ul class="feature-list">
-                    <li><strong>Access Control:</strong> Control de acceso basado en roles (RBAC)</li>
-                    <li><strong>Capability System:</strong> Sistema de capacidades granular</li>
-                    <li><strong>Seccomp:</strong> Filtrado de syscalls para sandboxing</li>
-                    <li><strong>LSM (Linux Security Modules):</strong> Módulos de seguridad intercambiables</li>
+                    <li><strong>Access Control:</strong> Role-based access control (RBAC)</li>
+                    <li><strong>Capability System:</strong> Granular capability system</li>
+                    <li><strong>Seccomp:</strong> Syscall filtering for sandboxing</li>
+                    <li><strong>LSM (Linux Security Modules):</strong> Interchangeable security modules</li>
                 </ul>
-                <h3>Características:</h3>
+                <h3>Features:</h3>
                 <ul class="feature-list">
                     <li>ASLR (Address Space Layout Randomization)</li>
-                    <li>Stack canaries y protección contra buffer overflows</li>
-                    <li>Kernel hardening automático</li>
-                    <li>Auditoría de eventos de seguridad</li>
-                    <li>Integración con TPM para medición de integridad</li>
+                    <li>Stack canaries and buffer overflow protection</li>
+                    <li>Automatic kernel hardening</li>
+                    <li>Security event auditing</li>
+                    <li>TPM integration for integrity measurement</li>
                 </ul>
-                <p><strong>Archivos:</strong> security/capability.c, security/seccomp.c, security/lsm/, security/audit.c
-                </p>
+                <p><strong>Files:</strong> security/capability.c, security/seccomp.c, security/lsm/, security/audit.c</p>
             </div>
 
             <div class="info-card">
                 <h2>⚡ Power Management</h2>
                 <p>
-                    Sistema avanzado de gestión de energía que optimiza el consumo de batería en dispositivos móviles
-                    y reduce el consumo energético en servidores, manteniendo el rendimiento.
+                    Advanced power management system that optimizes battery consumption in mobile devices
+                    and reduces energy consumption in servers while maintaining performance.
                 </p>
-                <h3>Estados de Energía:</h3>
+                <h3>Power States:</h3>
                 <ul class="feature-list">
-                    <li><strong>Suspend to RAM:</strong> Suspensión rápida con recuperación instantánea</li>
-                    <li><strong>Suspend to Disk:</strong> Hibernación completa</li>
-                    <li><strong>Standby:</strong> Modo de espera de bajo consumo</li>
-                    <li><strong>Dynamic Frequency Scaling:</strong> Ajuste dinámico de frecuencia CPU</li>
+                    <li><strong>Suspend to RAM:</strong> Fast suspension with instant recovery</li>
+                    <li><strong>Suspend to Disk:</strong> Complete hibernation</li>
+                    <li><strong>Standby:</strong> Low-power standby mode</li>
+                    <li><strong>Dynamic Frequency Scaling:</strong> Dynamic CPU frequency adjustment</li>
                 </ul>
-                <h3>Optimizaciones:</h3>
+                <h3>Optimizations:</h3>
                 <ul class="feature-list">
-                    <li>CPU idle management inteligente</li>
-                    <li>Wake-on-LAN y wake-on-timer</li>
-                    <li>Power capping para servidores</li>
-                    <li>Thermal management automático</li>
+                    <li>Intelligent CPU idle management</li>
+                    <li>Wake-on-LAN and wake-on-timer</li>
+                    <li>Power capping for servers</li>
+                    <li>Automatic thermal management</li>
                     <li>Battery health monitoring</li>
                 </ul>
-                <p><strong>Archivos:</strong> power/suspend.c, power/cpuidle.c, power/thermal.c, power/battery.c</p>
+                <p><strong>Files:</strong> power/suspend.c, power/cpuidle.c, power/thermal.c, power/battery.c</p>
             </div>
 
             <div class="info-card">
-                <h2>🎯 Virtualización</h2>
+                <h2>🎯 Virtualization</h2>
                 <p>
-                    Subsistema de virtualización que permite ejecutar múltiples sistemas operativos simultáneamente,
-                    con soporte para contenedores y máquinas virtuales completas.
+                    Virtualization subsystem that allows running multiple operating systems simultaneously,
+                    with support for containers and complete virtual machines.
                 </p>
-                <h3>Tipos de Virtualización:</h3>
+                <h3>Virtualization Types:</h3>
                 <ul class="feature-list">
-                    <li><strong>Containers:</strong> Aislamiento ligero con namespaces y cgroups</li>
-                    <li><strong>KVM:</strong> Kernel-based Virtual Machine para VMs completas</li>
-                    <li><strong>Xen:</strong> Hypervisor tipo 1 para virtualización bare-metal</li>
-                    <li><strong>Docker/OCI:</strong> Soporte para estándares de contenedores</li>
+                    <li><strong>Containers:</strong> Light isolation with namespaces and cgroups</li>
+                    <li><strong>KVM:</strong> Kernel-based Virtual Machine for complete VMs</li>
+                    <li><strong>Xen:</strong> Type 1 hypervisor for bare-metal virtualization</li>
+                    <li><strong>Docker/OCI:</strong> Support for container standards</li>
                 </ul>
-                <h3>Características:</h3>
+                <h3>Features:</h3>
                 <ul class="feature-list">
                     <li>Hardware-assisted virtualization (Intel VT-x, AMD-V)</li>
                     <li>Nested virtualization</li>
-                    <li>Live migration de VMs</li>
-                    <li>GPU passthrough para aceleración gráfica</li>
-                    <li>Memory ballooning y overcommit</li>
+                    <li>Live VM migration</li>
+                    <li>GPU passthrough for graphics acceleration</li>
+                    <li>Memory ballooning and overcommit</li>
                 </ul>
-                <p><strong>Archivos:</strong> virt/kvm/, virt/xen/, kernel/nsproxy.c, kernel/cgroup.c</p>
+                <p><strong>Files:</strong> virt/kvm/, virt/xen/, kernel/nsproxy.c, kernel/cgroup.c</p>
             </div>
 
             <div class="info-card">
-                <h2>📊 Monitoring y Debugging</h2>
+                <h2>📊 Monitoring and Debugging</h2>
                 <p>
-                    Sistema completo de monitoreo y debugging que proporciona visibilidad profunda del funcionamiento
-                    del kernel y permite el diagnóstico de problemas en tiempo real.
+                    Complete monitoring and debugging system that provides deep visibility into kernel operation
+                    and enables real-time problem diagnosis.
                 </p>
-                <h3>Herramientas de Debugging:</h3>
+                <h3>Debugging Tools:</h3>
                 <ul class="feature-list">
-                    <li><strong>Kprobes:</strong> Puntos de inserción dinámicos en el kernel</li>
-                    <li><strong>ftrace:</strong> Tracer de funciones y eventos</li>
-                    <li><strong>perf:</strong> Profiler de rendimiento avanzado</li>
-                    <li><strong>eBPF:</strong> Programación dinámica del kernel</li>
+                    <li><strong>Kprobes:</strong> Dynamic insertion points in the kernel</li>
+                    <li><strong>ftrace:</strong> Function and event tracer</li>
+                    <li><strong>perf:</strong> Advanced performance profiler</li>
+                    <li><strong>eBPF:</strong> Dynamic kernel programming</li>
                 </ul>
-                <h3>Métricas y Monitoreo:</h3>
+                <h3>Metrics and Monitoring:</h3>
                 <ul class="feature-list">
-                    <li>CPU, memoria y I/O profiling</li>
+                    <li>CPU, memory and I/O profiling</li>
                     <li>Network packet tracing</li>
                     <li>System call monitoring</li>
                     <li>Kernel panic analysis</li>
                     <li>Performance counters</li>
                 </ul>
-                <p><strong>Archivos:</strong> kernel/trace/, kernel/debug/, kernel/profiling/, kernel/bpf/</p>
+                <p><strong>Files:</strong> kernel/trace/, kernel/debug/, kernel/profiling/, kernel/bpf/</p>
             </div>
 
             <div class="info-card">
                 <h2>🔧 Device Tree</h2>
                 <p>
-                    Sistema de descripción de hardware que permite al kernel descubrir y configurar automáticamente
-                    dispositivos de hardware sin necesidad de drivers específicos hardcodeados.
+                    Hardware description system that allows the kernel to automatically discover and configure
+                    hardware devices without needing hardcoded specific drivers.
                 </p>
-                <h3>Características:</h3>
+                <h3>Features:</h3>
                 <ul class="feature-list">
-                    <li>Descripción declarativa del hardware</li>
-                    <li>Soporte para múltiples arquitecturas</li>
-                    <li>Overlays dinámicos para configuración</li>
-                    <li>Compatibilidad con firmware UEFI/ACPI</li>
+                    <li>Declarative hardware description</li>
+                    <li>Support for multiple architectures</li>
+                    <li>Dynamic overlays for configuration</li>
+                    <li>UEFI/ACPI firmware compatibility</li>
                 </ul>
-                <h3>Beneficios:</h3>
+                <h3>Benefits:</h3>
                 <ul class="feature-list">
-                    <li>Boot más rápido en sistemas embebidos</li>
-                    <li>Configuración automática de dispositivos</li>
-                    <li>Portabilidad entre plataformas</li>
-                    <li>Reducción de código específico de plataforma</li>
+                    <li>Faster boot on embedded systems</li>
+                    <li>Automatic device configuration</li>
+                    <li>Cross-platform portability</li>
+                    <li>Reduction of platform-specific code</li>
                 </ul>
-                <p><strong>Archivos:</strong> drivers/of/, drivers/acpi/, drivers/firmware/</p>
+                <p><strong>Files:</strong> drivers/of/, drivers/acpi/, drivers/firmware/</p>
             </div>
 
             <div class="info-card">
-                <h2>🎮 Graphics y Multimedia</h2>
+                <h2>🎮 Graphics and Multimedia</h2>
                 <p>
-                    Subsistema gráfico que proporciona aceleración por hardware, soporte para múltiples monitores
-                    y capacidades multimedia avanzadas.
+                    Graphics subsystem that provides hardware acceleration, multi-monitor support
+                    and advanced multimedia capabilities.
                 </p>
-                <h3>Componentes Gráficos:</h3>
+                <h3>Graphics Components:</h3>
                 <ul class="feature-list">
-                    <li><strong>DRM (Direct Rendering Manager):</strong> Gestión de gráficos modernos</li>
-                    <li><strong>KMS (Kernel Mode Setting):</strong> Configuración de modo de pantalla</li>
-                    <li><strong>GEM (Graphics Execution Manager):</strong> Gestión de memoria gráfica</li>
-                    <li><strong>V4L2:</strong> Video4Linux para captura de video</li>
+                    <li><strong>DRM (Direct Rendering Manager):</strong> Modern graphics management</li>
+                    <li><strong>KMS (Kernel Mode Setting):</strong> Display mode configuration</li>
+                    <li><strong>GEM (Graphics Execution Manager):</strong> Graphics memory management</li>
+                    <li><strong>V4L2:</strong> Video4Linux for video capture</li>
                 </ul>
-                <h3>Características:</h3>
+                <h3>Features:</h3>
                 <ul class="feature-list">
-                    <li>Soporte para GPUs modernas (NVIDIA, AMD, Intel)</li>
-                    <li>Hardware acceleration para video</li>
+                    <li>Support for modern GPUs (NVIDIA, AMD, Intel)</li>
+                    <li>Hardware video acceleration</li>
                     <li>Multi-head display</li>
-                    <li>HDR y color management</li>
+                    <li>HDR and color management</li>
                     <li>VR/AR support</li>
                 </ul>
-                <p><strong>Archivos:</strong> drivers/gpu/drm/, drivers/media/, drivers/video/</p>
+                <p><strong>Files:</strong> drivers/gpu/drm/, drivers/media/, drivers/video/</p>
             </div>
 
             <div class="info-card">
                 <h2>🔊 Audio Subsystem</h2>
                 <p>
-                    Sistema de audio avanzado que proporciona soporte para múltiples formatos, procesamiento
-                    de audio en tiempo real y gestión de dispositivos de audio complejos.
+                    Advanced audio system that provides support for multiple formats, real-time audio processing
+                    and management of complex audio devices.
                 </p>
-                <h3>Componentes de Audio:</h3>
+                <h3>Audio Components:</h3>
                 <ul class="feature-list">
-                    <li><strong>ALSA (Advanced Linux Sound Architecture):</strong> Framework de audio principal</li>
-                    <li><strong>PulseAudio:</strong> Servidor de sonido para usuarios</li>
-                    <li><strong>JACK:</strong> Audio profesional de baja latencia</li>
-                    <li><strong>ASoC (ALSA System on Chip):</strong> Audio para sistemas embebidos</li>
+                    <li><strong>ALSA (Advanced Linux Sound Architecture):</strong> Main audio framework</li>
+                    <li><strong>PulseAudio:</strong> Sound server for users</li>
+                    <li><strong>JACK:</strong> Low-latency professional audio</li>
+                    <li><strong>ASoC (ALSA System on Chip):</strong> Audio for embedded systems</li>
                 </ul>
-                <h3>Características:</h3>
+                <h3>Features:</h3>
                 <ul class="feature-list">
-                    <li>Soporte para formatos HD (24-bit, 192kHz)</li>
-                    <li>Audio surround 7.1</li>
+                    <li>HD format support (24-bit, 192kHz)</li>
+                    <li>7.1 surround audio</li>
                     <li>Noise cancellation</li>
                     <li>Bluetooth audio (A2DP, aptX)</li>
-                    <li>MIDI y síntesis de audio</li>
+                    <li>MIDI and audio synthesis</li>
                 </ul>
-                <p><strong>Archivos:</strong> sound/core/, sound/soc/, sound/pci/, sound/usb/</p>
+                <p><strong>Files:</strong> sound/core/, sound/soc/, sound/pci/, sound/usb/</p>
             </div>
 
             <div class="info-card">
                 <h2>📱 Input/Output Subsystem</h2>
                 <p>
-                    Sistema unificado de entrada y salida que maneja todos los dispositivos de interfaz de usuario,
-                    desde teclados y ratones hasta pantallas táctiles y sensores.
+                    Unified input and output system that handles all user interface devices,
+                    from keyboards and mice to touchscreens and sensors.
                 </p>
-                <h3>Tipos de Dispositivos:</h3>
+                <h3>Device Types:</h3>
                 <ul class="feature-list">
-                    <li><strong>HID (Human Interface Devices):</strong> Teclados, ratones, gamepads</li>
-                    <li><strong>Touchscreens:</strong> Pantallas táctiles capacitivas y resistivas</li>
-                    <li><strong>Sensors:</strong> Acelerómetros, giroscopios, magnetómetros</li>
-                    <li><strong>Haptic Feedback:</strong> Vibración y feedback táctil</li>
+                    <li><strong>HID (Human Interface Devices):</strong> Keyboards, mice, gamepads</li>
+                    <li><strong>Touchscreens:</strong> Capacitive and resistive touchscreens</li>
+                    <li><strong>Sensors:</strong> Accelerometers, gyroscopes, magnetometers</li>
+                    <li><strong>Haptic Feedback:</strong> Vibration and tactile feedback</li>
                 </ul>
-                <h3>Características:</h3>
+                <h3>Features:</h3>
                 <ul class="feature-list">
                     <li>Multi-touch support</li>
                     <li>Gesture recognition</li>
                     <li>Accessibility features</li>
-                    <li>Hot-plugging automático</li>
-                    <li>Power management para dispositivos</li>
+                    <li>Automatic hot-plugging</li>
+                    <li>Device power management</li>
                 </ul>
-                <p><strong>Archivos:</strong> drivers/input/, drivers/hid/, drivers/iio/</p>
+                <p><strong>Files:</strong> drivers/input/, drivers/hid/, drivers/iio/</p>
             </div>
 
         </section>
 
         <section id="descarga" class="section">
-            <h1 class="titulo-guia">Descargas</h1>
+            <h1 class="titulo-guia">Downloads</h1>
 
             <div class="info-card">
                 <p>
-                    <li>La descarga del binario del kernel se expondrá en esta sección cuando salga la primer versión
-                        estable de la rama <strong>mainline</strong>.</li>
+                    <li>The kernel binary download will be available in this section when the first stable version of the mainline branch is released.</li>
                 </p>
-
+                
+            
             </div>
         </section>
     </div>
