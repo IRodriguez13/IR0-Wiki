@@ -1,6 +1,6 @@
 const LOC_API = "https://ir0-loc.onrender.com/api/loc";
 const STORAGE_KEY = "lastLOC";
-const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const ONE_DAY_MS = 300;
 
 // Función para actualizar el display con innerHTML
 function updateDisplay(value) {
