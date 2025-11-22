@@ -9,7 +9,8 @@
     <title>IR0 Kernel - Wiki</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&family=Ubuntu+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&family=Ubuntu+Mono&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -47,7 +48,8 @@
 
             <div class="info-card">
                 <p>
-                    The purpose of this "wiki", web documentation, guide, however you call it, is to use it as a personal memory aid
+                    The purpose of this "wiki", web documentation, guide, however you call it, is to use it as a
+                    personal memory aid
                     for kernel development.
                     It doesn't have to be an ultra-aesthetic page, but I'm trying hard so it doesn't show that I made it
                     with vanilla html, css and js like some amateur project
@@ -56,22 +58,26 @@
                         href="https://en.wikipedia.org/wiki/User_space_and_kernel_space" target="_blank"
                         rel="noopener noreferrer">Kernel Space</a> plus a minimal user space)
                     can easily run in <strong>15,000</strong> lines of code, so as you'll see;
-                    it's humanly impossible to memorize and understand the entire kernel flow by myself. Besides, there are many complex subsystems working together at a low level to mediate between hardware and software.
+                    it's humanly impossible to memorize and understand the entire kernel flow by myself. Besides, there
+                    are many complex subsystems working together at a low level to mediate between hardware and
+                    software.
                 </p>
             </div>
 
             <div class="info-card">
                 <p id="loc">
                 </p>
-                <p><small>This calculation is automatic and is done through an API that counts the number of lines of code that the kernel has (only .c, .h and .asm)</small></p>
-                
+                <p><small>This calculation is automatic and is done through an API that counts the number of lines of
+                        code that the kernel has (only .c, .h and .asm)</small></p>
+
             </div>
 
             <div class="info-card">
                 <h2>What is IR0?</h2>
                 <p>
                     <strong>IR0</strong> is a <strong>multipurpose operating system kernel</strong> developed
-                    from scratch for <strong>x86-64</strong> architecture written primarily in <strong>C</strong> and <strong>ASM</strong> (Although
+                    from scratch for <strong>x86-64</strong> architecture written primarily in <strong>C</strong> and
+                    <strong>ASM</strong> (Although
                     I have no problem including code from other specialized languages in performance such as
                     <strong>Cpp</strong> or <strong>Rust</strong>).
                     <br>
@@ -84,8 +90,10 @@
                     <br>
                     <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank" rel="noopener noreferrer">This
                         is its GitHub Repository.</a>
-                        <br>
-                    <a href="https://discord.gg/XZ84aPXtxh" target="_blank" rel="noopener noreferrer">Discord community</a>                </p>
+                    <br>
+                    <a href="https://discord.gg/XZ84aPXtxh" target="_blank" rel="noopener noreferrer">Discord
+                        community</a>
+                </p>
             </div>
 
             <div class="info-card">
@@ -135,7 +143,7 @@
                             <div class="component">ELF Loader</div>
                         </div>
                     </div>
-                    
+
                     <!-- Kernel Space -->
                     <div class="layer kernel-space">
                         <div class="layer-title">Kernel Space (Ring 0) - IR0</div>
@@ -147,7 +155,7 @@
                                 <div class="component">INT 0x80 Handler</div>
                                 <div class="component">Init System (PID 1)</div>
                             </div>
-                            
+
                             <!-- Process & Memory -->
                             <div class="kernel-section core-subsystems">
                                 <div class="section-title">Process & Memory</div>
@@ -156,7 +164,7 @@
                                 <div class="component">Heap Allocator</div>
                                 <div class="component">Process Manager</div>
                             </div>
-                            
+
                             <!-- File System -->
                             <div class="kernel-section compatibility-section">
                                 <div class="section-title">File System</div>
@@ -164,7 +172,7 @@
                                 <div class="component">MINIX Filesystem</div>
                                 <div class="component">File Operations</div>
                             </div>
-                            
+
                             <!-- Hardware Drivers -->
                             <div class="kernel-section hardware-abstraction">
                                 <div class="section-title">Hardware Drivers</div>
@@ -192,7 +200,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Hardware -->
                     <div class="layer hardware">
                         <div class="layer-title">Hardware</div>
@@ -206,7 +214,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Legend -->
                 <div class="architecture-legend">
                     <div class="legend-item">
@@ -231,48 +239,59 @@
                         href="https://www.redox-os.org/" target="_blank" rel="noopener noreferrer">Redox-OS
                         (Microkernel)</a>,
                     or the same <a href="https://es.wikipedia.org/wiki/MINIX" target="_blank"
-                        rel="noopener noreferrer">MINIX kernel (microkernel)</a>, IR0 is based on a more similar architecture
+                        rel="noopener noreferrer">MINIX kernel (microkernel)</a>, IR0 is based on a more similar
+                    architecture
                     to what Linux has, which is monolithic.
                     <br>
 
                     However, my main argument is that of performance. I understand that someone could come and
                     point out that, like any monolith, if a subcomponent breaks, the entire system crashes <small>(and
                         they would be right)</small>
-                    but what I respond to that is <i>"What good does it do me that the kernel supports continuing without
-                        filesystem if I can't do anything practical without it?"</i>, that is, it doesn't make sense that the
+                    but what I respond to that is <i>"What good does it do me that the kernel supports continuing
+                        without
+                        filesystem if I can't do anything practical without it?"</i>, that is, it doesn't make sense
+                    that the
                     kernel
                     continues functioning <strong>without one of its key components running</strong>. <br><br>
 
                     That's why I don't see a better alternative (for now) than the <a
                         href="https://es.wikipedia.org/wiki/N%C3%BAcleo_monol%C3%ADtico" target="_blank"
-                        rel="noopener noreferrer">monolithic</a> pattern. And it also saves me from having to interconnect
+                        rel="noopener noreferrer">monolithic</a> pattern. And it also saves me from having to
+                    interconnect
                     key subsystems with each other via IPC, which impacts performance of the Operating System. It's not
-                    perfect, but it's stable. It's not entirely traceable and requires scaling little by little, but if it scales well it performs a lot. <br>
+                    perfect, but it's stable. It's not entirely traceable and requires scaling little by little, but if
+                    it scales well it performs a lot. <br>
 
                     <br>
                     However, I also have disagreements with the <a
                         href="https://es.wikipedia.org/wiki/Filosof%C3%ADa_de_Unix" target="_blank"
                         rel="noopener noreferrer">UNIX philosophy</a>. They (among other things and very briefly)
                     consider
-                    that if something fails, <i>let it fail well</i>. Which in kernel terms would be: <i>If the scheduler breaks, Panic() directly. If you have memory corruption (in kernel space),
+                    that if something fails, <i>let it fail well</i>. Which in kernel terms would be: <i>If the
+                        scheduler breaks, Panic() directly. If you have memory corruption (in kernel space),
                         Panic.</i><br>
-                    And it's not that I question it for no reason, I simply ask (although without solutions yet) <i>"Why not rescue the system during Panic()?, or at least try"</i>. <br>
-                    Beyond the philosophical point and to summarize, the kernel is monolithic because it's more performant and
+                    And it's not that I question it for no reason, I simply ask (although without solutions yet) <i>"Why
+                        not rescue the system during Panic()?, or at least try"</i>. <br>
+                    Beyond the philosophical point and to summarize, the kernel is monolithic because it's more
+                    performant and
                     I feel that the key pieces of the kernel must <strong>work without overhead</strong>. <br>
                     However, if in the future I needed to integrate some specific subsystem in a hybrid way,
                     I would surely be pragmatic.
                 </p>
                 <h2>Kernel Space is sacred</h2>
                 <p>
-                    I know I talk as if IR0 were used by thousands of people and all the history, but I'm going to give myself the luxury of opining
+                    I know I talk as if IR0 were used by thousands of people and all the history, but I'm going to give
+                    myself the luxury of opining
                     about it.
                     <br>So, the point is that kernel space <strong>has to be only habitable by subsystems
                         that work in that Environment</strong>,
                     nothing else. <br>
                     I understand that there are certain <a
                         href="https://www.reddit.com/r/riotgames/comments/1gxhfmh/the_future_of_riot_vanguard_and_kernel_level/"
-                        target="_blank" rel="noopener noreferrer">manufacturers concerned about their clients' security</a> who,
-                    coincidentally, have access to <i>every interruption that the user makes (they know what keys you press,
+                        target="_blank" rel="noopener noreferrer">manufacturers concerned about their clients'
+                        security</a> who,
+                    coincidentally, have access to <i>every interruption that the user makes (they know what keys you
+                        press,
                         your session time every time you turn on the computer, etc.)</i> And all that because they have
                     software running in the <a href="https://en.wikipedia.org/wiki/User_space_and_kernel_space"
                         target="_blank" rel="noopener noreferrer">kernel space</a> with all the privileges that implies.
@@ -282,20 +301,23 @@
                 </p>
                 <h2>Network Approach: Basic but Functional</h2>
                 <p>
-                    For IR0 to work as support for basic servers and IoT applications, I need 
-                    <strong>fundamental network support</strong> but without the massive complexity of Linux's complete stack.
+                    For IR0 to work as support for basic servers and IoT applications, I need
+                    <strong>fundamental network support</strong> but without the massive complexity of Linux's complete
+                    stack.
                     <br><br>
-                    In the Linux Kernel there are more or less <i>1,500,000</i> lines of code <strong>ONLY THE COMPLETE NETWORK STACK</strong>. Instead of trying to port all of that, I've decided to use a more pragmatic approach:
+                    In the Linux Kernel there are more or less <i>1,500,000</i> lines of code <strong>ONLY THE COMPLETE
+                        NETWORK STACK</strong>. Instead of trying to port all of that, I've decided to use a more
+                    pragmatic approach:
                     <br><br>
                     <strong>Basic implementation with IoT library:</strong>
-                    <ul class="feature-list">
-                        <li>Lightweight and functional TCP/IP stack</li>
-                        <li>Support for basic network connectivity</li>
-                        <li>Simplified socket interface</li>
-                        <li>Essential Ethernet drivers</li>
-                        <li>Minimalist approach that keeps the kernel manageable</li>
-                    </ul>
-                    This allows me to have network functionality without adding millions of lines of code to the kernel.
+                <ul class="feature-list">
+                    <li>Lightweight and functional TCP/IP stack</li>
+                    <li>Support for basic network connectivity</li>
+                    <li>Simplified socket interface</li>
+                    <li>Essential Ethernet drivers</li>
+                    <li>Minimalist approach that keeps the kernel manageable</li>
+                </ul>
+                This allows me to have network functionality without adding millions of lines of code to the kernel.
 
                 <h2>Advantages of the Basic Approach</h2>
                 This approach with IoT library has several advantages:
@@ -333,14 +355,16 @@
                         <br>
                         <br>
                         For that I use 3 main git branches in the
-                        process: mainline, dev and feature (which although feature is not in the repository, it's the one used as convention for
+                        process: mainline, dev and feature (which although feature is not in the repository, it's the
+                        one used as convention for
                         integrating new code).
                         Where only <strong>mainline</strong> and <strong>dev</strong> are the only 2 <i>upstream
                             branches</i>.
                         <br>
                         <br>
                         <strong>experimental</strong> is a branch
-                        divergent to <strong>dev</strong>, and <strong>feature</strong> is the branch that is created to send
+                        divergent to <strong>dev</strong>, and <strong>feature</strong> is the branch that is created to
+                        send
                         contributions.
                     </article>
                 </div>
@@ -358,7 +382,8 @@
                         <li>Only tested and functional code</li>
                         <li>Complete documentation</li>
                         <li>My base for rc's.</li>
-                        <li><strong>mainline is sacred</strong>, since this branch <strong>has to compile and boot always</strong>. It's the most stable of the two upstream branches.
+                        <li><strong>mainline is sacred</strong>, since this branch <strong>has to compile and boot
+                                always</strong>. It's the most stable of the two upstream branches.
                         </li>
                     </ul>
 
@@ -387,7 +412,8 @@
                     <div class="status-badge status-feat">DEVELOPMENT</div>
                     <p><strong>-</strong>
                         I add it because it's the branch where feats are created that later go to upstream
-                        merging to <strong>dev</strong>. It's the most unstable of all because it's where new code is integrated that must also be tested and reviewed before reaching merge.
+                        merging to <strong>dev</strong>. It's the most unstable of all because it's where new code is
+                        integrated that must also be tested and reviewed before reaching merge.
                     </p>
 
                     <h3>Characteristics:</h3>
@@ -415,7 +441,8 @@
                         <li>Here fall the features and experiments that don't reach <strong>mainline</strong></li>
                         <li>Things that aren't tested in operating systems or new ideas</li>
                         <li>Stability is not so important in this branch</li>
-                        <li>If they are tested enough without breaking anything, they may or may not merge to mainline first
+                        <li>If they are tested enough without breaking anything, they may or may not merge to mainline
+                            first
                             passing through <strong>dev</strong> again.
                         </li>
                     </ul>
@@ -427,9 +454,12 @@
                 <h2>How is merging from feature to mainline?</h2>
 
                 <article>
-                    Basically, you create your improvement/optimization <strong>from a fork of the repo with a new branch</strong> that will be something like <i>"feature/fix-scheduler"</i> for example. <br>
-                    Then, <strong>you make PR to the upstream dev branch (not to mainline)</strong> and the review and merge is done if applicable. <br>
-                    The merge to mainline depends on <strong>how aligned with the project I consider the feature is</strong>. <br>
+                    Basically, you create your improvement/optimization <strong>from a fork of the repo with a new
+                        branch</strong> that will be something like <i>"feature/fix-scheduler"</i> for example. <br>
+                    Then, <strong>you make PR to the upstream dev branch (not to mainline)</strong> and the review and
+                    merge is done if applicable. <br>
+                    The merge to mainline depends on <strong>how aligned with the project I consider the feature
+                        is</strong>. <br>
                     Not even some of my own implementations would I merge directly to mainline for this same reason.
                 </article>
 
@@ -439,13 +469,14 @@
 
         <section id="subsystems" class="section">
             <h1 class="titulo-principal">IR0 Kernel Subsystems</h1>
-            
+
             <div class="info-card">
                 <h2>Project Status</h2>
                 <p><strong>Version:</strong> v0.0.01 pre-release candidate 1<br>
-                   <strong>Architecture:</strong> x86-64 (primary), x86-32 (experimental), ARM (in development)<br>
-                   <strong>License:</strong> GNU GPL v3.0<br>
-                   <strong>Type:</strong> Monolithic Modular Kernel</p>
+                    <strong>Architecture:</strong> x86-64 (primary), x86-32 (experimental), ARM (in development)<br>
+                    <strong>License:</strong> GNU GPL v3.0<br>
+                    <strong>Type:</strong> Monolithic Modular Kernel
+                </p>
             </div>
 
             <div class="info-card">
@@ -698,7 +729,8 @@ SYS_EXEC(56)        - Execute program</pre>
                 <h3>✅ Interactive Shell</h3>
                 <ul class="feature-list">
                     <li>Command-line interface in Ring 3 (user mode)</li>
-                    <li>Built-in commands: ls, ps, cat, mkdir, rmdir, touch, rm, fork, clear, help, exit, malloc, sbrk, exec</li>
+                    <li>Built-in commands: ls, ps, cat, mkdir, rmdir, touch, rm, fork, clear, help, exit, malloc, sbrk,
+                        exec</li>
                 </ul>
 
                 <h3>✅ Shell Features</h3>
@@ -722,7 +754,8 @@ SYS_EXEC(56)        - Execute program</pre>
                     <li>Ping utility planned</li>
                     <li>Minimalist approach to reduce complexity</li>
                 </ul>
-                <p><small><strong>Note:</strong> Opted for a basic implementation with IoT library instead of porting Linux's complete stack (1.5M lines) to keep the kernel lightweight and manageable.</small></p>
+                <p><small><strong>Note:</strong> Opted for a basic implementation with IoT library instead of porting
+                        Linux's complete stack (1.5M lines) to keep the kernel lightweight and manageable.</small></p>
             </div>
 
             <div class="info-card">
@@ -834,7 +867,8 @@ User Space:   0x40000000+ (1GB+)</pre>
             <div class="info-card">
                 <p>
                 <div class="code-block">
-                    <strong>-</strong> This section is in case someone is interested in contributing to the project. <strong>They are not
+                    <strong>-</strong> This section is in case someone is interested in contributing to the project.
+                    <strong>They are not
                         strict rules, they are simply recommendations
                         to make it more bearable.</strong>
                 </div>
@@ -844,20 +878,27 @@ User Space:   0x40000000+ (1GB+)</pre>
                 <li>Know structured/functional/object-oriented programming as necessary for the language.
                 </li>
                 <li>Know C or C++ or Rust.</li>
-                <li>Assembly if you contribute to subsystems very close to the hardware, but I recommend knowing the basics to know how <i>panic(), boot.asm, etc.</i> work</li>
+                <li>Assembly if you contribute to subsystems very close to the hardware, but I recommend knowing the
+                    basics to know how <i>panic(), boot.asm, etc.</i> work</li>
                 <li><strong>Know how a makefile works</strong>, how to compile subsystems by parts, why
                     subsystems have to be compiled separately with their own makefile</li>
-                <li><strong>General development tools</strong>: GIT/GitHub, how to create, change, pull and launch PR's between branches</li>
-                <li><strong>Basic QEMU.</strong> How the VM works, how the generated image is loaded when compiling the kernel.</li>
-                <li><strong>Knowing Bash is a plus for quick testing</strong>, since you can start QEMU with a script without repeating the complete command.</li>
+                <li><strong>General development tools</strong>: GIT/GitHub, how to create, change, pull and launch PR's
+                    between branches</li>
+                <li><strong>Basic QEMU.</strong> How the VM works, how the generated image is loaded when compiling the
+                    kernel.</li>
+                <li><strong>Knowing Bash is a plus for quick testing</strong>, since you can start QEMU with a script
+                    without repeating the complete command.</li>
                 <li>Communication. <strong>Argue decisions about PR's</strong>, debate healthily about it.
                 </li>
                 <li>Know how to use AI's in general to optimize debugging and adapt it to code conventions.
                 </li>
-                <li>Know that, when contributing, <strong>you can be maintainer of the subsystem you contributed to</strong>. And if
-                    you can't provide maintenance recurrent to the subsystem, <strong>leave it well documented</strong>.</li>
+                <li>Know that, when contributing, <strong>you can be maintainer of the subsystem you contributed
+                        to</strong>. And if
+                    you can't provide maintenance recurrent to the subsystem, <strong>leave it well documented</strong>.
+                </li>
                 <br>
-                    Similarly, <strong>you don't have to be an expert to contribute to the kernel. Simply with having the desire
+                Similarly, <strong>you don't have to be an expert to contribute to the kernel. Simply with having the
+                    desire
                     to learn/study about what you're going to contribute is more than enough</strong>.
 
                 <h2>Environment Setup</h2>
@@ -917,15 +958,192 @@ User Space:   0x40000000+ (1GB+)</pre>
             </div>
 
             <div class="info-card">
-                <h2>How to compile (for now)</h2>
+                <h2>🔧 Setup and Compilation</h2>
+
+                <h3>Dependency Verification</h3>
+                <p><strong>IMPORTANT:</strong> Before compiling, it's recommended to verify that all dependencies are
+                    correctly installed:</p>
                 <div class="code-block">
-                    <li>There must be a makefile in all subsystems, so it should be possible to do <i>make
-                            "subsystem"</i></li> <br>
-                    <li>Then, the kernel has a general makefile to generate the binary, with its respective clean.
-                        For now it's used like this: <i>make all</i></li> <br>
-                    <li>In the future, there will surely be compilation strategies that allow compiling the entire kernel
-                        for its different uses.</li>
+                    <pre>make deptest</pre>
                 </div>
+                <p>This command will verify the presence of all necessary tools (GCC, NASM, LD, Make, QEMU, GRUB).</p>
+
+                <h3>Required Tools</h3>
+                <h4>Essential:</h4>
+                <ul class="feature-list">
+                    <li><strong>GCC</strong> - C Compiler</li>
+                    <li><strong>NASM</strong> - Assembler</li>
+                    <li><strong>LD</strong> - ELF x86-64 Linker</li>
+                    <li><strong>Make</strong> - Build automation</li>
+                </ul>
+
+                <h4>Runtime:</h4>
+                <ul class="feature-list">
+                    <li><strong>QEMU</strong> (qemu-system-x86_64) - Emulator</li>
+                    <li><strong>GRUB</strong> (grub-mkrescue) - Bootable ISO creation</li>
+                </ul>
+
+                <h4>Optional:</h4>
+                <ul class="feature-list">
+                    <li><strong>Python 3</strong> - Kernel configuration system</li>
+                </ul>
+
+                <h3>Installation on Linux</h3>
+                <div class="code-block">
+                    <pre># Debian/Ubuntu
+sudo apt-get install build-essential nasm qemu-system-x86 grub-pc-bin python3
+
+# Arch Linux
+sudo pacman -S base-devel nasm qemu grub python</pre>
+                </div>
+
+                <h3>Compilation Commands</h3>
+                <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                    <thead>
+                        <tr style="background-color: var(--card-bg); border-bottom: 2px solid var(--accent-color);">
+                            <th style="padding: 0.75rem; text-align: left;">Command</th>
+                            <th style="padding: 0.75rem; text-align: left;">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make ir0</code></td>
+                            <td style="padding: 0.75rem;">Complete build: kernel ISO + userspace programs</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make kernel-x64.bin</code></td>
+                            <td style="padding: 0.75rem;">Build only the kernel binary</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make kernel-x64.iso</code></td>
+                            <td style="padding: 0.75rem;">Create bootable ISO image</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make userspace-programs</code></td>
+                            <td style="padding: 0.75rem;">Build only userspace programs</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make clean</code></td>
+                            <td style="padding: 0.75rem;">Clean all build artifacts</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem;"><code>make userspace-clean</code></td>
+                            <td style="padding: 0.75rem;">Clean only userspace programs</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Running in QEMU</h3>
+                <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                    <thead>
+                        <tr style="background-color: var(--card-bg); border-bottom: 2px solid var(--accent-color);">
+                            <th style="padding: 0.75rem; text-align: left;">Command</th>
+                            <th style="padding: 0.75rem; text-align: left;">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make run</code></td>
+                            <td style="padding: 0.75rem;">Run with GUI + virtual disk (recommended)</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make run-debug</code></td>
+                            <td style="padding: 0.75rem;">Run with GUI + serial debug output</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make debug</code></td>
+                            <td style="padding: 0.75rem;">Run with detailed QEMU logging</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make run-nodisk</code></td>
+                            <td style="padding: 0.75rem;">Run without virtual disk</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem;"><code>make run-console</code></td>
+                            <td style="padding: 0.75rem;">Run in console mode (no GUI)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p><strong>QEMU Configuration:</strong></p>
+                <ul class="feature-list">
+                    <li>Memory: 512MB</li>
+                    <li>Display: GTK (configurable to SDL2)</li>
+                    <li>Serial: stdio (for debug)</li>
+                    <li>Flags: <code>-no-reboot -no-shutdown</code></li>
+                    <li>Debug log: <code>qemu_debug.log</code></li>
+                </ul>
+
+                <h3>Virtual Disk Management</h3>
+                <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                    <thead>
+                        <tr style="background-color: var(--card-bg); border-bottom: 2px solid var(--accent-color);">
+                            <th style="padding: 0.75rem; text-align: left;">Command</th>
+                            <th style="padding: 0.75rem; text-align: left;">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make create-disk</code></td>
+                            <td style="padding: 0.75rem;">Create virtual disk image (disk.img)</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem;"><code>make delete-disk</code></td>
+                            <td style="padding: 0.75rem;">Delete virtual disk image</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p><strong>Disk specifications:</strong></p>
+                <ul class="feature-list">
+                    <li>Size: 100MB (configurable)</li>
+                    <li>Format: RAW</li>
+                    <li>Filesystem: MINIX</li>
+                    <li>Script: <code>scripts/create_disk.sh</code></li>
+                </ul>
+
+                <h3>Utility Commands</h3>
+                <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                    <thead>
+                        <tr style="background-color: var(--card-bg); border-bottom: 2px solid var(--accent-color);">
+                            <th style="padding: 0.75rem; text-align: left;">Command</th>
+                            <th style="padding: 0.75rem; text-align: left;">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make deptest</code></td>
+                            <td style="padding: 0.75rem;">Verify all system dependencies</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make help</code></td>
+                            <td style="padding: 0.75rem;">Show complete Makefile help</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make menuconfig</code></td>
+                            <td style="padding: 0.75rem;">Launch kernel configuration (ncurses)</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem;"><code>make unibuild FILE=&lt;file&gt;</code></td>
+                            <td style="padding: 0.75rem;">Compile individual file</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p><strong>Unibuild example:</strong></p>
+                <div class="code-block">
+                    <pre>make unibuild FILE=fs/ramfs.c
+make unibuild FILES="fs/ramfs.c fs/vfs.c"</pre>
+                </div>
+
+                <h3>Recommended Workflow</h3>
+                <ol class="feature-list">
+                    <li><strong>Verify dependencies:</strong> <code>make deptest</code></li>
+                    <li><strong>Build the kernel:</strong> <code>make ir0</code></li>
+                    <li><strong>Create virtual disk:</strong> <code>make create-disk</code> (first time)</li>
+                    <li><strong>Run in QEMU:</strong> <code>make run</code></li>
+                    <li><strong>For debugging:</strong> <code>make run-debug</code></li>
+                </ol>
             </div>
         </section>
 
@@ -938,8 +1156,8 @@ User Space:   0x40000000+ (1GB+)</pre>
                     <br>
                     <br>
                     The best way to understand the internal operation is by reviewing the source code in the
-                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank"
-                        rel="noopener noreferrer" class="link-repo">GitHub Repository</a>.
+                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank" rel="noopener noreferrer"
+                        class="link-repo">GitHub Repository</a>.
                 </p>
             </div>
 
@@ -985,7 +1203,8 @@ User Space:   0x40000000+ (1GB+)</pre>
                 </ul>
                 <h3>Innovations:</h3>
                 <ul class="feature-list">
-                    <li>Integration with <a href="https://github.com/victor-base/libvictor" target="_blank" rel="noopener noreferrer">libvictor</a> for semantic searches</li>
+                    <li>Integration with <a href="https://github.com/victor-base/libvictor" target="_blank"
+                            rel="noopener noreferrer">libvictor</a> for semantic searches</li>
                     <li>Intelligent cache based on access patterns</li>
                     <li>Extended metadata support</li>
                     <li>File-level encryption</li>
@@ -1014,7 +1233,8 @@ User Space:   0x40000000+ (1GB+)</pre>
                     <li>Deferred interrupt processing</li>
                     <li>Interrupt coalescing for optimization</li>
                 </ul>
-                <p><strong>Files:</strong> interrupt/idt.c, interrupt/interrupt.asm, interrupt/isr_handlers.c, interrupt/irq.c</p>
+                <p><strong>Files:</strong> interrupt/idt.c, interrupt/interrupt.asm, interrupt/isr_handlers.c,
+                    interrupt/irq.c</p>
             </div>
 
             <div class="info-card">
@@ -1133,7 +1353,8 @@ User Space:   0x40000000+ (1GB+)</pre>
                     <li>Security event auditing</li>
                     <li>TPM integration for integrity measurement</li>
                 </ul>
-                <p><strong>Files:</strong> security/capability.c, security/seccomp.c, security/lsm/, security/audit.c</p>
+                <p><strong>Files:</strong> security/capability.c, security/seccomp.c, security/lsm/, security/audit.c
+                </p>
             </div>
 
             <div class="info-card">
@@ -1310,10 +1531,11 @@ User Space:   0x40000000+ (1GB+)</pre>
 
             <div class="info-card">
                 <p>
-                    <li>The kernel binary download will be available in this section when the first stable version of the mainline branch is released.</li>
+                    <li>The kernel binary download will be available in this section when the first stable version of
+                        the mainline branch is released.</li>
                 </p>
-                
-            
+
+
             </div>
         </section>
     </div>

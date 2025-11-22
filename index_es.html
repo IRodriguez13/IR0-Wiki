@@ -971,17 +971,191 @@ Espacio Usuario: 0x40000000+ (1GB+)</pre>
             </div>
 
             <div class="info-card">
-                <h2>Cómo compilar (por ahora)</h2>
+                <h2>🔧 Setup y Compilación</h2>
+                
+                <h3>Verificación de Dependencias</h3>
+                <p><strong>IMPORTANTE:</strong> Antes de compilar, se recomienda verificar que todas las dependencias estén correctamente instaladas:</p>
                 <div class="code-block">
-                    <li>Tiene que haber un makefile en todos los subsistemas, por lo que se debería poder hacer <i>make
-                            "subsistema"</i></li> <br>
-                    <li>Después, el kernel tiene un makefile general para generar el binario, con su clean respectivo.
-                        Por
-                        ahora se usa así: <i>make all</i></li> <br>
-                    <li>A futuro, seguramente hayan estrategias de compilación que permitan compilar el kernel entero
-                        para
-                        sus distintos usos.</li>
+                    <pre>make deptest</pre>
                 </div>
+                <p>Este comando verificará la presencia de todas las herramientas necesarias (GCC, NASM, LD, Make, QEMU, GRUB).</p>
+
+                <h3>Herramientas Requeridas</h3>
+                <h4>Esenciales:</h4>
+                <ul class="feature-list">
+                    <li><strong>GCC</strong> - Compilador C</li>
+                    <li><strong>NASM</strong> - Ensamblador</li>
+                    <li><strong>LD</strong> - Enlazador ELF x86-64</li>
+                    <li><strong>Make</strong> - Automatización de compilación</li>
+                </ul>
+
+                <h4>Runtime:</h4>
+                <ul class="feature-list">
+                    <li><strong>QEMU</strong> (qemu-system-x86_64) - Emulador</li>
+                    <li><strong>GRUB</strong> (grub-mkrescue) - Creación de ISO booteable</li>
+                </ul>
+
+                <h4>Opcionales:</h4>
+                <ul class="feature-list">
+                    <li><strong>Python 3</strong> - Sistema de configuración del kernel</li>
+                </ul>
+
+                <h3>Instalación en Linux</h3>
+                <div class="code-block">
+                    <pre># Debian/Ubuntu
+sudo apt-get install build-essential nasm qemu-system-x86 grub-pc-bin python3
+
+# Arch Linux
+sudo pacman -S base-devel nasm qemu grub python</pre>
+                </div>
+
+                <h3>Comandos de Compilación</h3>
+                <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                    <thead>
+                        <tr style="background-color: var(--card-bg); border-bottom: 2px solid var(--accent-color);">
+                            <th style="padding: 0.75rem; text-align: left;">Comando</th>
+                            <th style="padding: 0.75rem; text-align: left;">Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make ir0</code></td>
+                            <td style="padding: 0.75rem;">Compilación completa: kernel ISO + programas userspace</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make kernel-x64.bin</code></td>
+                            <td style="padding: 0.75rem;">Compilar solo el binario del kernel</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make kernel-x64.iso</code></td>
+                            <td style="padding: 0.75rem;">Crear imagen ISO booteable</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make userspace-programs</code></td>
+                            <td style="padding: 0.75rem;">Compilar solo programas de userspace</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make clean</code></td>
+                            <td style="padding: 0.75rem;">Limpiar todos los artefactos de compilación</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem;"><code>make userspace-clean</code></td>
+                            <td style="padding: 0.75rem;">Limpiar solo programas userspace</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Ejecución en QEMU</h3>
+                <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                    <thead>
+                        <tr style="background-color: var(--card-bg); border-bottom: 2px solid var(--accent-color);">
+                            <th style="padding: 0.75rem; text-align: left;">Comando</th>
+                            <th style="padding: 0.75rem; text-align: left;">Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make run</code></td>
+                            <td style="padding: 0.75rem;">Ejecutar con GUI + disco virtual (recomendado)</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make run-debug</code></td>
+                            <td style="padding: 0.75rem;">Ejecutar con GUI + salida de debug serial</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make debug</code></td>
+                            <td style="padding: 0.75rem;">Ejecutar con logging detallado de QEMU</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make run-nodisk</code></td>
+                            <td style="padding: 0.75rem;">Ejecutar sin disco virtual</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem;"><code>make run-console</code></td>
+                            <td style="padding: 0.75rem;">Ejecutar en modo consola (sin GUI)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p><strong>Configuración QEMU:</strong></p>
+                <ul class="feature-list">
+                    <li>Memoria: 512MB</li>
+                    <li>Display: GTK (configurable a SDL2)</li>
+                    <li>Serial: stdio (para debug)</li>
+                    <li>Flags: <code>-no-reboot -no-shutdown</code></li>
+                    <li>Debug log: <code>qemu_debug.log</code></li>
+                </ul>
+
+                <h3>Gestión de Disco Virtual</h3>
+                <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                    <thead>
+                        <tr style="background-color: var(--card-bg); border-bottom: 2px solid var(--accent-color);">
+                            <th style="padding: 0.75rem; text-align: left;">Comando</th>
+                            <th style="padding: 0.75rem; text-align: left;">Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make create-disk</code></td>
+                            <td style="padding: 0.75rem;">Crear imagen de disco virtual (disk.img)</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem;"><code>make delete-disk</code></td>
+                            <td style="padding: 0.75rem;">Eliminar imagen de disco virtual</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p><strong>Especificaciones del disco:</strong></p>
+                <ul class="feature-list">
+                    <li>Tamaño: 100MB (configurable)</li>
+                    <li>Formato: RAW</li>
+                    <li>Filesystem: MINIX</li>
+                    <li>Script: <code>scripts/create_disk.sh</code></li>
+                </ul>
+
+                <h3>Comandos de Utilidades</h3>
+                <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                    <thead>
+                        <tr style="background-color: var(--card-bg); border-bottom: 2px solid var(--accent-color);">
+                            <th style="padding: 0.75rem; text-align: left;">Comando</th>
+                            <th style="padding: 0.75rem; text-align: left;">Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make deptest</code></td>
+                            <td style="padding: 0.75rem;">Verificar todas las dependencias del sistema</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make help</code></td>
+                            <td style="padding: 0.75rem;">Mostrar ayuda completa del Makefile</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 0.75rem;"><code>make menuconfig</code></td>
+                            <td style="padding: 0.75rem;">Lanzar configuración del kernel (ncurses)</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem;"><code>make unibuild FILE=&lt;archivo&gt;</code></td>
+                            <td style="padding: 0.75rem;">Compilar archivo individual</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p><strong>Ejemplo de unibuild:</strong></p>
+                <div class="code-block">
+                    <pre>make unibuild FILE=fs/ramfs.c
+make unibuild FILES="fs/ramfs.c fs/vfs.c"</pre>
+                </div>
+
+                <h3>Flujo de Trabajo Recomendado</h3>
+                <ol class="feature-list">
+                    <li><strong>Verificar dependencias:</strong> <code>make deptest</code></li>
+                    <li><strong>Compilar el kernel:</strong> <code>make ir0</code></li>
+                    <li><strong>Crear disco virtual:</strong> <code>make create-disk</code> (primera vez)</li>
+                    <li><strong>Ejecutar en QEMU:</strong> <code>make run</code></li>
+                    <li><strong>Para debugging:</strong> <code>make run-debug</code></li>
+                </ol>
             </div>
         </section>
 
