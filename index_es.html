@@ -66,9 +66,10 @@
 
             <div class="info-card">
                 <p id="loc">
-                    
+
                 </p>
-                <p><small>Este cálculo es automático y se hace mediante una api que cuenta la cantidad de líneas de código que tiene el kernel (solo .c, .h y .asm)</small></p>
+                <p><small>Este cálculo es automático y se hace mediante una api que cuenta la cantidad de líneas de
+                        código que tiene el kernel (.c, .h, .asm, .rs y .cpp)</small></p>
                 <p><small>Esto merece que dejes una estrella en el repo</small></p>
             </div>
 
@@ -76,10 +77,10 @@
                 <h2>¿Qué es IR0?</h2>
                 <p>
                     <strong>IR0</strong> es un <strong>kernel de sistema operativo multipropósito</strong> desarrollado
-                    desde cero para arquitectura
-                    <strong>x86-64</strong> escrito principalmente en <strong>C</strong> y <strong>ASM</strong> (Aunque
-                    no tengo ningún problema en incluir código de otros lenguajes especializados en performance como
-                    <strong>Cpp</strong> o <strong>Rust</strong>).
+                    desde cero para arquitectura <strong>x86-64</strong> escrito en <strong>C</strong>,
+                    <strong>C++</strong>,
+                    <strong>Rust</strong> y <strong>ASM</strong>. El kernel core está en C, los device drivers en Rust
+                    (para memory safety), y componentes avanzados como schedulers en C++ (para templates y RAII).
                     <br>
                     Lo estoy creando para aprender más sobre sistemas operativos y poder usarlo como materia
                     prima para otro proyecto que replica a <a href="https://learn.microsoft.com/es-es/windows/wsl/about"
@@ -972,13 +973,23 @@ Espacio Usuario: 0x40000000+ (1GB+)</pre>
 
             <div class="info-card">
                 <h2>🔧 Setup y Compilación</h2>
-                
+
                 <h3>Verificación de Dependencias</h3>
-                <p><strong>IMPORTANTE:</strong> Antes de compilar, se recomienda verificar que todas las dependencias estén correctamente instaladas:</p>
+                <p><strong>IMPORTANTE:</strong> Antes de compilar, se recomienda verificar que todas las dependencias
+                    estén correctamente instaladas:</p>
                 <div class="code-block">
                     <pre>make deptest</pre>
                 </div>
-                <p>Este comando verificará la presencia de todas las herramientas necesarias (GCC, NASM, LD, Make, QEMU, GRUB).</p>
+                <p>Este comando verificará la presencia de <strong>todas</strong> las herramientas necesarias:</p>
+                <ul class="feature-list">
+                    <li><strong>Herramientas Esenciales:</strong> GCC, NASM, LD, Make, QEMU, GRUB</li>
+                    <li><strong>Multi-Language Compilers (REQUERIDO):</strong> G++/Clang++, Rustc, Cargo, rust-src</li>
+                    <li><strong>Cross-Compilation:</strong> MinGW-w64 (para compilar a Windows desde Linux)</li>
+                    <li><strong>Python:</strong> Python 3, tkinter, PIL/Pillow</li>
+                </ul>
+                <p>El script detecta automáticamente tu plataforma y proporciona instrucciones específicas de
+                    instalación si falta alguna herramienta.</p>
+
 
                 <h3>Herramientas Requeridas</h3>
                 <h4>Esenciales:</h4>
@@ -999,6 +1010,48 @@ Espacio Usuario: 0x40000000+ (1GB+)</pre>
                 <ul class="feature-list">
                     <li><strong>Python 3</strong> - Sistema de configuración del kernel</li>
                 </ul>
+
+                <h4>Multi-Language Support (REQUERIDO desde v0.0.1-pre.1):</h4>
+                <ul class="feature-list">
+                    <li><strong>G++ / Clang++</strong> - Compilador C++ (para componentes avanzados del kernel)</li>
+                    <li><strong>Rustc + Cargo</strong> - Compilador Rust (para device drivers)</li>
+                    <li><strong>rust-src</strong> - Componente de Rust para desarrollo no_std</li>
+                </ul>
+
+                <h3>Soporte Multi-Lenguaje</h3>
+                <p>IR0 ahora soporta desarrollo en <strong>tres lenguajes</strong>:</p>
+                <ul class="feature-list">
+                    <li><strong>C</strong> - Kernel core, memory management, system calls</li>
+                    <li><strong>Rust</strong> - Device drivers (network, storage, USB) con memory safety</li>
+                    <li><strong>C++</strong> - Componentes avanzados (schedulers, protocol stacks) con templates y RAII
+                    </li>
+                </ul>
+
+                <h4>Instalación de Rust:</h4>
+                <div class="code-block">
+                    <pre># Instalar Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Agregar componentes necesarios
+rustup component add rust-src
+rustup target add x86_64-unknown-none
+
+# Verificar instalación
+rustc --version
+cargo --version</pre>
+                </div>
+
+                <h4>Instalación de C++:</h4>
+                <div class="code-block">
+                    <pre># Debian/Ubuntu
+sudo apt-get install g++
+
+# Arch Linux
+sudo pacman -S gcc
+
+# Verificar instalación
+g++ --version</pre>
+                </div>
 
                 <h3>Instalación en Linux</h3>
                 <div class="code-block">
@@ -1142,11 +1195,35 @@ sudo pacman -S base-devel nasm qemu grub python</pre>
                     </tbody>
                 </table>
 
-                <p><strong>Ejemplo de unibuild:</strong></p>
+                <p><strong>Sistema unibuild - Compilación Multi-Lenguaje:</strong></p>
+                <p>El sistema unibuild ahora soporta compilar archivos en C, C++, y Rust con flags específicos:</p>
                 <div class="code-block">
-                    <pre>make unibuild FILE=fs/ramfs.c
+                    <pre># Compilar archivos C (por defecto)
+make unibuild FILE=kernel/memory/kmalloc.c
+
+# Compilar archivos C++
+make unibuild -cpp FILE=kernel/scheduler/advanced_sched.cpp
+
+# Compilar drivers Rust
+make unibuild -rust FILE=drivers/network/rtl8139.rs
+
+# Cross-compilación a Windows (desde Linux)
+make unibuild -win FILE=kernel/file.c
+make unibuild -win -cpp FILE=kernel/component.cpp
+make unibuild -win -rust FILE=drivers/driver.rs
+
+# Compilar múltiples archivos
 make unibuild FILES="fs/ramfs.c fs/vfs.c"</pre>
                 </div>
+                <p><strong>Flags disponibles:</strong></p>
+                <ul class="feature-list">
+                    <li><code>-cpp</code> - Usar compilador C++ (g++)</li>
+                    <li><code>-rust</code> - Usar compilador Rust (rustc)</li>
+                    <li><code>-win</code> - Cross-compilar a Windows usando MinGW-w64</li>
+                </ul>
+                <p>Los flags se pueden combinar para diferentes casos de uso (ej: <code>-win -cpp</code> para
+                    cross-compilar C++ a Windows).</p>
+
 
                 <h3>Flujo de Trabajo Recomendado</h3>
                 <ol class="feature-list">

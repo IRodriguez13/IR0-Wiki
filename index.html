@@ -68,7 +68,8 @@
                 <p id="loc">
                 </p>
                 <p><small>This calculation is automatic and is done through an API that counts the number of lines of
-                        code that the kernel has (only .c, .h and .asm)</small></p>
+                        code in the kernel (.c, .h, .asm, .rs, and .cpp)</small></p>
+                <p><small>This deserves a star on the repo</small></p>
 
             </div>
 
@@ -76,10 +77,10 @@
                 <h2>What is IR0?</h2>
                 <p>
                     <strong>IR0</strong> is a <strong>multipurpose operating system kernel</strong> developed
-                    from scratch for <strong>x86-64</strong> architecture written primarily in <strong>C</strong> and
-                    <strong>ASM</strong> (Although
-                    I have no problem including code from other specialized languages in performance such as
-                    <strong>Cpp</strong> or <strong>Rust</strong>).
+                    from scratch for the <strong>x86-64</strong> architecture, written in <strong>C</strong>,
+                    <strong>C++</strong>,
+                    <strong>Rust</strong>, and <strong>ASM</strong>. The kernel core is in C, device drivers in Rust
+                    (for memory safety), and advanced components like schedulers in C++ (for templates and RAII).
                     <br>
                     I'm creating it to learn more about operating systems and be able to use it as raw material
                     for another project that replicates <a href="https://learn.microsoft.com/es-es/windows/wsl/about"
@@ -966,7 +967,16 @@ User Space:   0x40000000+ (1GB+)</pre>
                 <div class="code-block">
                     <pre>make deptest</pre>
                 </div>
-                <p>This command will verify the presence of all necessary tools (GCC, NASM, LD, Make, QEMU, GRUB).</p>
+                <p>This command will verify the presence of <strong>all</strong> necessary tools:</p>
+                <ul class="feature-list">
+                    <li><strong>Essential Tools:</strong> GCC, NASM, LD, Make, QEMU, GRUB</li>
+                    <li><strong>Multi-Language Compilers (REQUIRED):</strong> G++/Clang++, Rustc, Cargo, rust-src</li>
+                    <li><strong>Cross-Compilation:</strong> MinGW-w64 (for compiling to Windows from Linux)</li>
+                    <li><strong>Python:</strong> Python 3, tkinter, PIL/Pillow</li>
+                </ul>
+                <p>The script automatically detects your platform and provides specific installation instructions if any
+                    tool is missing.</p>
+
 
                 <h3>Required Tools</h3>
                 <h4>Essential:</h4>
@@ -987,6 +997,48 @@ User Space:   0x40000000+ (1GB+)</pre>
                 <ul class="feature-list">
                     <li><strong>Python 3</strong> - Kernel configuration system</li>
                 </ul>
+
+                <h4>Multi-Language Support (REQUIRED since v0.0.1-pre.1):</h4>
+                <ul class="feature-list">
+                    <li><strong>G++ / Clang++</strong> - C++ compiler (for advanced kernel components)</li>
+                    <li><strong>Rustc + Cargo</strong> - Rust compiler (for device drivers)</li>
+                    <li><strong>rust-src</strong> - Rust component for no_std development</li>
+                </ul>
+
+                <h3>Multi-Language Support</h3>
+                <p>IR0 now supports development in <strong>three languages</strong>:</p>
+                <ul class="feature-list">
+                    <li><strong>C</strong> - Kernel core, memory management, system calls</li>
+                    <li><strong>Rust</strong> - Device drivers (network, storage, USB) with memory safety</li>
+                    <li><strong>C++</strong> - Advanced components (schedulers, protocol stacks) with templates and RAII
+                    </li>
+                </ul>
+
+                <h4>Installing Rust:</h4>
+                <div class="code-block">
+                    <pre># Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Add required components
+rustup component add rust-src
+rustup target add x86_64-unknown-none
+
+# Verify installation
+rustc --version
+cargo --version</pre>
+                </div>
+
+                <h4>Installing C++:</h4>
+                <div class="code-block">
+                    <pre># Debian/Ubuntu
+sudo apt-get install g++
+
+# Arch Linux
+sudo pacman -S gcc
+
+# Verify installation
+g++ --version</pre>
+                </div>
 
                 <h3>Installation on Linux</h3>
                 <div class="code-block">
@@ -1130,11 +1182,35 @@ sudo pacman -S base-devel nasm qemu grub python</pre>
                     </tbody>
                 </table>
 
-                <p><strong>Unibuild example:</strong></p>
+                <p><strong>unibuild System - Multi-Language Compilation:</strong></p>
+                <p>The unibuild system now supports compiling files in C, C++, and Rust with specific flags:</p>
                 <div class="code-block">
-                    <pre>make unibuild FILE=fs/ramfs.c
+                    <pre># Compile C files (default)
+make unibuild FILE=kernel/memory/kmalloc.c
+
+# Compile C++ files
+make unibuild -cpp FILE=kernel/scheduler/advanced_sched.cpp
+
+# Compile Rust drivers
+make unibuild -rust FILE=drivers/network/rtl8139.rs
+
+# Cross-compile to Windows (from Linux)
+make unibuild -win FILE=kernel/file.c
+make unibuild -win -cpp FILE=kernel/component.cpp
+make unibuild -win -rust FILE=drivers/driver.rs
+
+# Compile multiple files
 make unibuild FILES="fs/ramfs.c fs/vfs.c"</pre>
                 </div>
+                <p><strong>Available flags:</strong></p>
+                <ul class="feature-list">
+                    <li><code>-cpp</code> - Use C++ compiler (g++)</li>
+                    <li><code>-rust</code> - Use Rust compiler (rustc)</li>
+                    <li><code>-win</code> - Cross-compile to Windows using MinGW-w64</li>
+                </ul>
+                <p>Flags can be combined for different use cases (e.g., <code>-win -cpp</code> to cross-compile C++ to
+                    Windows).</p>
+
 
                 <h3>Recommended Workflow</h3>
                 <ol class="feature-list">
