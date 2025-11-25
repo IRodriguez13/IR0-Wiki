@@ -20,8 +20,11 @@
 
     <nav class="navbar">
         <div class="nav-container">
-            <div class="logo"><a href="index.html" target="_blank" rel="noopener noreferrer"
-                    style="text-decoration: none; color: white;">IR0 - Wiki</a></div>
+            <div class="logo">
+                <a href="#overview" class="logo-link" onclick="event.preventDefault(); showSection('overview');" style="text-decoration: none; color: white; font-size: 1.8rem; font-weight: bold;">
+                    IR0 Wiki
+                </a>
+            </div>
             <ul class="nav-menu">
                 <li><a href="#overview" class="nav-link active" onclick="showSection('overview')">Inicio</a></li>
                 <li><a href="#architecture" class="nav-link" onclick="showSection('architecture')">Arquitectura</a></li>
@@ -60,6 +63,7 @@
                     puede andar fácilmente en las <strong>15.000</strong> líneas de código por lo que, como verás;
                     es humanamente imposible memorizar y comprender todo el flujo del kernel por mí mismo. Además son
                     muchos subsistemas complejos trabajando a bajo nivel juntos para intermediar entre hardware y
+                    software.
                 </p>
             </div>
 
@@ -71,6 +75,14 @@
                 <p><small>Este cálculo es automático y se hace mediante una api que cuenta la cantidad de líneas de
                         código que tiene el kernel (.c, .h, .asm, .rs y .cpp)</small></p>
                 <p><small>Esto merece que dejes una estrella en el repo</small></p>
+            </div>
+
+            <div class="info-card">
+                <h2>Contribuidores</h2>
+                <p style="text-align:center;">Gracias a quienes han contribuido al desarrollo de IR0.</p>
+                <div id="contributors-grid" class="contributors-grid">
+                    <!-- Los contribuidores se cargarán aquí -->
+                </div>
             </div>
 
             <div class="info-card">
@@ -89,12 +101,11 @@
                     pero entiendo que eso es al largo <i>(larguísimo)</i> plazo.
                     <br>
                     <br>
-                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank" rel="noopener noreferrer">Repo
-                        de GtiHub
-                        <br>
-
-                        <a href="https://discord.gg/XZ84aPXtxh" target="_blank" rel="noopener noreferrer">Discord
-                            community</a>
+                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank" rel="noopener noreferrer">Este
+                        es su Repositorio de GitHub.</a>
+                    <br>
+                    <a href="https://discord.gg/XZ84aPXtxh" target="_blank" rel="noopener noreferrer">Discord
+                        community</a>
                 </p>
             </div>
 
@@ -943,32 +954,85 @@ Espacio Usuario: 0x40000000+ (1GB+)</pre>
                     <li>Constantes: <code>CONSTANT_NAME</code></li>
                     <li>includes: <code>#INCLUDE -ir0/Lib.h - </code>(se estan migrando a ese formato)</li>
                 </ul>
-                <h3>Comentarios:</h3>
+                <h3>Estilo de Código y Convenciones:</h3>
+                <p>
+                    Intentamos seguir el estilo de código del kernel Linux, pero con algunas adaptaciones específicas
+                    para este proyecto.
+                    Estas son convenciones <strong>deseables</strong>, no reglas estrictas (excepto por el estilo de
+                    llaves).
+                </p>
+
                 <ul class="feature-list">
-                    <li>archivos de encabezado .h de funciones documentadas</li>
-                    <li>Archivos de código fuente con comentarios en algunas funciones, pero mas acotados</li>
-                    <li>Explicación de algoritmos complejos</li>
-                    <li>TO DO's claramente marcados</li>
-                    <li>Referencias a documentación técnica</li>
+                    <li><strong>Llaves estilo Allman (Importante):</strong> Usamos el estilo Allman (llaves en una nueva
+                        línea). Esta es la regla de formato más importante.</li>
+                    <li><strong>Comentarios:</strong> Preferimos comentarios multilínea <code>/* ... */</code> sobre los
+                        de una línea <code>//</code>.</li>
+                    <li><strong>Condicionales:</strong> Los <code>if</code> de una sola línea no deben usar llaves.</li>
+                    <li><strong>Manejo de Errores:</strong> Usamos <code>goto</code> para lógica de limpieza cuando
+                        múltiples puntos de salida comparten el mismo código de limpieza.</li>
                 </ul>
-                <small>Esto es aproximado. Por lo general trato de respetar esas convenciones lo máximo que
-                    puedo.</small>
-                <br><br>
-                <li>Algo así sería en este ejemplo una archivo promedio de código fuente:</li>
-                <br>
-                <img src="/Assets/funcion.c.png" alt="" srcset="" style="width: 50%;">
-                <br>
-                <i>Fijate en cómo uso las llaves por debajo del nombre de la funcion y los mismo en condicionales,
-                    bucles,
-                    etc. También como directamente no las uso cuando el condicional tiene una sola línea
-                    o hay cierto nesting.</i>
-                <br>
-                <br>
-                <li>Así manejo los encabezados (o la mayoría):</li>
-                <br><br>
-                <img src="/Assets/header.png" alt="" srcset="" style="width: 50%;">
-                <br>
-                <i>Los comentarios grandes van por lo general en éstos .h y en los fuente hacemos acotaciones.</i>
+
+                <div class="code-block">
+                    <pre><code class="language-c">/*
+ * Ejemplo de una función siguiendo las convenciones de IR0
+ * Note las llaves estilo Allman y los comentarios multilínea
+ */
+int process_data(struct data_t *data)
+{
+    if (!data)
+        return -1;  /* If de una línea sin llaves */
+
+    char *buffer = kmalloc(1024);
+    if (!buffer)
+    {
+        /* 
+         * Se usan llaves aquí porque el bloque 
+         * contiene múltiples líneas o es complejo 
+         */
+        return -ENOMEM;
+    }
+
+    if (prepare_buffer(buffer) < 0)
+        goto cleanup; /* Uso de goto para manejo de errores/limpieza */
+
+    /* ... lógica de procesamiento ... */
+
+    kfree(buffer);
+    return 0;
+
+cleanup:
+    kfree(buffer);
+    return -1;
+}</code></pre>
+                </div>
+
+                <h3>Archivos de Cabecera (.h):</h3>
+                <p>Los archivos de cabecera deben contener prototipos de funciones, definiciones de estructuras y
+                    documentación detallada en comentarios.</p>
+                <div class="code-block">
+                    <pre><code class="language-c">#ifndef _IR0_EXAMPLE_H
+#define _IR0_EXAMPLE_H
+
+/*
+ * struct example_t - Representa una estructura de ejemplo
+ * @id: Identificador único
+ * @value: Valor asociado
+ */
+typedef struct
+{
+    int id;
+    int value;
+} example_t;
+
+/*
+ * process_example - Procesa la estructura de ejemplo
+ * @ex: Puntero a la estructura
+ * Retorna: 0 en éxito, código de error negativo en fallo
+ */
+int process_example(example_t *ex);
+
+#endif</code></pre>
+                </div>
             </div>
 
             <div class="info-card">
@@ -1619,17 +1683,7 @@ make unibuild FILES="fs/ramfs.c fs/vfs.c"</pre>
 
         </section>
 
-        <section id="contributors" class="section">
-            <h1 class="titulo-principal">Contribuidores</h1>
-            <div class="info-card">
-                <p>
-                    Un agradecimiento especial a todas las personas que han contribuido al desarrollo de IR0.
-                </p>
-                <div id="contributors-grid" class="contributors-grid">
-                    <!-- Los contribuidores se cargarán aquí -->
-                </div>
-            </div>
-        </section>
+
 
         <section id="descarga" class="section">
             <h1 class="titulo-guia">Descargas</h1>

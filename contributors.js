@@ -16,14 +16,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Sort by contributions (descending) just in case
+            // ordeno de mayor a menor
             contributors.sort((a, b) => b.contributions - a.contributions);
 
             contributors.forEach(contributor => {
-                const card = document.createElement('div');
-                card.className = 'contributor-card';
+                const card = document.createElement('a'); // ahora es un enlace
+                card.href = contributor.html_url;
+                card.target = "_blank";
+                card.rel = "noopener noreferrer";
 
-                // Check if it's the creator
+                // Me fijo si soy yo
                 const isCreator = contributor.login === 'IRodriguez13';
                 const creatorBadge = isCreator ? '<span class="creator-badge">Creator</span>' : '';
                 const cardClass = isCreator ? 'contributor-card creator' : 'contributor-card';
@@ -36,9 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${creatorBadge}
                     </div>
                     <div class="contributor-info">
-                        <a href="${contributor.html_url}" target="_blank" rel="noopener noreferrer" class="contributor-name">
+                        <span class="contributor-name">
                             ${contributor.login}
-                        </a>
+                        </span>
                         <div class="contributor-commits">
                             <span class="commit-count">${contributor.contributions}</span> commits
                         </div>

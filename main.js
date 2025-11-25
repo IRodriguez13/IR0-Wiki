@@ -74,6 +74,12 @@
 
         // Inicialización cuando se carga la página
         document.addEventListener('DOMContentLoaded', function() {
+            // Ocultar todas las secciones primero
+            var sections = document.querySelectorAll('.section');
+            for (var i = 0; i < sections.length; i++) {
+                sections[i].classList.remove('active');
+            }
+            
             // Asegurar que la primera sección esté visible
             showSection('overview');
             

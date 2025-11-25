@@ -21,8 +21,11 @@
 
     <nav class="navbar">
         <div class="nav-container">
-            <div class="logo"><a href="index_en.html" target="_blank" rel="noopener noreferrer"
-                    style="text-decoration: none; color: white;">IR0 Wiki</a></div>
+            <div class="logo">
+                <a href="#overview" class="logo-link" onclick="event.preventDefault(); showSection('overview');" style="text-decoration: none; color: white; font-size: 1.8rem; font-weight: bold;">
+                    IR0 Wiki
+                </a>
+            </div>
             <ul class="nav-menu">
                 <li><a href="#overview" class="nav-link active" onclick="showSection('overview')">Home</a></li>
                 <li><a href="#architecture" class="nav-link" onclick="showSection('architecture')">Architecture</a></li>
@@ -74,6 +77,16 @@
             </div>
 
             <div class="info-card">
+                <h2>Contributors</h2>
+                <p>
+                    Special thanks to all the people who have contributed to the development of IR0.
+                </p>
+                <div id="contributors-grid" class="contributors-grid">
+                    <!-- Contributors will be loaded here -->
+                </div>
+            </div>
+
+            <div class="info-card">
                 <h2>What is IR0?</h2>
                 <p>
                     <strong>IR0</strong> is a <strong>multipurpose operating system kernel</strong> developed
@@ -103,7 +116,7 @@
                     <li>✅ Monolithic modular kernel for x86-64 architecture</li>
                     <li>✅ Complete virtual memory management with paging (MMU)</li>
                     <li>✅ Complete interrupt and exception system (64 IDT vectors)</li>
-                    <li>✅ CFS (Completely Fair Scheduler) with Red-Black Tree</li>
+                    <li>✅ Round Robin Scheduler (simple implementation)</li>
                     <li>✅ Complete process system with fork(), exit(), waitpid()</li>
                     <li>✅ 23 implemented syscalls (from basic to memory management)</li>
                     <li>✅ Complete MINIX filesystem with VFS (Virtual File System)</li>
@@ -111,8 +124,6 @@
                     <li>✅ Interactive shell in Ring 3 with built-in commands</li>
                     <li>✅ Freestanding LibC with printf(), malloc(), free()</li>
                     <li>✅ Multi-target build system (Desktop/Server/IoT/Embedded)</li>
-                    <li>🔄 Basic TCP/IP network stack (in development - using IoT library)</li>
-                    <li>🔄 Container support (in development)</li>
                 </ul>
             </div>
 
@@ -160,7 +171,7 @@
                             <!-- Process & Memory -->
                             <div class="kernel-section core-subsystems">
                                 <div class="section-title">Process & Memory</div>
-                                <div class="component">CFS Scheduler</div>
+                                <div class="component">Round Robin Scheduler</div>
                                 <div class="component">Virtual Memory (MMU)</div>
                                 <div class="component">Heap Allocator</div>
                                 <div class="component">Process Manager</div>
@@ -194,8 +205,8 @@
 
                             <!-- Network (Planned) -->
                             <div class="kernel-section core-subsystems">
-                                <div class="section-title">Network (In Development)</div>
-                                <div class="component">Basic TCP/IP (IoT)</div>
+                                <div class="section-title">Network (Planned)</div>
+                                <div class="component">Custom TCP/IP (Design)</div>
                                 <div class="component">Socket Interface</div>
                                 <div class="component">Ethernet Drivers</div>
                             </div>
@@ -310,24 +321,23 @@
                         NETWORK STACK</strong>. Instead of trying to port all of that, I've decided to use a more
                     pragmatic approach:
                     <br><br>
-                    <strong>Basic implementation with IoT library:</strong>
+                    <strong>Custom lightweight stack (planned):</strong>
                 <ul class="feature-list">
-                    <li>Lightweight and functional TCP/IP stack</li>
-                    <li>Support for basic network connectivity</li>
-                    <li>Simplified socket interface</li>
-                    <li>Essential Ethernet drivers</li>
-                    <li>Minimalist approach that keeps the kernel manageable</li>
+                    <li>In-house IPv4 + TCP/UDP implementation written specifically for IR0</li>
+                    <li>Socket interface aligned with our syscall layer</li>
+                    <li>Ethernet drivers integrated with the IR0 HAL</li>
+                    <li>Minimal feature set focused on reliability and learning</li>
                 </ul>
-                This allows me to have network functionality without adding millions of lines of code to the kernel.
+                The idea is to keep every line of the network stack ours, without porting Linux subsystems or reusing IoT
+                libraries, while still avoiding a multi-million line code drop.
 
-                <h2>Advantages of the Basic Approach</h2>
-                This approach with IoT library has several advantages:
+                <h2>Advantages of building our own stack</h2>
                 <ul class="feature-list">
-                    <li>Keeps the kernel lightweight and manageable</li>
-                    <li>Significantly reduces code complexity</li>
-                    <li>Allows network functionality without millions of additional lines</li>
-                    <li>Easier to debug and maintain</li>
-                    <li>Sufficient for basic use cases and IoT</li>
+                    <li>Total ownership and easier auditing of the codebase</li>
+                    <li>No dependence on Linux internals or third-party stacks</li>
+                    <li>Ability to evolve the stack at the same pace as the kernel</li>
+                    <li>Maintains the project lean and manageable</li>
+                    <li>Helps reinforce the educational goal of IR0</li>
                 </ul>
                 </p>
 
@@ -524,12 +534,11 @@
 
                 <h3>✅ Scheduler</h3>
                 <ul class="feature-list">
-                    <li>CFS (Completely Fair Scheduler) implementation</li>
-                    <li>Red-Black Tree runqueue for O(log n) operations</li>
-                    <li>Virtual runtime (vruntime) tracking for fairness</li>
-                    <li>Nice values support (-20 to +19)</li>
-                    <li>Preemptive multitasking with timer integration</li>
-                    <li>Context switching in optimized x86-64 assembly</li>
+                    <li>Round Robin scheduler with fixed quantum</li>
+                    <li>Single ready queue rotating runnable tasks</li>
+                    <li>PIT timer interrupts drive preemption points</li>
+                    <li>Integrates directly with the existing process lifecycle</li>
+                    <li>Serves as the base for the upcoming priority scheduler</li>
                 </ul>
 
                 <h3>✅ Init System</h3>
@@ -746,17 +755,15 @@ SYS_EXEC(56)        - Execute program</pre>
 
             <div class="info-card">
                 <h2>🌐 Network System</h2>
-                <h3>🔄 Basic TCP/IP Stack (In Development)</h3>
+                <h3>� Custom TCP/IP Stack (Planned)</h3>
                 <ul class="feature-list">
-                    <li>Basic implementation using lightweight IoT library</li>
-                    <li>Fundamental TCP/IP support for connectivity</li>
-                    <li>Simplified socket interface</li>
-                    <li>Basic Ethernet driver framework</li>
-                    <li>Ping utility planned</li>
-                    <li>Minimalist approach to reduce complexity</li>
+                    <li>Designing an in-house IPv4/TCP/UDP pipeline</li>
+                    <li>Lightweight socket interface wired into IR0 syscalls</li>
+                    <li>Ethernet driver bring-up before higher-level protocols</li>
+                    <li>Focus on correctness over feature count for the first release</li>
                 </ul>
-                <p><small><strong>Note:</strong> Opted for a basic implementation with IoT library instead of porting
-                        Linux's complete stack (1.5M lines) to keep the kernel lightweight and manageable.</small></p>
+                <p><small><strong>Status:</strong> There is no network connectivity yet; groundwork is in progress to
+                        code the entire stack ourselves.</small></p>
             </div>
 
             <div class="info-card">
@@ -837,7 +844,7 @@ User Space:   0x40000000+ (1GB+)</pre>
                 <ul class="feature-list">
                     <li>Fix fork() context switching issues</li>
                     <li>Implement proper zombie reaping</li>
-                    <li>Integrate basic TCP/IP stack with IoT library</li>
+                    <li>Bootstrap the in-house TCP/IP stack</li>
                     <li>Improve ELF loader</li>
                     <li>Add USB framework</li>
                 </ul>
@@ -932,30 +939,85 @@ User Space:   0x40000000+ (1GB+)</pre>
                     <li>Constants: <code>CONSTANT_NAME</code></li>
                     <li>includes: <code>#INCLUDE -ir0/Lib.h - </code>(are being migrated to that format)</li>
                 </ul>
-                <h3>Comments:</h3>
+                <h3>Coding Style & Conventions:</h3>
+                <p>
+                    We try to follow the Linux kernel coding style, but with some specific adaptations for this project.
+                    These are <strong>desirable</strong> conventions, not strict rules (except for the brace style).
+                </p>
+
                 <ul class="feature-list">
-                    <li>header files .h of documented functions</li>
-                    <li>Source code files with comments in some functions, but more limited</li>
-                    <li>Explanation of complex algorithms</li>
-                    <li>TO DO's clearly marked</li>
-                    <li>References to technical documentation</li>
+                    <li><strong>Allman Style Braces (Important):</strong> We use the Allman style (braces on a new
+                        line). This is the most important formatting rule.</li>
+                    <li><strong>Comments:</strong> We prefer multi-line comments <code>/* ... */</code> over single-line
+                        <code>//</code>.
+                    </li>
+                    <li><strong>Conditionals:</strong> Single-line <code>if</code> statements should not use braces.
+                    </li>
+                    <li><strong>Error Handling:</strong> We use <code>goto</code> for cleanup logic when multiple exit
+                        points share the same cleanup code.</li>
                 </ul>
-                <small>This is approximate. I generally try to respect those conventions as much as I can.</small>
-                <br><br>
-                <li>Something like this would be in this example an average source code file:</li>
-                <br>
-                <img src="/Assets/funcion.c.png" alt="" srcset="" style="width: 50%;">
-                <br>
-                <i>Notice how I use the braces below the function name and the same in conditionals,
-                    loops, etc. Also how I don't use them directly when the conditional has a single line
-                    or there's certain nesting.</i>
-                <br>
-                <br>
-                <li>This is how I handle headers (or most):</li>
-                <br><br>
-                <img src="/Assets/header.png" alt="" srcset="">
-                <br>
-                <i>Large comments usually go in these .h and in the source we make notes.</i>
+
+                <div class="code-block">
+                    <pre><code class="language-c">/*
+ * Example of a function following IR0 conventions
+ * Note the Allman style braces and multi-line comments
+ */
+int process_data(struct data_t *data)
+{
+    if (!data)
+        return -1;  /* Single line if without braces */
+
+    char *buffer = kmalloc(1024);
+    if (!buffer)
+    {
+        /* 
+         * Braces are used here because the block 
+         * contains multiple lines or is complex 
+         */
+        return -ENOMEM;
+    }
+
+    if (prepare_buffer(buffer) < 0)
+        goto cleanup; /* Use goto for error handling/cleanup */
+
+    /* ... processing logic ... */
+
+    kfree(buffer);
+    return 0;
+
+cleanup:
+    kfree(buffer);
+    return -1;
+}</code></pre>
+                </div>
+
+                <h3>Header Files (.h):</h3>
+                <p>Header files should contain function prototypes, struct definitions, and detailed documentation in
+                    comments.</p>
+                <div class="code-block">
+                    <pre><code class="language-c">#ifndef _IR0_EXAMPLE_H
+#define _IR0_EXAMPLE_H
+
+/*
+ * struct example_t - Represents an example structure
+ * @id: Unique identifier
+ * @value: Associated value
+ */
+typedef struct
+{
+    int id;
+    int value;
+} example_t;
+
+/*
+ * process_example - Processes the example structure
+ * @ex: Pointer to the structure
+ * Returns: 0 on success, negative error code on failure
+ */
+int process_example(example_t *ex);
+
+#endif</code></pre>
+                </div>
             </div>
 
             <div class="info-card">
@@ -1363,26 +1425,24 @@ make unibuild FILES="fs/ramfs.c fs/vfs.c"</pre>
             <div class="info-card">
                 <h2>🌐 Network Subsystem</h2>
                 <p>
-                    Complete network stack based on Linux but optimized for the IR0 kernel, providing
-                    support for modern protocols and specific optimizations.
+                    We are drafting a custom TCP/IP stack written 100% by us, without importing Linux code or external
+                    libraries. The focus is on a maintainable, well-understood implementation tailored to IR0.
                 </p>
-                <h3>Supported Protocols:</h3>
+                <h3>Initial Scope (planned):</h3>
                 <ul class="feature-list">
-                    <li>Complete TCP/IP stack</li>
-                    <li>UDP with latency optimizations</li>
-                    <li>HTTP/2 and HTTP/3</li>
-                    <li>QUIC for fast connections</li>
-                    <li>IPv6 with automatic transition</li>
+                    <li>Ethernet + ARP + IPv4 support</li>
+                    <li>Minimal TCP and UDP implementations</li>
+                    <li>Socket API surfaced through existing syscalls</li>
+                    <li>Driver layer for a handful of NICs</li>
                 </ul>
-                <h3>Optimizations:</h3>
+                <h3>Future Goals:</h3>
                 <ul class="feature-list">
-                    <li>Zero-copy networking</li>
-                    <li>Kernel bypass for high-performance applications</li>
-                    <li>Network function virtualization (NFV)</li>
-                    <li>Intelligent load balancing</li>
+                    <li>IPv6 once IPv4 path is stable</li>
+                    <li>Basic tooling (ping, netstat) built on top of our stack</li>
+                    <li>Performance tuning specific to IR0 workloads</li>
+                    <li>Optional crypto/offload extensions</li>
                 </ul>
-                <p><strong>Status:</strong> Integration with Linux networking stack</p>
-                <p><strong>Files:</strong> net/tcp.c, net/udp.c, net/socket.c, net/protocols/</p>
+                <p><strong>Status:</strong> Research/design phase (no borrowed Linux subsystems).</p>
             </div>
 
             <div class="info-card">
@@ -1460,25 +1520,17 @@ make unibuild FILES="fs/ramfs.c fs/vfs.c"</pre>
             <div class="info-card">
                 <h2>🎯 Virtualization</h2>
                 <p>
-                    Virtualization subsystem that allows running multiple operating systems simultaneously,
-                    with support for containers and complete virtual machines.
+                    Virtualization support is a long-term research item aimed at running alternate OS instances for lab
+                    work. Containerization is not on the roadmap for IR0.
                 </p>
-                <h3>Virtualization Types:</h3>
+                <h3>Planned Exploration:</h3>
                 <ul class="feature-list">
-                    <li><strong>Containers:</strong> Light isolation with namespaces and cgroups</li>
-                    <li><strong>KVM:</strong> Kernel-based Virtual Machine for complete VMs</li>
-                    <li><strong>Xen:</strong> Type 1 hypervisor for bare-metal virtualization</li>
-                    <li><strong>Docker/OCI:</strong> Support for container standards</li>
+                    <li>Simple hypervisor hooks inspired by KVM concepts</li>
+                    <li>Paravirtualized drivers tailored to IR0 guests</li>
+                    <li>Debug-focused instrumentation rather than production HA features</li>
+                    <li>GPU/IO passthrough research once the basics are stable</li>
                 </ul>
-                <h3>Features:</h3>
-                <ul class="feature-list">
-                    <li>Hardware-assisted virtualization (Intel VT-x, AMD-V)</li>
-                    <li>Nested virtualization</li>
-                    <li>Live VM migration</li>
-                    <li>GPU passthrough for graphics acceleration</li>
-                    <li>Memory ballooning and overcommit</li>
-                </ul>
-                <p><strong>Files:</strong> virt/kvm/, virt/xen/, kernel/nsproxy.c, kernel/cgroup.c</p>
+                <p><strong>Status:</strong> Concept stage; no containers and no running VMs yet.</p>
             </div>
 
             <div class="info-card">
@@ -1602,17 +1654,7 @@ make unibuild FILES="fs/ramfs.c fs/vfs.c"</pre>
 
         </section>
 
-        <section id="contributors" class="section">
-            <h1 class="titulo-principal">Contributors</h1>
-            <div class="info-card">
-                <p>
-                    Special thanks to all the people who have contributed to the development of IR0.
-                </p>
-                <div id="contributors-grid" class="contributors-grid">
-                    <!-- Contributors will be loaded here -->
-                </div>
-            </div>
-        </section>
+
 
         <section id="descarga" class="section">
             <h1 class="titulo-guia">Downloads</h1>
