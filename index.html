@@ -126,9 +126,11 @@
 
             <div class="info-card">
                 <h2>Project Status</h2>
-                <p><strong>Version:</strong> v0.0.1 pre-release candidate 1<br>
-                    <strong>Architecture:</strong> x86-64 (primary), x86-32 (experimental), ARM (in development)<br>
+                <p><strong>Version:</strong> 0.0.1 pre-release 3<br>
+                    <strong>Architecture:</strong> x86-64 (primary), x86-32 (experimental), ARM32 (planned)<br>
                     <strong>Bootloader:</strong> GRUB<br>
+                    <strong>License:</strong> GNU General Public License v3.0<br>
+                    <strong>Development Status:</strong> Active Development<br>
                     <strong>License:</strong> GNU GPL v3.0<br>
                     <strong>Type:</strong> Monolithic Modular Kernel<br>
                     <strong>ASM Syntax:</strong> Intel (NASM)
@@ -138,6 +140,19 @@
 
         <section id="architecture" class="section">
             <h1 class="titulo-principal">System Architecture</h1>
+            
+            <div class="info-card">
+                <h2>Design Philosophy</h2>
+                <p>
+                    IR0 implements a <strong>modular monolithic kernel</strong> architecture where:
+                    <ul class="feature-list">
+                        <li>Core kernel services reside in Ring 0 (kernel space)</li>
+                        <li>User applications execute in Ring 3 (user space)</li>
+                        <li>System calls provide the interface between user and kernel space</li>
+                        <li>Modular design allows selective compilation of subsystems</li>
+                    </ul>
+                </p>
+            </div>
 
             <div class="architecture-box">
                 <h3>IR0 Kernel Architecture Diagram</h3>
@@ -477,6 +492,69 @@
 
         <section id="subsystems" class="section">
             <h1 class="titulo-principal">IR0 Kernel Subsystems</h1>
+            
+            <div class="info-card">
+                <h2>Process Management</h2>
+                <p><strong>Location:</strong> <code>kernel/process.c</code>, <code>kernel/task.c</code>, <code>kernel/init.c</code></p>
+                
+                <h3>Features:</h3>
+                <ul class="feature-list">
+                    <li><strong>Process States:</strong> NEW, READY, RUNNING, SLEEPING, STOPPED, ZOMBIE, DEAD</li>
+                    <li><strong>Process Lifecycle:</strong> Complete fork/exec/wait/exit implementation</li>
+                    <li><strong>Process Tree:</strong> Parent-child relationships with proper hierarchy</li>
+                    <li><strong>PID Management:</strong> Process ID assignment starting from PID 1</li>
+                    <li><strong>Context Switching:</strong> Full register preservation during context switches</li>
+                    <li><strong>Memory Isolation:</strong> Ring 0/3 separation with proper privilege levels</li>
+                </ul>
+                
+                <h3>Key Functions:</h3>
+                <div class="code-block">
+<pre>fork()  - Create child process
+exec()  - Execute new program
+exit()  - Terminate process
+wait()  - Wait for child process termination
+getpid() - Get current process ID</pre>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <h2>Memory Management</h2>
+                <p><strong>Location:</strong> <code>includes/ir0/memory/</code></p>
+                
+                <h3>Components:</h3>
+                <ul class="feature-list">
+                    <li><strong>Physical Memory Manager (PMM):</strong> Bitmap-based physical page tracking, page frame allocation/deallocation</li>
+                    <li><strong>Virtual Memory Manager (Paging):</strong> 4-level paging on x86-64, page fault handling, memory protection</li>
+                    <li><strong>Kernel Memory Allocator:</strong> <code>kmalloc()</code>/<code>kfree()</code> with slab allocator for efficient small object allocation</li>
+                </ul>
+                
+                <h3>Memory Layout:</h3>
+                <div class="code-block">
+<pre>0x00000000 - 0xFFFFFFFF: Kernel Space (Identity Mapped)
+0x100000000+: User Space (Per-Process Virtual Address Space)</pre>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <h2>Scheduler</h2>
+                <p><strong>Location:</strong> <code>kernel/rr_sched.c</code>, <code>kernel/scheduler/</code></p>
+                
+                <h3>Algorithms Implemented:</h3>
+                <ol class="feature-list">
+                    <li><strong>Round-Robin (RR):</strong> Time-sliced scheduling with quantum</li>
+                    <li><strong>Priority-Based:</strong> Priority queue scheduling</li>
+                    <li><strong>CFS (Completely Fair Scheduler):</strong> Red-Black Tree implementation with O(log n) complexity</li>
+                </ol>
+                
+                <h3>Features:</h3>
+                <ul class="feature-list">
+                    <li>Preemptive multitasking</li>
+                    <li>Timer-based preemption</li>
+                    <li>Assembly-optimized context switching (<code>switch_x64.asm</code>)</li>
+                    <li>Process priority management</li>
+                    <li>Load balancing</li>
+                </ul>
+            </div>
 
             <div class="info-card">
                 <h2>Project Status</h2>
@@ -576,6 +654,8 @@ SYS_EXEC(56)        - Execute program</pre>
                 </div>
 
                 <h3>✅ Syscall Mechanism</h3>
+                <p><strong>Location:</strong> <code>kernel/syscalls.c</code>, <code>arch/x86-64/asm/syscall_entry_64.asm</code></p>
+                <p><strong>Implementation:</strong> 45+ system calls implemented with INT 0x80 interface (legacy) and SYSCALL/SYSRET (x86-64)</p>
                 <ul class="feature-list">
                     <li>INT 0x80 software interrupt interface</li>
                     <li>Register-based parameter passing</li>
@@ -675,8 +755,20 @@ SYS_EXEC(56)        - Execute program</pre>
             <div class="info-card">
                 <h2>📁 File System</h2>
                 <h3>✅ Virtual File System (VFS)</h3>
+                <p><strong>Location:</strong> <code>fs/</code></p>
+                <h4>VFS Architecture Components:</h4>
                 <ul class="feature-list">
-                    <li>Unified filesystem abstraction layer</li>
+                    <li><strong>VFS Abstraction Layer</strong> (<code>vfs.c</code>, <code>vfs.h</code>) - Unified interface for all filesystems</li>
+                    <li><strong>VFS Simple Implementation</strong> (<code>vfs_simple.c</code>) - Simplified VFS operations</li>
+                    <li><strong>Path Resolution</strong> (<code>path.c</code>) - Path parsing and resolution</li>
+                    <li><strong>File Operations</strong> (<code>kernel/fs/file.c</code>) - File descriptor management</li>
+                </ul>
+                
+                <h4>Supported Filesystems:</h4>
+                <ul class="feature-list">
+                    <li><strong>MINIX Filesystem</strong> (<code>fs/minix_fs.c</code>, <code>fs/minix_fs.h</code>) - Full MINIX v1/v2 support with directory and file operations</li>
+                    <li><strong>RAM Filesystem</strong> - In-memory filesystem for temporary storage</li>
+                </ul>
                     <li>Multiple filesystem support framework</li>
                     <li>Standard file operations (open, read, write, close)</li>
                     <li>Directory operations (mkdir, rmdir, ls)</li>
