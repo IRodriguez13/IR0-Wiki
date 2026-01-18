@@ -494,65 +494,215 @@
             <h1 class="titulo-principal">IR0 Kernel Subsystems</h1>
             
             <div class="info-card">
-                <h2>Process Management</h2>
-                <p><strong>Location:</strong> <code>kernel/process.c</code>, <code>kernel/task.c</code>, <code>kernel/init.c</code></p>
+                <h2>⚙️ Process Management</h2>
+                <p><strong>Location:</strong> <code>kernel/process.c</code>, <code>kernel/process.h</code></p>
                 
-                <h3>Features:</h3>
+                <p>The process management subsystem handles the complete lifecycle of processes in the IR0 kernel, including creation, execution, termination, and parent-child relationships. It provides process isolation through separate page directories and supports signal-based inter-process communication.</p>
+                
+                <h3>Process Structure</h3>
+                <p>Each process is represented by a <code>process_t</code> structure containing:</p>
                 <ul class="feature-list">
-                    <li><strong>Process States:</strong> NEW, READY, RUNNING, SLEEPING, STOPPED, ZOMBIE, DEAD</li>
-                    <li><strong>Process Lifecycle:</strong> Complete fork/exec/wait/exit implementation</li>
-                    <li><strong>Process Tree:</strong> Parent-child relationships with proper hierarchy</li>
-                    <li><strong>PID Management:</strong> Process ID assignment starting from PID 1</li>
-                    <li><strong>Context Switching:</strong> Full register preservation during context switches</li>
-                    <li><strong>Memory Isolation:</strong> Ring 0/3 separation with proper privilege levels</li>
+                    <li><strong>Task Context</strong> - CPU register state (RAX, RBX, RCX, RDX, RSI, RDI, RSP, RBP, RIP, RFLAGS, segments)</li>
+                    <li><strong>Process ID</strong> - Unique identifier (starts from PID 2, PID 1 is init)</li>
+                    <li><strong>Parent Process ID</strong> - Parent process identifier</li>
+                    <li><strong>Process State</strong> - READY, RUNNING, BLOCKED, or ZOMBIE</li>
+                    <li><strong>Execution Mode</strong> - KERNEL_MODE or USER_MODE</li>
+                    <li><strong>Page Directory</strong> - Virtual memory isolation (separate page tables per process)</li>
+                    <li><strong>Memory Layout</strong> - Stack, heap boundaries, and memory mappings</li>
+                    <li><strong>File Descriptors</strong> - Table of open file descriptors (max 32 per process)</li>
+                    <li><strong>Signal Pending</strong> - Bitmask of pending signals</li>
                 </ul>
                 
-                <h3>Key Functions:</h3>
-                <div class="code-block">
-<pre>fork()  - Create child process
-exec()  - Execute new program
-exit()  - Terminate process
-wait()  - Wait for child process termination
-getpid() - Get current process ID</pre>
-                </div>
+                <h3>Process States</h3>
+                <ul class="feature-list">
+                    <li><strong>PROCESS_READY</strong> (0) - Process is ready to run, waiting to be scheduled</li>
+                    <li><strong>PROCESS_RUNNING</strong> (1) - Process is currently executing on CPU</li>
+                    <li><strong>PROCESS_BLOCKED</strong> (2) - Process is waiting for I/O or other events</li>
+                    <li><strong>PROCESS_ZOMBIE</strong> (3) - Process has terminated but parent hasn't called <code>wait()</code> yet</li>
+                </ul>
+                
+                <h3>Process Lifecycle</h3>
+                <h4>Process Creation</h4>
+                <p><code>process_spawn()</code> - Creates a new process deterministically with a specified entry point and name:</p>
+                <ul class="feature-list">
+                    <li>Creates isolated process with separate page directory</li>
+                    <li>Allocates 8KB stack</li>
+                    <li>Sets up CPU context for user mode (Ring 3)</li>
+                    <li>Registers process in scheduler</li>
+                    <li>Assigns sequential PID (starting from 2)</li>
+                    <li>Sets parent to current process</li>
+                </ul>
+                
+                <h4>Process Termination</h4>
+                <p><code>process_exit()</code> - Terminates the current process:</p>
+                <ul class="feature-list">
+                    <li>Sets process state to ZOMBIE</li>
+                    <li>Stores exit code</li>
+                    <li>Reparents orphaned children to init (PID 1)</li>
+                    <li>Sends SIGCHLD signal to parent process</li>
+                    <li>Halts execution until reaped by parent</li>
+                </ul>
+                
+                <h4>Process Waiting</h4>
+                <p><code>process_wait()</code> - Waits for a child process to terminate and retrieves its exit status:</p>
+                <ul class="feature-list">
+                    <li>Searches for zombie child process with matching PID</li>
+                    <li>Retrieves exit code and removes from process list</li>
+                    <li>Returns child PID on success</li>
+                </ul>
+                
+                <h3>Signal Integration</h3>
+                <p>The process subsystem integrates with the signal system for inter-process communication and error handling:</p>
+                <ul class="feature-list">
+                    <li><strong>CPU Exceptions → Signals:</strong> SIGSEGV (page fault), SIGFPE (divide by zero), SIGILL (invalid opcode)</li>
+                    <li><strong>Termination Signals:</strong> SIGKILL, SIGTERM, SIGINT, SIGQUIT</li>
+                    <li><strong>Process Control:</strong> SIGCHLD (child terminated), SIGSTOP, SIGCONT</li>
+                    <li>Signals are handled before each context switch</li>
+                    <li>Fatal signals terminate the process</li>
+                </ul>
+                
+                <h3>Memory Isolation</h3>
+                <p>Each process has its own page directory (CR3 register) for memory isolation:</p>
+                <ul class="feature-list">
+                    <li><strong>Kernel Space</strong> - Shared across all processes (identity mapped)</li>
+                    <li><strong>User Space</strong> - Process-specific virtual address space</li>
+                    <li><strong>Stack</strong> - Private 8KB stack per process</li>
+                    <li><strong>Heap</strong> - Managed by <code>brk()</code> syscall (per-process heap)</li>
+                </ul>
             </div>
             
             <div class="info-card">
-                <h2>Memory Management</h2>
-                <p><strong>Location:</strong> <code>includes/ir0/memory/</code></p>
+                <h2>🛡️ Memory Management</h2>
+                <p><strong>Location:</strong> <code>mm/pmm.c</code>, <code>mm/allocator.c</code>, <code>mm/paging.c</code></p>
                 
-                <h3>Components:</h3>
+                <p>The memory management subsystem provides three layers of memory allocation and management: Physical Memory Manager (PMM) for frame allocation, heap allocator for dynamic kernel memory, and paging system for virtual memory and process isolation.</p>
+                
+                <h3>Physical Memory Manager (PMM)</h3>
+                <p><strong>Location:</strong> <code>mm/pmm.h</code>, <code>mm/pmm.c</code></p>
+                <p>The PMM manages physical memory frames (4KB pages) using a bitmap-based allocator:</p>
                 <ul class="feature-list">
-                    <li><strong>Physical Memory Manager (PMM):</strong> Bitmap-based physical page tracking, page frame allocation/deallocation</li>
-                    <li><strong>Virtual Memory Manager (Paging):</strong> 4-level paging on x86-64, page fault handling, memory protection</li>
-                    <li><strong>Kernel Memory Allocator:</strong> <code>kmalloc()</code>/<code>kfree()</code> with slab allocator for efficient small object allocation</li>
+                    <li><strong>Memory Region:</strong> 8MB to 32MB (24MB total, ~6000 frames)</li>
+                    <li><strong>Algorithm:</strong> First-fit bitmap search</li>
+                    <li><strong>Operations:</strong> <code>pmm_alloc_frame()</code> - Allocates a frame, <code>pmm_free_frame()</code> - Deallocates a frame</li>
+                    <li><strong>Statistics:</strong> <code>pmm_stats()</code> - Provides total/used/free frame counts</li>
+                    <li><strong>Encoding:</strong> 1 bit per 4KB frame (1 = used, 0 = free)</li>
                 </ul>
                 
-                <h3>Memory Layout:</h3>
+                <h3>Heap Allocator</h3>
+                <p><strong>Location:</strong> <code>includes/ir0/kmem.h</code>, <code>mm/allocator.c</code></p>
+                <p>Dynamic memory allocation for kernel code using a free-list with boundary tags:</p>
+                <ul class="feature-list">
+                    <li><strong>Algorithm:</strong> Free-list with boundary tags for efficient coalescing</li>
+                    <li><strong>Allocation:</strong> First-fit search with block splitting</li>
+                    <li><strong>Deallocation:</strong> Forward and backward coalescing (O(1) operations)</li>
+                    <li><strong>API:</strong> <code>kmalloc()</code>, <code>kmalloc_aligned()</code>, <code>krealloc()</code>, <code>kfree()</code>, <code>kfree_aligned()</code></li>
+                    <li><strong>Structure:</strong> Each block has header (start) and footer (end) with size and free status</li>
+                </ul>
+                
+                <h3>Paging System</h3>
+                <p><strong>Location:</strong> <code>mm/paging.h</code>, <code>mm/paging.c</code></p>
+                <p>Virtual memory management and process isolation through separate page directories:</p>
+                <ul class="feature-list">
+                    <li><strong>Page Sizes:</strong> 4KB pages (standard), 2MB pages (identity mapping), 1GB pages (defined but unused)</li>
+                    <li><strong>x86-64 Structure:</strong> PML4 → PDPT → PD → PT (4-level paging)</li>
+                    <li><strong>Page Flags:</strong> PRESENT, RW, USER, WRITETHROUGH, CACHE_DISABLE, ACCESSED, DIRTY, SIZE_2MB, GLOBAL</li>
+                    <li><strong>Process Isolation:</strong> Each process has its own page directory (CR3 register)</li>
+                    <li><strong>Identity Mapping:</strong> First 16MB using 2MB pages for kernel space</li>
+                    <li><strong>Operations:</strong> <code>map_page()</code>, <code>unmap_page()</code>, <code>create_process_page_directory()</code></li>
+                </ul>
+                
+                <h3>Memory Regions</h3>
+                <h4>Kernel Memory Map</h4>
                 <div class="code-block">
-<pre>0x00000000 - 0xFFFFFFFF: Kernel Space (Identity Mapped)
-0x100000000+: User Space (Per-Process Virtual Address Space)</pre>
+<pre>0x000000 - 0x100000  Boot code, kernel code
+0x100000 - 0x800000  Kernel heap (grows upward)
+0x800000 - 0x2000000 PMM managed frames (8MB-32MB, 24MB)
+0x2000000+          Kernel data, stacks</pre>
                 </div>
+                
+                <h4>Process Memory Layout</h4>
+                <ul class="feature-list">
+                    <li><strong>Code Segment</strong> - ELF binary loaded into user space</li>
+                    <li><strong>Stack</strong> - 8KB default, grows downward from high address</li>
+                    <li><strong>Heap</strong> - Grows upward from low address, managed by <code>brk()</code> syscall</li>
+                    <li><strong>Page Directory</strong> - Isolated virtual address space</li>
+                </ul>
+                
+                <h3>Implementation Notes</h3>
+                <ul class="feature-list">
+                    <li><strong>No Copy-on-Write:</strong> Fork operations don't use COW (intentional limitation)</li>
+                    <li><strong>No Swap:</strong> All memory is physical (no disk swapping)</li>
+                    <li><strong>Simple Algorithms:</strong> First-fit for both PMM and heap (not optimized)</li>
+                    <li><strong>No NUMA:</strong> Assumes uniform memory access</li>
+                    <li><strong>Single CPU:</strong> No SMP-aware memory management</li>
+                </ul>
             </div>
             
             <div class="info-card">
-                <h2>Scheduler</h2>
-                <p><strong>Location:</strong> <code>kernel/rr_sched.c</code>, <code>kernel/scheduler/</code></p>
+                <h2>🔄 Scheduler</h2>
+                <p><strong>Location:</strong> <code>kernel/rr_sched.c</code>, <code>kernel/rr_sched.h</code></p>
                 
-                <h3>Algorithms Implemented:</h3>
-                <ol class="feature-list">
-                    <li><strong>Round-Robin (RR):</strong> Time-sliced scheduling with quantum</li>
-                    <li><strong>Priority-Based:</strong> Priority queue scheduling</li>
-                    <li><strong>CFS (Completely Fair Scheduler):</strong> Red-Black Tree implementation with O(log n) complexity</li>
-                </ol>
+                <p>The scheduling subsystem manages CPU time allocation among processes. IR0 currently implements a simple Round-Robin scheduler that provides fair time-sharing among all ready processes. The scheduler integrates with the process management and signal handling subsystems.</p>
                 
-                <h3>Features:</h3>
+                <h3>Round-Robin Algorithm</h3>
+                <p>The Round-Robin scheduler maintains a circular linked list of processes:</p>
                 <ul class="feature-list">
-                    <li>Preemptive multitasking</li>
-                    <li>Timer-based preemption</li>
-                    <li>Assembly-optimized context switching (<code>switch_x64.asm</code>)</li>
-                    <li>Process priority management</li>
-                    <li>Load balancing</li>
+                    <li><strong>Process Queue:</strong> Linked list of <code>rr_task_t</code> nodes, each containing a <code>process_t*</code></li>
+                    <li><strong>Current Pointer:</strong> Points to the currently executing process node</li>
+                    <li><strong>Circular Selection:</strong> Each context switch advances to the next node, wrapping to head when reaching tail</li>
+                </ul>
+                
+                <h3>Operations</h3>
+                <h4>Adding Processes</h4>
+                <p><code>rr_add_process()</code> - Adds a process to the scheduler queue:</p>
+                <ul class="feature-list">
+                    <li>Validates process pointer</li>
+                    <li>Allocates new <code>rr_task_t</code> node</li>
+                    <li>Sets process state to PROCESS_READY</li>
+                    <li>Appends to tail of queue</li>
+                </ul>
+                
+                <h4>Scheduling Next Process</h4>
+                <p><code>rr_schedule_next()</code> - Performs context switch to next process:</p>
+                <ul class="feature-list">
+                    <li><strong>Selection:</strong> Advances to next node (wraps to head if at tail)</li>
+                    <li><strong>State Update:</strong> Previous → PROCESS_READY, Next → PROCESS_RUNNING</li>
+                    <li><strong>Signal Handling:</strong> Calls <code>handle_signals()</code> before context switch</li>
+                    <li><strong>Context Switch:</strong> First switch uses <code>jmp_ring3()</code>, subsequent use <code>switch_context_x64()</code></li>
+                </ul>
+                
+                <h3>Context Switching</h3>
+                <p>Context switching saves/restores CPU state (<code>kernel/scheduler/switch/switch_x64.asm</code>):</p>
+                <ul class="feature-list">
+                    <li><strong>Saved Registers:</strong> RAX-R15, RSP, RBP, RIP, RFLAGS, segments (CS, DS, ES, FS, GS, SS)</li>
+                    <li><strong>Memory Isolation:</strong> Switches page directory (CR3 register) for process isolation</li>
+                    <li><strong>Process:</strong> Save current → Load CR3 → Load segments → Load registers → Execute IRETQ</li>
+                </ul>
+                
+                <h3>Time Slicing</h3>
+                <p>Current implementation:</p>
+                <ul class="feature-list">
+                    <li><strong>No explicit time slicing</strong> - Processes run until they voluntarily yield, block on I/O, exit, or receive a blocking/terminating signal</li>
+                    <li><strong>Future:</strong> Integration with timer interrupts for preemptive scheduling with time slices (e.g., 10ms per process)</li>
+                </ul>
+                
+                <h3>Signal Integration</h3>
+                <p>The scheduler calls <code>handle_signals()</code> before each context switch:</p>
+                <ul class="feature-list">
+                    <li>Checks for pending signals in current process</li>
+                    <li>Handles signals in priority order (SIGKILL, CPU exceptions, termination signals)</li>
+                    <li>Clears signal bitmask after handling</li>
+                    <li>Ensures signals are processed synchronously before process execution continues</li>
+                </ul>
+                
+                <h3>Limitations</h3>
+                <ul class="feature-list">
+                    <li><strong>No Priorities:</strong> All processes have equal priority</li>
+                    <li><strong>No Nice Values:</strong> Cannot adjust process priority</li>
+                    <li><strong>Cooperative Multitasking:</strong> Processes must yield voluntarily</li>
+                    <li><strong>No Preemption:</strong> Timer interrupts don't trigger context switches</li>
+                    <li><strong>Simple Queue:</strong> Linked list, not optimized for many processes</li>
+                    <li><strong>No Load Balancing:</strong> Single CPU only (no SMP support)</li>
                 </ul>
             </div>
 

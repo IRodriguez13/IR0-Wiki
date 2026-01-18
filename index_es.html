@@ -522,35 +522,149 @@
                     <li>Manejo de fallos de página con lectura de dirección CR2</li>
                 </ul>
             </div>
+            
+            <div class="info-card">
+                <h2>🛡️ Gestión de Memoria</h2>
+                <p><strong>Ubicación:</strong> <code>mm/pmm.c</code>, <code>mm/allocator.c</code>, <code>mm/paging.c</code></p>
+                
+                <p>El subsistema de gestión de memoria proporciona tres capas de asignación y gestión de memoria: Administrador de Memoria Física (PMM) para asignación de frames, asignador de heap para memoria dinámica del kernel, y sistema de paginación para memoria virtual y aislamiento de procesos.</p>
+                
+                <h3>Administrador de Memoria Física (PMM)</h3>
+                <p><strong>Ubicación:</strong> <code>mm/pmm.h</code>, <code>mm/pmm.c</code></p>
+                <p>El PMM gestiona frames de memoria física (páginas de 4KB) usando un asignador basado en bitmap:</p>
+                <ul class="feature-list">
+                    <li><strong>Región de Memoria:</strong> 8MB a 32MB (24MB total, ~6000 frames)</li>
+                    <li><strong>Algoritmo:</strong> Búsqueda first-fit en bitmap</li>
+                    <li><strong>Operaciones:</strong> <code>pmm_alloc_frame()</code> - Asigna un frame, <code>pmm_free_frame()</code> - Desasigna un frame</li>
+                    <li><strong>Estadísticas:</strong> <code>pmm_stats()</code> - Proporciona conteos de frames totales/usados/libres</li>
+                    <li><strong>Codificación:</strong> 1 bit por frame de 4KB (1 = usado, 0 = libre)</li>
+                </ul>
+                
+                <h3>Asignador de Heap</h3>
+                <p><strong>Ubicación:</strong> <code>includes/ir0/kmem.h</code>, <code>mm/allocator.c</code></p>
+                <p>Asignación dinámica de memoria para código del kernel usando una free-list con boundary tags:</p>
+                <ul class="feature-list">
+                    <li><strong>Algoritmo:</strong> Free-list con boundary tags para coalescencia eficiente</li>
+                    <li><strong>Asignación:</strong> Búsqueda first-fit con división de bloques</li>
+                    <li><strong>Desasignación:</strong> Coalescencia hacia adelante y hacia atrás (operaciones O(1))</li>
+                    <li><strong>API:</strong> <code>kmalloc()</code>, <code>kmalloc_aligned()</code>, <code>krealloc()</code>, <code>kfree()</code>, <code>kfree_aligned()</code></li>
+                    <li><strong>Estructura:</strong> Cada bloque tiene header (inicio) y footer (fin) con tamaño y estado libre</li>
+                </ul>
+                
+                <h3>Sistema de Paginación</h3>
+                <p><strong>Ubicación:</strong> <code>mm/paging.h</code>, <code>mm/paging.c</code></p>
+                <p>Gestión de memoria virtual y aislamiento de procesos a través de directorios de página separados:</p>
+                <ul class="feature-list">
+                    <li><strong>Tamaños de Página:</strong> Páginas de 4KB (estándar), páginas de 2MB (mapeo idéntico), páginas de 1GB (definidas pero no usadas)</li>
+                    <li><strong>Estructura x86-64:</strong> PML4 → PDPT → PD → PT (paginación de 4 niveles)</li>
+                    <li><strong>Banderas de Página:</strong> PRESENT, RW, USER, WRITETHROUGH, CACHE_DISABLE, ACCESSED, DIRTY, SIZE_2MB, GLOBAL</li>
+                    <li><strong>Aislamiento de Proceso:</strong> Cada proceso tiene su propio directorio de página (registro CR3)</li>
+                    <li><strong>Mapeo Idéntico:</strong> Primeros 16MB usando páginas de 2MB para espacio del kernel</li>
+                    <li><strong>Operaciones:</strong> <code>map_page()</code>, <code>unmap_page()</code>, <code>create_process_page_directory()</code></li>
+                </ul>
+                
+                <h3>Regiones de Memoria</h3>
+                <h4>Mapa de Memoria del Kernel</h4>
+                <div class="code-block">
+<pre>0x000000 - 0x100000  Código de arranque, código del kernel
+0x100000 - 0x800000  Heap del kernel (crece hacia arriba)
+0x800000 - 0x2000000 Frames gestionados por PMM (8MB-32MB, 24MB)
+0x2000000+          Datos del kernel, stacks</pre>
+                </div>
+                
+                <h4>Layout de Memoria del Proceso</h4>
+                <ul class="feature-list">
+                    <li><strong>Segmento de Código</strong> - Binario ELF cargado en espacio de usuario</li>
+                    <li><strong>Stack</strong> - 8KB por defecto, crece hacia abajo desde dirección alta</li>
+                    <li><strong>Heap</strong> - Crece hacia arriba desde dirección baja, gestionado por syscall <code>brk()</code></li>
+                    <li><strong>Directorio de Página</strong> - Espacio de direcciones virtuales aislado</li>
+                </ul>
+                
+                <h3>Notas de Implementación</h3>
+                <ul class="feature-list">
+                    <li><strong>Sin Copy-on-Write:</strong> Operaciones fork no usan COW (limitación intencional)</li>
+                    <li><strong>Sin Swap:</strong> Toda la memoria es física (sin intercambio a disco)</li>
+                    <li><strong>Algoritmos Simples:</strong> First-fit tanto para PMM como heap (no optimizado)</li>
+                    <li><strong>Sin NUMA:</strong> Asume acceso uniforme a memoria</li>
+                    <li><strong>CPU Única:</strong> Sin gestión de memoria consciente de SMP</li>
+                </ul>
+            </div>
 
             <div class="info-card">
                 <h2>⚙️ Gestión de Procesos</h2>
-                <h3>✅ Sistema de Procesos</h3>
+                <p><strong>Ubicación:</strong> <code>kernel/process.c</code>, <code>kernel/process.h</code></p>
+                
+                <p>El subsistema de gestión de procesos maneja el ciclo de vida completo de los procesos en el kernel IR0, incluyendo creación, ejecución, terminación y relaciones padre-hijo. Proporciona aislamiento de procesos a través de directorios de página separados y soporta comunicación entre procesos basada en señales.</p>
+                
+                <h3>Estructura de Proceso</h3>
+                <p>Cada proceso está representado por una estructura <code>process_t</code> que contiene:</p>
                 <ul class="feature-list">
-                    <li>Gestión completa del ciclo de vida de procesos</li>
-                    <li>Estados de proceso: READY, RUNNING, BLOCKED, ZOMBIE</li>
-                    <li>Asignación de PID comenzando desde PID 1</li>
-                    <li>Creación de procesos con syscall fork()</li>
-                    <li>Terminación de procesos con syscall exit()</li>
-                    <li>Relaciones padre-hijo con waitpid()</li>
+                    <li><strong>Contexto de Tarea</strong> - Estado de registros CPU (RAX, RBX, RCX, RDX, RSI, RDI, RSP, RBP, RIP, RFLAGS, segmentos)</li>
+                    <li><strong>ID de Proceso</strong> - Identificador único (comienza desde PID 2, PID 1 es init)</li>
+                    <li><strong>ID de Proceso Padre</strong> - Identificador del proceso padre</li>
+                    <li><strong>Estado del Proceso</strong> - READY, RUNNING, BLOCKED, o ZOMBIE</li>
+                    <li><strong>Modo de Ejecución</strong> - KERNEL_MODE o USER_MODE</li>
+                    <li><strong>Directorio de Página</strong> - Aislamiento de memoria virtual (tablas de página separadas por proceso)</li>
+                    <li><strong>Layout de Memoria</strong> - Límites de stack y heap, y mapeos de memoria</li>
+                    <li><strong>Descriptores de Archivo</strong> - Tabla de descriptores de archivo abiertos (máx. 32 por proceso)</li>
+                    <li><strong>Señal Pendiente</strong> - Máscara de bits de señales pendientes</li>
                 </ul>
-
-                <h3>✅ Planificador</h3>
+                
+                <h3>Estados de Proceso</h3>
                 <ul class="feature-list">
-                    <li>Implementación CFS (Completely Fair Scheduler)</li>
-                    <li>Cola de ejecución Red-Black Tree para operaciones O(log n)</li>
-                    <li>Seguimiento de tiempo virtual (vruntime) para equidad</li>
-                    <li>Soporte de valores nice (-20 a +19)</li>
-                    <li>Multitarea preemptiva con integración de timer</li>
-                    <li>Cambio de contexto en ensamblador x86-64 optimizado</li>
+                    <li><strong>PROCESS_READY</strong> (0) - Proceso está listo para ejecutar, esperando ser planificado</li>
+                    <li><strong>PROCESS_RUNNING</strong> (1) - Proceso está ejecutándose actualmente en CPU</li>
+                    <li><strong>PROCESS_BLOCKED</strong> (2) - Proceso está esperando I/O u otros eventos</li>
+                    <li><strong>PROCESS_ZOMBIE</strong> (3) - Proceso ha terminado pero el padre no ha llamado <code>wait()</code> todavía</li>
                 </ul>
-
-                <h3>✅ Sistema Init</h3>
+                
+                <h3>Ciclo de Vida del Proceso</h3>
+                <h4>Creación de Proceso</h4>
+                <p><code>process_spawn()</code> - Crea un nuevo proceso determinísticamente con un punto de entrada y nombre especificados:</p>
                 <ul class="feature-list">
-                    <li>Proceso init PID 1 (mini-systemd)</li>
-                    <li>Gestión de servicios y respawn</li>
-                    <li>Cambio a modo usuario desde kernel</li>
-                    <li>Gestión de servicios shell</li>
+                    <li>Crea proceso aislado con directorio de página separado</li>
+                    <li>Asigna stack de 8KB</li>
+                    <li>Configura contexto CPU para modo usuario (Ring 3)</li>
+                    <li>Registra proceso en planificador</li>
+                    <li>Asigna PID secuencial (comenzando desde 2)</li>
+                    <li>Establece padre al proceso actual</li>
+                </ul>
+                
+                <h4>Terminación de Proceso</h4>
+                <p><code>process_exit()</code> - Termina el proceso actual:</p>
+                <ul class="feature-list">
+                    <li>Establece estado del proceso a ZOMBIE</li>
+                    <li>Almacena código de salida</li>
+                    <li>Reasigna procesos hijos huérfanos a init (PID 1)</li>
+                    <li>Envía señal SIGCHLD al proceso padre</li>
+                    <li>Detiene ejecución hasta ser limpiado por el padre</li>
+                </ul>
+                
+                <h4>Espera de Proceso</h4>
+                <p><code>process_wait()</code> - Espera a que un proceso hijo termine y recupera su estado de salida:</p>
+                <ul class="feature-list">
+                    <li>Busca proceso hijo zombie con PID coincidente</li>
+                    <li>Recupera código de salida y elimina de la lista de procesos</li>
+                    <li>Devuelve PID del hijo en éxito</li>
+                </ul>
+                
+                <h3>Integración de Señales</h3>
+                <p>El subsistema de procesos se integra con el sistema de señales para comunicación entre procesos y manejo de errores:</p>
+                <ul class="feature-list">
+                    <li><strong>Excepciones CPU → Señales:</strong> SIGSEGV (fallo de página), SIGFPE (división por cero), SIGILL (opcode inválido)</li>
+                    <li><strong>Señales de Terminación:</strong> SIGKILL, SIGTERM, SIGINT, SIGQUIT</li>
+                    <li><strong>Control de Proceso:</strong> SIGCHLD (hijo terminado), SIGSTOP, SIGCONT</li>
+                    <li>Las señales se manejan antes de cada cambio de contexto</li>
+                    <li>Las señales fatales terminan el proceso</li>
+                </ul>
+                
+                <h3>Aislamiento de Memoria de Proceso</h3>
+                <p>Cada proceso tiene su propio directorio de página (registro CR3) para aislamiento de memoria:</p>
+                <ul class="feature-list">
+                    <li><strong>Espacio del Kernel</strong> - Compartido entre todos los procesos (mapeado idéntico)</li>
+                    <li><strong>Espacio de Usuario</strong> - Espacio de direcciones virtuales específico del proceso</li>
+                    <li><strong>Stack</strong> - Stack privado de 8KB por proceso</li>
+                    <li><strong>Heap</strong> - Gestionado por syscall <code>brk()</code> (heap por proceso)</li>
                 </ul>
             </div>
 
@@ -1315,27 +1429,70 @@ make unibuild FILES="fs/ramfs.c fs/vfs.c"</pre>
 
             <div class="info-card">
                 <h2>🔄 Scheduler (Planificador)</h2>
-                <p>
-                    El scheduler es el corazón del sistema de multiprocesamiento. Actualmente implementa un algoritmo
-                    <a href="https://en.wikipedia.org/wiki/Round-robin_scheduling" target="_blank"
-                        rel="noopener noreferrer">Round-Robin</a> simple como fallback, pero el objetivo es migrar a un
-                    scheduler preemptivo con esquema de prioridades similar al CFS (Completely Fair Scheduler) de Linux.
-                </p>
-                <h3>Características Actuales:</h3>
+                <p><strong>Ubicación:</strong> <code>kernel/rr_sched.c</code>, <code>kernel/rr_sched.h</code></p>
+                
+                <p>El subsistema de planificación gestiona la asignación de tiempo de CPU entre procesos. IR0 implementa actualmente un planificador Round-Robin simple que proporciona tiempo compartido justo entre todos los procesos listos. El planificador se integra con los subsistemas de gestión de procesos y manejo de señales.</p>
+                
+                <h3>Algoritmo Round-Robin</h3>
+                <p>El planificador Round-Robin mantiene una lista enlazada circular de procesos:</p>
                 <ul class="feature-list">
-                    <li>Algoritmo Round-Robin con quantum fijo</li>
-                    <li>Soporte para múltiples niveles de prioridad</li>
-                    <li>Manejo básico de estados de proceso (Ready, Running, Blocked)</li>
-                    <li>Context switching optimizado en ensamblador</li>
+                    <li><strong>Cola de Procesos:</strong> Lista enlazada de nodos <code>rr_task_t</code>, cada uno contiene un <code>process_t*</code></li>
+                    <li><strong>Puntero Actual:</strong> Apunta al nodo del proceso que se está ejecutando actualmente</li>
+                    <li><strong>Selección Circular:</strong> Cada cambio de contexto avanza al siguiente nodo, volviendo a la cabeza al llegar a la cola</li>
                 </ul>
-                <h3>Próximas Mejoras:</h3>
+                
+                <h3>Operaciones</h3>
+                <h4>Agregar Procesos</h4>
+                <p><code>rr_add_process()</code> - Agrega un proceso a la cola del planificador:</p>
                 <ul class="feature-list">
-                    <li>Implementación de scheduler preemptivo</li>
-                    <li>Algoritmo CFS para distribución equitativa de CPU</li>
-                    <li>Soporte para real-time scheduling</li>
-                    <li>Load balancing entre núcleos</li>
+                    <li>Valida puntero de proceso</li>
+                    <li>Asigna nuevo nodo <code>rr_task_t</code></li>
+                    <li>Establece estado del proceso a PROCESS_READY</li>
+                    <li>Añade a la cola de la cola</li>
                 </ul>
-                <p><strong>Archivos:</strong> scheduler/scheduler.c, scheduler/task.h, scheduler/switch/switch.asm</p>
+                
+                <h4>Planificar Siguiente Proceso</h4>
+                <p><code>rr_schedule_next()</code> - Realiza cambio de contexto al siguiente proceso:</p>
+                <ul class="feature-list">
+                    <li><strong>Selección:</strong> Avanza al siguiente nodo (vuelve a la cabeza si está en la cola)</li>
+                    <li><strong>Actualización de Estado:</strong> Anterior → PROCESS_READY, Siguiente → PROCESS_RUNNING</li>
+                    <li><strong>Manejo de Señales:</strong> Llama <code>handle_signals()</code> antes del cambio de contexto</li>
+                    <li><strong>Cambio de Contexto:</strong> Primer cambio usa <code>jmp_ring3()</code>, subsiguientes usan <code>switch_context_x64()</code></li>
+                </ul>
+                
+                <h3>Cambio de Contexto</h3>
+                <p>El cambio de contexto guarda/restaura el estado CPU (<code>kernel/scheduler/switch/switch_x64.asm</code>):</p>
+                <ul class="feature-list">
+                    <li><strong>Registros Guardados:</strong> RAX-R15, RSP, RBP, RIP, RFLAGS, segmentos (CS, DS, ES, FS, GS, SS)</li>
+                    <li><strong>Aislamiento de Memoria:</strong> Cambia directorio de página (registro CR3) para aislamiento de proceso</li>
+                    <li><strong>Proceso:</strong> Guarda actual → Carga CR3 → Carga segmentos → Carga registros → Ejecuta IRETQ</li>
+                </ul>
+                
+                <h3>Particion de Tiempo</h3>
+                <p>Implementación actual:</p>
+                <ul class="feature-list">
+                    <li><strong>Sin partición de tiempo explícita</strong> - Los procesos se ejecutan hasta que ceden voluntariamente, se bloquean en I/O, salen, o reciben una señal que los bloquea/termina</li>
+                    <li><strong>Futuro:</strong> Integración con interrupciones de timer para planificación preventiva con particiones de tiempo (ej: 10ms por proceso)</li>
+                </ul>
+                
+                <h3>Integración de Señales</h3>
+                <p>El planificador llama <code>handle_signals()</code> antes de cada cambio de contexto:</p>
+                <ul class="feature-list">
+                    <li>Verifica señales pendientes en el proceso actual</li>
+                    <li>Maneja señales en orden de prioridad (SIGKILL, excepciones CPU, señales de terminación)</li>
+                    <li>Limpia máscara de bits de señales después del manejo</li>
+                    <li>Asegura que las señales se procesen síncronamente antes de que continúe la ejecución del proceso</li>
+                </ul>
+                
+                <h3>Limitaciones</h3>
+                <ul class="feature-list">
+                    <li><strong>Sin Prioridades:</strong> Todos los procesos tienen igual prioridad</li>
+                    <li><strong>Sin Valores Nice:</strong> No se puede ajustar la prioridad del proceso</li>
+                    <li><strong>Multitarea Cooperativa:</strong> Los procesos deben ceder voluntariamente</li>
+                    <li><strong>Sin Prevención:</strong> Las interrupciones de timer no disparan cambios de contexto</li>
+                    <li><strong>Cola Simple:</strong> Lista enlazada, no optimizada para muchos procesos</li>
+                    <li><strong>Sin Balanceo de Carga:</strong> Solo una CPU (sin soporte SMP)</li>
+                </ul>
             </div>
 
             <div class="info-card">
