@@ -1,0 +1,68 @@
+{
+  "title": "Architecture at a glance",
+  "subtitle": "Mini map — not a substitute for IR0/Documentation or mandocs.",
+  "logo": "assets/black_hole_logo.png",
+  "layers": [
+    {
+      "id": "userspace",
+      "label": "Programs",
+      "role": "What you run — not patched for IR0",
+      "items": ["musl-linked binaries", "BusyBox applets", "TinyX / KDrive", "Doom, smokes, your programs"]
+    },
+    {
+      "id": "isd",
+      "label": "ISD",
+      "role": "Distribution — rootfs, init, toolchain",
+      "items": ["rootfs profiles", "BusyBox + musl", "runit PID 1", "TCC", "disk.img"]
+    },
+    {
+      "id": "ir0-kernel",
+      "label": "IR0 kernel",
+      "role": "This project — implements the contracts",
+      "items": ["arch (x86_64, aarch64)", "MM & page fault", "scheduler", "syscalls (Linux ABI subset)", "VFS + MINIX/tmpfs", "devfs (/dev/fb0, events0, tty)", "drivers"]
+    },
+    {
+      "id": "hardware",
+      "label": "Hardware / QEMU",
+      "role": "The machine underneath",
+      "items": ["PS/2 keyboard & mouse", "virtio-blk / IDE", "framebuffer", "serial"]
+    }
+  ],
+  "contracts": {
+    "title": "Linux userspace contracts",
+    "note": "Where practical, IR0 implements the contracts existing software already expects — TinyX is not patched to tolerate kernel bugs.",
+    "flow": [
+      {
+        "id": "software",
+        "label": "Third-party software",
+        "detail": "Binaries you did not fork for IR0",
+        "items": ["TinyX / KDrive", "musl", "BusyBox", "Doom"]
+      },
+      {
+        "id": "uapi",
+        "label": "Linux-compatible UAPI",
+        "detail": "Syscall numbers, errno, /dev/fb0, evdev, TTY ioctls — what the software already calls",
+        "items": ["x86-64 syscall ABI", "open/read/write/mmap", "/dev/events0", "/dev/fb0"]
+      },
+      {
+        "id": "implementations",
+        "label": "Kernel implementations",
+        "detail": "Same contract, different codebase",
+        "items": [
+          { "name": "Linux", "role": "reference ground truth" },
+          { "name": "IR0", "role": "this project" }
+        ]
+      }
+    ]
+  },
+  "repos": [
+    { "name": "IR0", "role": "kernel + smokes", "path": "../IR0" },
+    { "name": "ISD", "role": "rootfs & product", "path": "../ISD" },
+    { "name": "Explore IR0", "role": "this site", "path": ".." }
+  ],
+  "deep_dive": [
+    { "label": "Documentation index", "file": "IR0/Documentation/README.md" },
+    { "label": "Mandocs index", "file": "IR0/Documentation/mandocs/en/INDEX.md" },
+    { "label": "ISD rootfs layout", "file": "ISD/Documentation/ROOTFS_LAYOUT.md" }
+  ]
+}

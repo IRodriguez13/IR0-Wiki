@@ -1,0 +1,75 @@
+{
+  "id": "run-program",
+  "action_id": "run-program",
+  "title": "Run a program",
+  "subtitle": "What happens when I type ./hello?",
+  "what_you_see": "ivan@ir0:~$ ./hello\nHello!",
+  "why_it_matters": "execve is the moment a shell stops being a parser and becomes a launcher. IR0 must resolve the path, read ELF, build a new address space, construct argv/envp/auxv, and iretq into ring 3 — then musl reaches main() without knowing it is not on Linux.",
+  "has_dual_view": true,
+  "dual_view": {
+    "user": "ivan@ir0:~$ ./hello\nHello!",
+    "kernel": "execve()\n  ↓ resolve path (VFS)\n  ↓ read ELF headers\n  ↓ create mappings + stack\n  ↓ argv / envp / auxv\n  ↓ iretq → ring 3\n  ↓ musl _start → main()"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "node": "userspace.shell",
+      "label": "Shell",
+      "what_ir0_does": "ash parses ./hello and calls execve. On success the shell image is replaced; on failure you see ENOENT or permission errors.",
+      "why_it_matters": "No fork required for simple exec — but job control often forks first.",
+      "implementation": { "file": "ISD/out/x86_64/rootfs/minimal/bin/busybox", "label": "BusyBox ash" },
+      "deep_dive": { "file": "ISD/Documentation/ROOTFS_LAYOUT.md", "label": "ISD rootfs" }
+    },
+    {
+      "id": 2,
+      "node": "kernel.process.exec",
+      "label": "execve",
+      "what_ir0_does": "Syscall enters the process domain: validate path, load ELF PT_LOAD segments, setup stack with aux vector, preserve fd table per CLOEXEC rules.",
+      "why_it_matters": "Getting auxv wrong breaks ifunc, TLS, and ifunc-heavy libc.",
+      "implementation": { "file": "IR0/kernel/elf_loader.c", "symbol": "kexecve", "label": "ELF loader" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/process.md", "label": "mandoc: exec" }
+    },
+    {
+      "id": 3,
+      "node": "kernel.vfs.lookup",
+      "label": "Resolve path",
+      "what_ir0_does": "Walk mount table from cwd to ./hello on MINIX (or tmpfs). Open inode, check execute permission.",
+      "why_it_matters": "Every exec is a filesystem walk first.",
+      "implementation": { "file": "IR0/fs/vfs.c", "symbol": "vfs_open", "label": "VFS" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/vfs.md", "label": "mandoc: vfs" }
+    },
+    {
+      "id": 4,
+      "node": "arch.mmu",
+      "label": "Address space",
+      "what_ir0_does": "New mappings for text/data/bss/stack. CR3 loaded before user entry. NX and user bit enforced.",
+      "why_it_matters": "Exec is the heaviest MM operation in normal use.",
+      "implementation": { "file": "IR0/mm/paging.c", "label": "paging" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/mm.md", "label": "mandoc: mm" }
+    },
+    {
+      "id": 5,
+      "node": "userspace.libc",
+      "label": "musl _start",
+      "what_ir0_does": "Dynamic or static entry sets up TLS, calls constructors, jumps to main.",
+      "why_it_matters": "libc is the real continuation of the kernel boot protocol for user programs.",
+      "implementation": { "file": "IR0/kernel/elf_loader.c", "label": "aux vector setup" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/process.md", "label": "mandoc: exec / auxv" }
+    },
+    {
+      "id": 6,
+      "node": "userspace.program",
+      "label": "main()",
+      "what_ir0_does": "Your program runs. printf → write(1). Exit → exit_group → zombie until wait.",
+      "why_it_matters": "Everything above exists so this line can be boring.",
+      "implementation": { "file": "IR0/setup/pid1/init_tcc_power_halt.c", "label": "guest hello smoke" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/syscalls.md", "label": "mandoc: syscalls" }
+    }
+  ],
+  "story_id": "hello-tcc",
+  "story_also": ["ls-root"],
+  "refs": [
+    { "symbol": "sys_exec", "path": "IR0/kernel/syscalls/process_syscalls.c" },
+    { "symbol": "kexecve", "path": "IR0/kernel/elf_loader.c" }
+  ]
+}

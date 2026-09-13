@@ -1,0 +1,215 @@
+{
+  "id": "hello-tcc",
+  "journey_id": "run-program",
+  "title": "What happens when I compile hello.c with TCC?",
+  "subtitle": "ISD rootfs, guest compile, ELF exec, and first userspace output",
+  "edition": "0.0.1-pre-rc3",
+  "command": "tcc -o hello hello.c && ./hello",
+  "trace_file": "hello-tcc.trace.json",
+  "panels": ["terminal", "kernel", "code"],
+  "timeline": [
+    "userspace.shell",
+    "userspace.tcc",
+    "kernel.fs.minix",
+    "kernel.process.exec",
+    "userspace.program",
+    "kernel.tty.write",
+    "userspace.shell"
+  ],
+  "code_sample": {
+    "language": "c",
+    "lines": [
+      "#include <stdio.h>",
+      "int main(void) {",
+      "    printf(\"hello, IR0\\n\");",
+      "    return 0;",
+      "}"
+    ],
+    "highlight_step": 2
+  },
+  "steps": [
+    {
+      "id": 1,
+      "node": "userspace.shell",
+      "event": "invoke-tcc",
+      "concept": "Developer runs TCC on ISD to compile hello.c on the guest filesystem.",
+      "function": "ash",
+      "file": "ISD rootfs",
+      "detail": { "cmd": "tcc -o hello hello.c" },
+      "playback": {
+        "terminal": { "history": ["ivan@ir0:~$ tcc -o hello hello.c"], "cursor": false },
+        "cpu": { "mode": "userspace", "ring": 3, "rip": "tcc main" },
+        "kernel": { "lines": ["[sched] tcc pid=55 running"] },
+        "code": { "highlight": 0 }
+      }
+    },
+    {
+      "id": 2,
+      "node": "userspace.tcc",
+      "event": "compile",
+      "concept": "TCC reads source via open/read, writes ELF binary via write syscalls.",
+      "function": "tcc",
+      "file": "ISD packages",
+      "detail": { "output": "./hello" },
+      "playback": {
+        "terminal": {
+          "history": [
+            "ivan@ir0:~$ tcc -o hello hello.c",
+            "TCC_POWER_LINK_OK"
+          ],
+          "cursor": false
+        },
+        "cpu": { "mode": "userspace", "ring": 3, "note": "open/read hello.c, write hello ELF" },
+        "kernel": {
+          "lines": [
+            "sys_openat(hello.c) sys_read …",
+            "sys_write(hello) MINIX persist",
+            "TCC linked /tmp/ph"
+          ],
+          "highlight": 2
+        },
+        "code": { "highlight": 1 }
+      }
+    },
+    {
+      "id": 3,
+      "node": "kernel.fs.minix",
+      "event": "persist",
+      "concept": "hello ELF and hello.c live on MINIX rootfs inside disk.img.",
+      "function": "minix_write_block",
+      "file": "IR0/fs/minix_fs.c",
+      "detail": { "path": "/home/ivan/hello" },
+      "playback": {
+        "terminal": {
+          "history": [
+            "ivan@ir0:~$ tcc -o hello hello.c",
+            "ivan@ir0:~$ ./hello"
+          ],
+          "cursor": false
+        },
+        "cpu": { "mode": "kernel", "ring": 0, "note": "MINIX write blocks for hello ELF" },
+        "kernel": {
+          "lines": [
+            "minix_write_block: inode for ./hello",
+            "blocks allocated on disk.img"
+          ],
+          "highlight": 0,
+          "active": "minix_write_block"
+        },
+        "code": { "highlight": 2, "marker": "← will print this" }
+      }
+    },
+    {
+      "id": 4,
+      "node": "kernel.process.exec",
+      "event": "execve",
+      "concept": "./hello loaded; musl _start → main.",
+      "function": "sys_exec",
+      "file": "IR0/kernel/syscalls/process_syscalls.c",
+      "detail": { "path": "./hello" },
+      "playback": {
+        "terminal": {
+          "history": [
+            "ivan@ir0:~$ tcc -o hello hello.c",
+            "ivan@ir0:~$ ./hello"
+          ],
+          "cursor": false
+        },
+        "cpu": { "mode": "kernel", "ring": 0, "cr3": "hello process CR3", "note": "kexecve loading ./hello" },
+        "kernel": {
+          "lines": [
+            "sys_execve(\"./hello\")",
+            "ELF mapped, auxv for musl",
+            "iretq → main()"
+          ],
+          "highlight": 2,
+          "active": "sys_exec"
+        },
+        "code": { "highlight": 2 }
+      }
+    },
+    {
+      "id": 5,
+      "node": "userspace.program",
+      "event": "printf",
+      "concept": "musl printf → write(1, \"hello, IR0\\n\").",
+      "function": "main",
+      "file": "hello.c",
+      "detail": {},
+      "playback": {
+        "terminal": {
+          "history": [
+            "ivan@ir0:~$ tcc -o hello hello.c",
+            "ivan@ir0:~$ ./hello"
+          ],
+          "cursor": false
+        },
+        "cpu": { "mode": "userspace", "ring": 3, "rip": "main+0x… printf PLT", "note": "about to write stdout" },
+        "kernel": { "lines": ["[sched] hello pid=56 in main()"] },
+        "code": { "highlight": 2, "marker": "← printf" }
+      }
+    },
+    {
+      "id": 6,
+      "node": "kernel.tty.write",
+      "event": "write",
+      "concept": "Kernel TTY driver emits characters to virtual console.",
+      "function": "sys_write",
+      "file": "IR0/kernel/syscalls/fs_syscalls.c",
+      "detail": { "fd": 1, "bytes": 11 },
+      "playback": {
+        "terminal": {
+          "history": [
+            "ivan@ir0:~$ tcc -o hello hello.c",
+            "ivan@ir0:~$ ./hello",
+            "hello, IR0"
+          ],
+          "cursor": false
+        },
+        "cpu": { "mode": "kernel", "ring": 0, "note": "sys_write fd=1 len=11" },
+        "kernel": {
+          "lines": [
+            "sys_write(1, \"hello, IR0\\n\", 11)",
+            "console backend → serial/QEMU",
+            "POWER_TCC_KTM_OK"
+          ],
+          "highlight": 0
+        },
+        "code": { "highlight": 2 }
+      }
+    },
+    {
+      "id": 7,
+      "node": "userspace.shell",
+      "event": "done",
+      "concept": "Program exits; shell continues. POWER_TCC_KTM_OK smoke validates the path.",
+      "function": "ash",
+      "file": "ISD rootfs",
+      "detail": { "smoke": "POWER_TCC_KTM_OK" },
+      "playback": {
+        "terminal": {
+          "history": [
+            "ivan@ir0:~$ tcc -o hello hello.c",
+            "ivan@ir0:~$ ./hello",
+            "hello, IR0"
+          ],
+          "prompt": "ivan@ir0:~$ ",
+          "cursor": true
+        },
+        "cpu": { "mode": "userspace", "ring": 3, "rip": "ash prompt" },
+        "kernel": {
+          "lines": [
+            "POWER_TCC_KTM_OK",
+            "SYSTEM_SHUTDOWN_HALT (smoke)"
+          ],
+          "highlight": 0
+        },
+        "code": { "highlight": 2 }
+      }
+    }
+  ],
+  "refs": [
+    { "symbol": "sys_exec", "path": "IR0/kernel/syscalls/process_syscalls.c" },
+    { "symbol": "sys_write", "path": "IR0/kernel/syscalls/fs_syscalls.c" }
+  ]
+}

@@ -1,0 +1,248 @@
+{
+  "id": "null-dereference",
+  "journey_id": "receive-signal",
+  "title": "What happens when a process dereferences NULL?",
+  "subtitle": "Userspace isolation — page fault, SIGSEGV, process teardown, shell wait",
+  "edition": "0.0.1-pre-rc3",
+  "command": "./userspace_segv",
+  "trace_file": "null-dereference.trace.json",
+  "panels": ["code", "cpu", "kernel", "terminal"],
+  "timeline": [
+    "userspace.program",
+    "arch.page_fault",
+    "kernel.mm.page_fault",
+    "kernel.signals",
+    "kernel.process.exit",
+    "kernel.process.wait",
+    "userspace.shell"
+  ],
+  "code_sample": {
+    "language": "c",
+    "file": "IR0/setup/pid1/userspace_segv.c",
+    "lines": [
+      "int main(void)",
+      "{",
+      "    volatile int *p = (int *)0xDEADBEEF;",
+      "    *p = 1;",
+      "    return 0;",
+      "}"
+    ],
+    "highlight_step": 3,
+    "note": "Smoke uses 0xDEADBEEF (unmapped). Address 0 follows the same path when unmapped."
+  },
+  "steps": [
+    {
+      "id": 1,
+      "node": "userspace.program",
+      "event": "load-store",
+      "concept": "The program executes a store through a pointer to an unmapped virtual address.",
+      "function": "main",
+      "file": "IR0/setup/pid1/userspace_segv.c",
+      "detail": { "address": "0xDEADBEEF", "access": "write", "ring": 3 },
+      "playback": {
+        "terminal": { "history": ["ivan@ir0:~$ ./userspace_segv"], "cursor": false },
+        "cpu": {
+          "mode": "userspace",
+          "ring": 3,
+          "rip": "0x401018",
+          "cr3": "0x...process CR3",
+          "note": "about to execute: mov [0xDEADBEEF], eax"
+        },
+        "kernel": { "lines": ["[sched] running pid=42 (userspace_segv)"] },
+        "code": { "highlight": 3, "marker": "← store triggers #PF" }
+      }
+    },
+    {
+      "id": 2,
+      "node": "arch.page_fault",
+      "event": "exception-entry",
+      "concept": "The CPU raises #PF: the PTE is not present or the address is outside any mapped VMA.",
+      "function": "page_fault_handler",
+      "file": "IR0/arch/x86_64/",
+      "detail": { "vector": 14, "error_code": "user, not present" },
+      "playback": {
+        "terminal": { "history": ["ivan@ir0:~$ ./userspace_segv"], "cursor": false },
+        "cpu": {
+          "mode": "exception",
+          "ring": 0,
+          "vector": 14,
+          "vector_name": "#PF",
+          "cr2": "0x00000000DEADBEEF",
+          "error_code": "0x6 (U=1 W=1 P=0)",
+          "rip": "0x401018 (faulting insn)",
+          "note": "CPU saved user frame on kernel stack"
+        },
+        "kernel": {
+          "lines": [
+            "[sched] running pid=42 (userspace_segv)",
+            "[PF] #14 user not-present CR2=0xDEADBEEF"
+          ],
+          "highlight": 1
+        },
+        "code": { "highlight": 3, "marker": "← fault here" }
+      }
+    },
+    {
+      "id": 3,
+      "node": "kernel.mm.page_fault",
+      "event": "classify-userspace",
+      "concept": "mm_page_fault_handle sees a user fault on an address that is not heap, stack, or mmap — not demand-paging.",
+      "function": "mm_page_fault_handle",
+      "file": "IR0/mm/page_fault.c",
+      "detail": { "present": false, "user": true, "policy": "pf_user_segv" },
+      "playback": {
+        "terminal": { "history": ["ivan@ir0:~$ ./userspace_segv"], "cursor": false },
+        "cpu": {
+          "mode": "kernel",
+          "ring": 0,
+          "cr2": "0x00000000DEADBEEF",
+          "pte": "not present (no VMA covers address)",
+          "rip": "mm_page_fault_handle+0x..."
+        },
+        "kernel": {
+          "lines": [
+            "[PF] #14 user not-present CR2=0xDEADBEEF",
+            "mm_page_fault_handle: user write, not demand-page",
+            "→ pf_user_segv"
+          ],
+          "highlight": 2,
+          "active": "pf_user_segv"
+        },
+        "code": { "highlight": 3 }
+      }
+    },
+    {
+      "id": 4,
+      "node": "kernel.mm.page_fault",
+      "event": "deliver-or-kill",
+      "concept": "If no handler is installed, default SIGSEGV kill path runs (Linux wait status semantics).",
+      "function": "pf_user_segv",
+      "file": "IR0/mm/page_fault.c",
+      "detail": { "signal": "SIGSEGV", "handler": "none" },
+      "playback": {
+        "terminal": { "history": ["ivan@ir0:~$ ./userspace_segv"], "cursor": false },
+        "cpu": {
+          "mode": "kernel",
+          "ring": 0,
+          "cr2": "0x00000000DEADBEEF",
+          "note": "no SA_SIGINFO handler → default kill"
+        },
+        "kernel": {
+          "lines": [
+            "mm_page_fault_handle: user write, not demand-page",
+            "pf_user_segv: deliver SIGSEGV (default action: terminate)"
+          ],
+          "highlight": 1
+        },
+        "code": { "highlight": 3 }
+      }
+    },
+    {
+      "id": 5,
+      "node": "kernel.signals",
+      "event": "default-kill",
+      "concept": "process_signal_default_kill sets exit_signal so wait status is WIFSIGNALED, not exited(139).",
+      "function": "process_signal_default_kill",
+      "file": "IR0/kernel/process/signals.c",
+      "detail": { "signal": 11 },
+      "playback": {
+        "terminal": { "history": ["ivan@ir0:~$ ./userspace_segv"], "cursor": false },
+        "cpu": { "mode": "kernel", "ring": 0, "note": "signal pending: SIGSEGV (11)" },
+        "kernel": {
+          "lines": [
+            "pf_user_segv: deliver SIGSEGV (default action: terminate)",
+            "process_signal_default_kill(pid=42, sig=11)",
+            "exit_signal = SIGSEGV"
+          ],
+          "highlight": 2
+        },
+        "code": { "highlight": 3 }
+      }
+    },
+    {
+      "id": 6,
+      "node": "kernel.process.exit",
+      "event": "teardown",
+      "concept": "process_exit reclaims mm, closes fds, wakes parent waiters; child becomes zombie briefly.",
+      "function": "process_exit",
+      "file": "IR0/kernel/process/exit.c",
+      "detail": { "exit_signal": "SIGSEGV" },
+      "playback": {
+        "terminal": { "history": ["ivan@ir0:~$ ./userspace_segv"], "cursor": false },
+        "cpu": { "mode": "kernel", "ring": 0, "note": "tear down mm + fd table for pid=42" },
+        "kernel": {
+          "lines": [
+            "process_signal_default_kill(pid=42, sig=11)",
+            "process_exit(42): unmap VMAs, close fds",
+            "zombie pid=42 → parent pid=41 (shell) notified"
+          ],
+          "highlight": 2,
+          "active": "process_exit"
+        },
+        "code": { "highlight": 3 }
+      }
+    },
+    {
+      "id": 7,
+      "node": "kernel.process.wait",
+      "event": "wait4",
+      "concept": "Parent shell wait4 observes WIFSIGNALED(SIGSEGV).",
+      "function": "sys_wait4",
+      "file": "IR0/kernel/syscalls/process_syscalls.c",
+      "detail": { "status": "WIFSIGNALED(SIGSEGV)" },
+      "playback": {
+        "terminal": { "history": ["ivan@ir0:~$ ./userspace_segv"], "cursor": false },
+        "cpu": { "mode": "userspace", "ring": 3, "rip": "shell wait4 return path", "rax": "pid 42" },
+        "kernel": {
+          "lines": [
+            "process_exit(42): zombie",
+            "sys_wait4: parent reaps pid=42",
+            "status = WIFSIGNALED(SIGSEGV)  (signal 11)"
+          ],
+          "highlight": 2,
+          "active": "sys_wait4"
+        },
+        "code": { "highlight": 3 }
+      }
+    },
+    {
+      "id": 8,
+      "node": "userspace.shell",
+      "event": "shell-message",
+      "concept": "BusyBox ash prints Segmentation fault and returns a prompt — the kernel keeps running.",
+      "function": "main",
+      "file": "IR0/setup/pid1/init_segv_smoke.c",
+      "detail": { "message": "Segmentation fault" },
+      "playback": {
+        "terminal": {
+          "history": [
+            "ivan@ir0:~$ ./userspace_segv",
+            "Segmentation fault"
+          ],
+          "prompt": "ivan@ir0:~$ ",
+          "cursor": true
+        },
+        "cpu": { "mode": "userspace", "ring": 3, "rip": "ash main loop", "note": "only faulting process died" },
+        "kernel": {
+          "lines": [
+            "sys_wait4: WIFSIGNALED(SIGSEGV)",
+            "[SMOKE] userspace_segv observed — kernel still running"
+          ],
+          "highlight": 1
+        },
+        "code": { "highlight": 3 }
+      }
+    }
+  ],
+  "compare": {
+    "title": "Userspace fault vs kernel fault",
+    "userspace": "Only the faulting process dies; init/shell survive.",
+    "kernel": "Unhandled kernel #PF calls panic — entire system stops."
+  },
+  "refs": [
+    { "symbol": "mm_page_fault_handle", "path": "IR0/mm/page_fault.c" },
+    { "symbol": "pf_user_segv", "path": "IR0/mm/page_fault.c" },
+    { "symbol": "process_exit", "path": "IR0/kernel/process/exit.c" },
+    { "symbol": "sys_wait4", "path": "IR0/kernel/syscalls/process_syscalls.c" }
+  ]
+}

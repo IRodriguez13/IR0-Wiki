@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/theme-init.js?v=7"></script>
+    <title>IR0 Journal — Reading</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/journal.css?v=7">
+</head>
+<body>
+    <header class="masthead">
+        <div class="masthead-inner">
+            <div>
+                <div class="journal-title"><a href="index.html" style="color:inherit;text-decoration:none">IR0 Journal</a></div>
+                <div class="journal-sub">Reading room</div>
+            </div>
+            <ul class="nav-links"></ul>
+        </div>
+    </header>
+    <div class="edition-bar" id="edition-bar">
+        <span id="edition-text">Loading edition…</span>
+    </div>
+
+    <main class="page two-col">
+        <div>
+            <h1 id="article-title" style="font-size:1.75rem;margin-bottom:0.25rem">…</h1>
+            <p id="article-meta" class="trace-evidence" style="margin-bottom:1.5rem"></p>
+            <div class="article-body" id="article-root">
+                <p>Loading article…</p>
+            </div>
+        </div>
+        <aside class="marginalia" id="article-nav">
+            <p>Loading index…</p>
+        </aside>
+    </main>
+
+    <footer class="footer-note"><a href="misc.html">← Misc</a></footer>
+    <script src="js/edition.js?v=7"></script>
+    <script src="js/explore-common.js?v=7"></script>
+    <script src="js/read.js?v=7"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.IR0Explore) IR0Explore.init('misc');
+        });
+    </script>
+</body>
+</html>

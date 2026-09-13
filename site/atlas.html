@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/theme-init.js?v=7"></script>
+    <title>Explore IR0 — Kernel map</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/journal.css?v=7">
+</head>
+<body>
+    <header class="masthead">
+        <div class="masthead-inner">
+            <div>
+                <div class="journal-title">Explore IR0</div>
+                <div class="journal-sub">Kernel map (secondary view)</div>
+            </div>
+            <ul class="nav-links"></ul>
+        </div>
+    </header>
+    <div class="edition-bar" id="edition-bar">
+        <span id="edition-text">Loading edition…</span>
+    </div>
+
+    <main class="page">
+        <h1 class="section-head" id="atlas-title">Kernel map</h1>
+        <p class="section-note" id="atlas-subtitle">Layer catalog — not a force-directed graph.</p>
+        <p id="atlas-intro">Secondary view — pick a node to see summary and upstream/downstream links. Start from <a href="index.html">action journeys</a> for narrative paths.</p>
+
+        <div class="layer-tabs" id="layer-tabs"></div>
+        <div class="atlas-wrap" id="atlas-canvas"></div>
+        <div class="atlas-sidebar" id="atlas-detail">
+            <p id="atlas-detail-placeholder">Select a node to see its summary and related stories.</p>
+        </div>
+    </main>
+
+    <footer class="footer-note"><a href="index.html">← Explore</a></footer>
+    <script src="js/edition.js?v=7"></script>
+    <script src="js/explore-common.js?v=7"></script>
+    <script src="js/atlas-map.js?v=7"></script>
+</body>
+</html>

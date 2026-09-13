@@ -1,0 +1,119 @@
+{
+  "brand": {
+    "title": "Explore IR0",
+    "tagline": "Take IR0 apart while it's running"
+  },
+  "nav": {
+    "explore": "explore",
+    "break": "break IR0",
+    "map": "kernel map",
+    "arch": "architecture",
+    "misc": "misc"
+  },
+  "toolbar": {
+    "back": "Back",
+    "theme_light": "Switch to light mode",
+    "theme_dark": "Switch to dark mode",
+    "lang_switch": "Español"
+  },
+  "banner": {
+    "guide_not_spec": "Guide, not spec."
+  },
+  "index": {
+    "section_actions": "What do you want to do?",
+    "section_journeys": "Featured journeys",
+    "section_traces": "QEMU trace replays",
+    "section_traces_note": "Evidence from real smokes — step through serial/KTM events.",
+    "section_also": "Misc",
+    "intro_what": "IR0 is an independent Unix-like kernel. It is not a Linux fork and not a distro — ISD is the rootfs and the userspace product.",
+    "intro_philosophy": "Where it can, IR0 honors the contracts existing programs already speak: Linux syscall ABI, /dev/fb0, evdev, TTY. The work is making the kernel right, not patching every app.",
+    "intro_guide": "This site is a guide, not the spec. Contracts live in IR0/Documentation and mandocs at the pinned edition.",
+    "aside_docs_title": "Documentation vs this site",
+    "aside_docs_body": "IR0/Documentation and mandocs explain how IR0 is built. Explore IR0 shows what happens when you use the machine — then links you to the spec.",
+    "aside_hierarchy_title": "Hierarchy",
+    "aside_hierarchy_body": "This site tells the story · the code proves it · mandocs hold the contract.",
+    "aside_classic": "Classic wiki",
+    "explore_btn": "Explore →",
+    "home_link": "← Explore"
+  },
+  "journey": {
+    "what_you_see": "What you see",
+    "why_matters": "Why it matters",
+    "path_title": "Path through IR0",
+    "what_ir0_does": "What IR0 does",
+    "replay_trace": "Replay QEMU trace →",
+    "on_map": "This step on the kernel map →",
+    "architecture": "Architecture stack →",
+    "prev": "◀ prev",
+    "next": "next ▶",
+    "user_view": "User view",
+    "kernel_view": "Kernel view",
+    "all_journeys": "← All journeys",
+    "see_impl": "See implementation → {label}",
+    "deep_dive_link": "Deep dive → {label}",
+    "not_found": "Journey not found: {id}",
+    "fork_parent": "parent",
+    "fork_child": "child",
+    "fork_arrow": "fork"
+  },
+  "edition": {
+    "bar": "Edition {edition} · kernel {kernel} · ISD {isd} · generated {generated}",
+    "cover": "Edition {edition} · kernel {kernel}"
+  },
+  "read": {
+    "articles": "Articles"
+  },
+  "story": {
+    "back_to_journey": "← Back to the journey",
+    "other_stories": "Other stories:",
+    "path_map": "Path through kernel map",
+    "play": "▶ play",
+    "pause": "⏸ pause",
+    "prev": "◀ prev",
+    "next": "next ▶"
+  },
+  "atlas": {
+    "title": "Kernel map",
+    "subtitle": "Layer catalog — not a force-directed graph.",
+    "intro_prefix": "Pick a node to see summary and upstream/downstream links. Start from",
+    "intro_link": "action journeys",
+    "intro_suffix": "for narrative paths.",
+    "select_node": "Select a node to see its summary and related stories.",
+    "nodes": "nodes",
+    "from": "From:",
+    "to": "To:",
+    "stories": "Stories:",
+    "symbols": "Symbols:",
+    "all_layers": "All layers",
+    "no_path": "No path for this story."
+  },
+  "architecture": {
+    "stack_note": "Top is what you run. Bottom is the machine. Each band sits on the one below.",
+    "calls_into": "sits on",
+    "relies_on": "talks through",
+    "contracts_title": "Linux userspace contracts",
+    "deep_dive": "Deep dive (normative)",
+    "kernel_map_link": "Kernel map →"
+  },
+  "break": {
+    "pick": "Cause a failure",
+    "sequence": "What the machine does",
+    "step_user": "You see",
+    "step_kernel": "IR0 does",
+    "replay": "Replay a real trace →",
+    "locked": "Not yet",
+    "guess": "What happens first?",
+    "correct": "Yes — now walk the rest.",
+    "wrong": "Not that. Try another.",
+    "continue": "See what happens →"
+  },
+  "misc": {
+    "title": "Misc",
+    "subtitle": "Side notes, maps, and the old wiki — jump with the chips.",
+    "linux": "Is it Linux?",
+    "journal": "Journal",
+    "arch": "Architecture",
+    "map": "Kernel map",
+    "archive": "Classic wiki (archive)"
+  }
+}

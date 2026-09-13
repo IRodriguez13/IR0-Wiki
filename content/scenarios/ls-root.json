@@ -1,0 +1,261 @@
+{
+  "id": "ls-root",
+  "journey_id": "open-file",
+  "title": "What happens when I run ls /?",
+  "subtitle": "Shell, exec, syscalls, VFS, MINIX, and TTY output",
+  "edition": "0.0.1-pre-rc3",
+  "command": "ls /",
+  "trace_file": "ls-root.trace.json",
+  "panels": ["terminal", "kernel", "cpu"],
+  "timeline": [
+    "userspace.shell",
+    "kernel.process.fork",
+    "kernel.process.exec",
+    "boundary.syscall_enter",
+    "kernel.vfs.lookup",
+    "kernel.vfs.readdir",
+    "kernel.fs.minix",
+    "kernel.tty.write",
+    "boundary.syscall_exit",
+    "userspace.shell"
+  ],
+  "code_sample": {
+    "language": "sh",
+    "lines": [
+      "$ ls /",
+      "# fork → execve /bin/ls",
+      "# openat(/) → getdents64 → write(stdout)"
+    ],
+    "highlight_step": 0
+  },
+  "steps": [
+    {
+      "id": 1,
+      "node": "userspace.shell",
+      "event": "parse",
+      "concept": "The shell parses ls and / as argv; typically forks a child for external commands.",
+      "function": "ash",
+      "file": "ISD rootfs /bin/busybox",
+      "detail": { "argv": ["ls", "/"] },
+      "playback": {
+        "terminal": { "history": ["ivan@ir0:~$ ls /"], "cursor": false },
+        "cpu": { "mode": "userspace", "ring": 3, "rip": "ash: parse argv", "note": "builtin vs external dispatch" },
+        "kernel": { "lines": ["[sched] pid=1 shell running"] }
+      }
+    },
+    {
+      "id": 2,
+      "node": "kernel.process.fork",
+      "event": "fork",
+      "concept": "Child process duplicates the parent's address space and fd table.",
+      "function": "sys_fork",
+      "file": "IR0/kernel/syscalls/process_syscalls.c",
+      "detail": { "parent": "shell", "child": "ls" },
+      "playback": {
+        "terminal": { "history": ["ivan@ir0:~$ ls /"], "cursor": false },
+        "cpu": { "mode": "kernel", "ring": 0, "rax": "0 (child) / pid (parent)", "note": "duplicate mm + fds" },
+        "kernel": {
+          "lines": [
+            "sys_fork: parent pid=41 → child pid=42",
+            "copy fd table, share or COW mm"
+          ],
+          "highlight": 0,
+          "active": "sys_fork"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "node": "kernel.process.exec",
+      "event": "execve",
+      "concept": "Child loads /bin/ls ELF via kexecve; musl startup runs main.",
+      "function": "sys_exec",
+      "file": "IR0/kernel/syscalls/process_syscalls.c",
+      "detail": { "path": "/bin/ls" },
+      "playback": {
+        "terminal": { "history": ["ivan@ir0:~$ ls /"], "cursor": false },
+        "cpu": { "mode": "kernel", "ring": 0, "cr3": "new CR3 for /bin/ls", "rip": "kexecve" },
+        "kernel": {
+          "lines": [
+            "sys_fork: child pid=42",
+            "sys_execve(\"/bin/ls\", [\"ls\",\"/\"])",
+            "ELF PT_LOAD mapped, auxv built"
+          ],
+          "highlight": 2,
+          "active": "kexecve"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "node": "boundary.syscall_enter",
+      "event": "openat",
+      "concept": "ls opens directory / with O_RDONLY | O_DIRECTORY.",
+      "function": "sys_openat",
+      "file": "IR0/kernel/syscalls/fs_syscalls.c",
+      "detail": { "syscall": "openat", "path": "/" },
+      "playback": {
+        "terminal": { "history": ["ivan@ir0:~$ ls /"], "cursor": false },
+        "cpu": { "mode": "userspace→kernel", "ring": 3, "rax": "syscall# openat", "note": "syscall entry" },
+        "kernel": {
+          "lines": [
+            "KTM|SYSCALL_ENTER|openat|/ O_DIRECTORY",
+            "sys_openat: dirfd=AT_FDCWD path=/"
+          ],
+          "highlight": 0
+        }
+      }
+    },
+    {
+      "id": 5,
+      "node": "kernel.vfs.lookup",
+      "event": "lookup",
+      "concept": "VFS walks mount table and resolves / to root inode.",
+      "function": "vfs_open",
+      "file": "IR0/fs/vfs.c",
+      "detail": { "path": "/" },
+      "playback": {
+        "terminal": { "history": ["ivan@ir0:~$ ls /"], "cursor": false },
+        "cpu": { "mode": "kernel", "ring": 0, "note": "path walk / → root inode" },
+        "kernel": {
+          "lines": [
+            "sys_openat: path=/",
+            "vfs_lookup: mount=minix inode=1",
+            "fd 3 installed → directory /"
+          ],
+          "highlight": 1,
+          "active": "vfs_open"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "node": "kernel.vfs.readdir",
+      "event": "getdents64",
+      "concept": "Repeated getdents64 fills dirent buffers for listing.",
+      "function": "sys_getdents64",
+      "file": "IR0/kernel/syscalls/fs_syscalls.c",
+      "detail": { "syscall": "getdents64" },
+      "playback": {
+        "terminal": { "history": ["ivan@ir0:~$ ls /"], "cursor": false },
+        "cpu": { "mode": "kernel", "ring": 0, "note": "fill dirent buffer in userspace" },
+        "kernel": {
+          "lines": [
+            "vfs_lookup: fd=3 → /",
+            "sys_getdents64: loop until EOF",
+            "KTM|SYSCALL_ENTER|getdents64"
+          ],
+          "highlight": 1
+        }
+      }
+    },
+    {
+      "id": 7,
+      "node": "kernel.fs.minix",
+      "event": "readdir",
+      "concept": "MINIX backend reads directory inode entries from disk image.",
+      "function": "minix_fs_readdir",
+      "file": "IR0/fs/minix_fs.c",
+      "detail": { "fs": "minix", "inode": 1 },
+      "playback": {
+        "terminal": { "history": ["ivan@ir0:~$ ls /"], "cursor": false },
+        "cpu": { "mode": "kernel", "ring": 0, "note": "read MINIX zone blocks for dir inode 1" },
+        "kernel": {
+          "lines": [
+            "sys_getdents64",
+            "minix_fs_readdir(/): bin dev etc home lib proc root sbin tmp usr var",
+            "FASE58L_LS_PATH_OK"
+          ],
+          "highlight": 2,
+          "active": "minix_fs_readdir"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "node": "kernel.tty.write",
+      "event": "write",
+      "concept": "Formatted names written to fd 1 (console TTY).",
+      "function": "sys_write",
+      "file": "IR0/kernel/syscalls/fs_syscalls.c",
+      "detail": { "fd": 1 },
+      "playback": {
+        "terminal": {
+          "history": [
+            "ivan@ir0:~$ ls /",
+            "bin  dev  etc  home  lib  proc  root  sbin  tmp  usr  var"
+          ],
+          "cursor": false
+        },
+        "cpu": { "mode": "userspace", "ring": 3, "note": "write(1, buf, n) → TTY driver" },
+        "kernel": {
+          "lines": [
+            "minix_fs_readdir: names ready in userspace buffer",
+            "sys_write(fd=1): console backend → framebuffer/serial",
+            "KTM|SYSCALL_ENTER|write"
+          ],
+          "highlight": 1
+        }
+      }
+    },
+    {
+      "id": 9,
+      "node": "boundary.syscall_exit",
+      "event": "exit",
+      "concept": "ls exits 0; shell wait4 reaps child.",
+      "function": "sys_exit",
+      "file": "IR0/kernel/syscalls/process_syscalls.c",
+      "detail": { "status": 0 },
+      "playback": {
+        "terminal": {
+          "history": [
+            "ivan@ir0:~$ ls /",
+            "bin  dev  etc  home  lib  proc  root  sbin  tmp  usr  var"
+          ],
+          "cursor": false
+        },
+        "cpu": { "mode": "kernel", "ring": 0, "note": "exit(0), zombie until wait" },
+        "kernel": {
+          "lines": [
+            "sys_write: listing complete",
+            "sys_exit(0): pid=42",
+            "parent wait4 pending"
+          ],
+          "highlight": 1
+        }
+      }
+    },
+    {
+      "id": 10,
+      "node": "userspace.shell",
+      "event": "prompt",
+      "concept": "Shell prints next prompt.",
+      "function": "ash",
+      "file": "ISD rootfs",
+      "detail": {},
+      "playback": {
+        "terminal": {
+          "history": [
+            "ivan@ir0:~$ ls /",
+            "bin  dev  etc  home  lib  proc  root  sbin  tmp  usr  var"
+          ],
+          "prompt": "ivan@ir0:~$ ",
+          "cursor": true
+        },
+        "cpu": { "mode": "userspace", "ring": 3, "rip": "ash readline loop" },
+        "kernel": {
+          "lines": [
+            "sys_wait4: pid=42 status=0",
+            "[sched] shell pid=41 ready"
+          ],
+          "highlight": 0
+        }
+      }
+    }
+  ],
+  "refs": [
+    { "symbol": "sys_exec", "path": "IR0/kernel/syscalls/process_syscalls.c" },
+    { "symbol": "sys_getdents64", "path": "IR0/kernel/syscalls/fs_syscalls.c" },
+    { "symbol": "vfs_open", "path": "IR0/fs/vfs.c" }
+  ]
+}

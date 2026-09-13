@@ -1,0 +1,78 @@
+{
+  "title": "Explore IR0",
+  "tagline": "Take IR0 apart while it's running",
+  "mission": "The kernel documentation explains how IR0 is built. Explore IR0 shows what happens inside when you use the computer.",
+  "actions": [
+    {
+      "id": "boot-ir0",
+      "label": "Boot IR0",
+      "verb": "Boot",
+      "status": "implemented",
+      "journey": "boot-ir0",
+      "summary": "From the ISO to the first shell prompt."
+    },
+    {
+      "id": "run-program",
+      "label": "Run a program",
+      "verb": "Run",
+      "status": "implemented",
+      "journey": "run-program",
+      "story": "hello-tcc",
+      "summary": "What happens when you type ./hello."
+    },
+    {
+      "id": "press-a-key",
+      "label": "Press a key",
+      "verb": "Press",
+      "status": "implemented",
+      "journey": "press-a-key",
+      "summary": "A keypress from the keyboard to the byte your shell reads."
+    },
+    {
+      "id": "open-file",
+      "label": "Open a file",
+      "verb": "Open",
+      "status": "implemented",
+      "journey": "open-file",
+      "story": "ls-root",
+      "summary": "ls / — from the shell through VFS to the disk."
+    },
+    {
+      "id": "fork-process",
+      "label": "fork()",
+      "verb": "fork",
+      "status": "partial",
+      "journey": "fork-process",
+      "summary": "The process splits in two — parent waits, child runs."
+    },
+    {
+      "id": "receive-signal",
+      "label": "Receive a signal",
+      "verb": "Signal",
+      "status": "implemented",
+      "journey": "receive-signal",
+      "story": "null-dereference",
+      "summary": "A bad pointer, a segfault, and the shell comes back."
+    },
+    {
+      "id": "start-x",
+      "label": "Start X",
+      "verb": "Start",
+      "status": "partial",
+      "journey": "start-x",
+      "summary": "startx — framebuffer and input, without patching X."
+    },
+    {
+      "id": "break-ir0",
+      "label": "Break IR0",
+      "verb": "Break",
+      "status": "implemented",
+      "page": "break.html",
+      "summary": "Cause a panic or a fault and watch both sides."
+    }
+  ],
+  "meta_pages": [
+    { "id": "is-it-linux", "label": "Is it Linux?", "href": "is-it-linux.html", "summary": "Where IR0 follows Linux, and where it does not." },
+    { "id": "reading", "label": "Journal", "href": "read.html", "summary": "Short pieces pinned to kernel and ISD work." }
+  ]
+}

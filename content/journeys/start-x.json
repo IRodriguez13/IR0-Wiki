@@ -1,0 +1,63 @@
+{
+  "id": "start-x",
+  "action_id": "start-x",
+  "title": "Start X",
+  "subtitle": "startx → TinyX → framebuffer + input UAPI",
+  "what_you_see": "A gray root window (historic capture) or twm + xterm after startx on a writable HOME. Pointer and keyboard move the session.",
+  "why_it_matters": "IR0 does not fork TinyX. The kernel must expose Linux-compatible /dev/fb0, socket, poll, and input read semantics so unmodified KDrive/TinyX runs. Real third-party software found a read(2) contract bug — fixed in kernel input, not in X.",
+  "has_dual_view": true,
+  "dual_view": {
+    "user": "ivan@ir0:~$ startx\n( gray root window / twm appears )",
+    "kernel": "startx → xinit\n  ↓ TinyX opens /dev/fb0 mmap\n  ↓ unix socket + poll\n  ↓ read(/dev/events0 or mouse)\n  ↓ must respect count byte!"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "node": "userspace.shell",
+      "label": "startx",
+      "what_ir0_does": "Shell script launches xinit, which execs the X server and window manager.",
+      "why_it_matters": "All policy is userspace — kernel only provides devices and syscalls.",
+      "implementation": { "file": "IR0/setup/pid1/init_ext2_startx_smoke.c", "label": "startx smoke harness" },
+      "deep_dive": { "file": "IR0/scripts/smoke_x11_pointer.py", "label": "X11 pointer smoke" }
+    },
+    {
+      "id": 2,
+      "node": "kernel.process.exec",
+      "label": "exec X server",
+      "what_ir0_does": "TinyX/KDrive binary loaded like any ELF. No IR0-specific patches in upstream X.",
+      "why_it_matters": "Compatibility strategy: kernel adapts, userspace stays stock.",
+      "implementation": { "file": "IR0/kernel/elf_loader.c", "symbol": "kexecve", "label": "exec" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/process.md", "label": "mandoc: exec" }
+    },
+    {
+      "id": 3,
+      "node": "kernel.drivers.fb",
+      "label": "/dev/fb0",
+      "what_ir0_does": "mmap MAP_SHARED of framebuffer memory. Console may hand off to fb backend.",
+      "why_it_matters": "Tier-2 graphics clients depend on fb UAPI parity.",
+      "implementation": { "file": "IR0/kernel/lib/fb.c", "label": "framebuffer helpers" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/graphics.md", "label": "mandoc: graphics" }
+    },
+    {
+      "id": 4,
+      "node": "kernel.input.events0",
+      "label": "Input devices",
+      "what_ir0_does": "X reads events with read(2). IR0 must not return more bytes than requested — a real bug found by running unmodified TinyX.",
+      "why_it_matters": "Contract violations surface only under real software.",
+      "implementation": { "file": "IR0/fs/devfs.c", "symbol": "dev_events0_read", "label": "input read path" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/input.md", "label": "mandoc: input" }
+    },
+    {
+      "id": 5,
+      "node": "userspace.xserver",
+      "label": "TinyX root window",
+      "what_ir0_does": "Server draws root window, accepts clients. Historic gray capture documents first success.",
+      "why_it_matters": "Pedagogically honest milestone — not replaced by a mock polished desktop.",
+      "implementation": { "file": "IR0/tests/ktm/userdev/ktm_x11_evdev_fb_case.c", "label": "KTM X11 case" },
+      "deep_dive": { "file": "IR0/Documentation/README.md", "label": "IR0 README screenshots" }
+    }
+  ],
+  "refs": [
+    { "symbol": "sys_read", "path": "IR0/kernel/syscalls/fs_syscalls.c" }
+  ]
+}

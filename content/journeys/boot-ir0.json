@@ -1,0 +1,59 @@
+{
+  "id": "boot-ir0",
+  "action_id": "boot-ir0",
+  "title": "Boot IR0",
+  "subtitle": "ISO → kernel → runit → login shell",
+  "what_you_see": "QEMU or bare metal shows boot messages, then runit stages, then a login prompt or first-boot wizard on the framebuffer.",
+  "why_it_matters": "Boot is the contract between firmware, kernel, and PID 1. IR0 uses a userspace-init ISO path: kernel brings up MM lazily, mounts root from disk, execs /sbin/init (runit-init).",
+  "has_dual_view": false,
+  "steps": [
+    {
+      "id": 1,
+      "node": "hardware.qemu",
+      "label": "Firmware / GRUB",
+      "what_ir0_does": "Multiboot or ISO boot loads kernel-x64-userspace.bin. Serial and framebuffer consoles come online.",
+      "why_it_matters": "Smokes assume this entry — Atlas traces start after init is scheduled.",
+      "implementation": { "file": "IR0/kernel/main.c", "label": "kernel main" },
+      "deep_dive": { "file": "IR0/Documentation/README.md", "label": "IR0 Documentation" }
+    },
+    {
+      "id": 2,
+      "node": "kernel.boot",
+      "label": "Kernel init",
+      "what_ir0_does": "Subsystems register: MM, scheduler, VFS, devfs, drivers. klog and smokes tag milestones.",
+      "why_it_matters": "Order matters — devfs before init opens /dev/console.",
+      "implementation": { "file": "IR0/kernel/main.c", "label": "subsystem init" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/INDEX.md", "label": "mandoc index" }
+    },
+    {
+      "id": 3,
+      "node": "kernel.process.exec",
+      "label": "exec /sbin/init",
+      "what_ir0_does": "First userspace process. On ISD this is runit-init, not a debug harness.",
+      "why_it_matters": "PID 1 owns reaping orphans and driving shutdown.",
+      "implementation": { "file": "IR0/kernel/elf_loader.c", "symbol": "kexecve", "label": "first exec" },
+      "deep_dive": { "file": "ISD/Documentation/ROOTFS_LAYOUT.md", "label": "ISD rootfs" }
+    },
+    {
+      "id": 4,
+      "node": "userspace.runit",
+      "label": "runit stages",
+      "what_ir0_does": "/etc/runit/1 → stage 2 → getty or first-boot services. RUNIT_STAGE2_OK is the smoke gate.",
+      "why_it_matters": "Product shape vs one-shot test init.",
+      "implementation": { "file": "ISD/scripts/build-services.sh", "label": "ISD runit stubs" },
+      "deep_dive": { "file": "ISD/Documentation/ROOTFS_LAYOUT.md", "label": "ISD rootfs" }
+    },
+    {
+      "id": 5,
+      "node": "userspace.shell",
+      "label": "Login shell",
+      "what_ir0_does": "getty → ash after first-boot account creation or existing passwd.",
+      "why_it_matters": "The machine is now “yours” — everything in Explore IR0 assumes this point.",
+      "implementation": { "file": "ISD/out/x86_64/rootfs/minimal/bin/busybox", "label": "getty + ash" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/tty.md", "label": "mandoc: tty" }
+    }
+  ],
+  "refs": [
+    { "symbol": "kexecve", "path": "IR0/kernel/elf_loader.c" }
+  ]
+}

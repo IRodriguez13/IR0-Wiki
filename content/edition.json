@@ -1,0 +1,63 @@
+{
+  "title": "Explore IR0",
+  "subtitle": "Take IR0 apart while it's running",
+  "edition": "0.0.1-rc5",
+  "generated": "2026-09-13",
+  "normative_notice": "This site is an explanatory guide, not normative documentation. For specs see IR0/Documentation and mandocs at the pinned commit.",
+  "repos": {
+    "kernel": {
+      "name": "IR0",
+      "path": "../IR0",
+      "commit": "1c3b990e",
+      "docs_url": "https://github.com/IRodriguez13/IR0/tree/1c3b990e/Documentation"
+    },
+    "isd": {
+      "name": "ISD",
+      "path": "../ISD",
+      "commit": "74424b5"
+    },
+    "wiki": {
+      "name": "IR0-Wiki",
+      "path": "..",
+      "commit": "fa08fff"
+    }
+  },
+  "editions": [
+    {
+      "id": "0.0.1-rc5",
+      "label": "0.0.1-rc5",
+      "kernel_commit": "1c3b990e",
+      "isd_commit": "74424b5",
+      "generated": "2026-09-13",
+      "current": true
+    },
+    {
+      "id": "0.0.1-rc4",
+      "label": "0.0.1-rc4",
+      "kernel_commit": "7aba4598",
+      "isd_commit": "74424b5",
+      "generated": "2026-08-01",
+      "current": false
+    }
+  ],
+  "today": {
+    "headline": "Today's system",
+    "items": [
+      "IR0 kernel @ 1c3b990e \u2014 smokes: IR0_LEGACY_SMOKE=1 smoke-userspace-segv, smoke-busybox-manifest, smoke-tcc-power-halt",
+      "ISD @ 74424b5 \u2014 rootfs profiles via make build ARCH=x86_64",
+      "Atlas traces captured from QEMU serial when --run-smoke is used",
+      "Three executable stories: NULL fault, ls /, TCC compile+halt"
+    ]
+  },
+  "featured_stories": [
+    "null-dereference",
+    "ls-root",
+    "hello-tcc"
+  ],
+  "featured_journeys": [
+    "press-a-key",
+    "run-program",
+    "receive-signal",
+    "start-x"
+  ]
+}

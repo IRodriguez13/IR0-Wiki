@@ -1,0 +1,44 @@
+{
+  "scenario": "null-dereference",
+  "edition": "0.0.1-pre-rc3",
+  "source": "captured-serial",
+  "kernel_commit": "d85557a",
+  "log_file": "/tmp/userspace-segv-smoke.log",
+  "events": [
+    {
+      "seq": 1,
+      "t_ms": 3,
+      "node": "kernel.process.exec",
+      "kind": "SYSCALL_ENTER",
+      "detail": "exec /sbin/init"
+    },
+    {
+      "seq": 2,
+      "t_ms": 6,
+      "node": "arch.page_fault",
+      "kind": "EXCEPTION",
+      "detail": "#PF user not-present addr=deadbeef"
+    },
+    {
+      "seq": 3,
+      "t_ms": 9,
+      "node": "kernel.mm.page_fault",
+      "kind": "CLASSIFY",
+      "detail": "pf_user_segv addr=deadbeef"
+    },
+    {
+      "seq": 4,
+      "t_ms": 12,
+      "node": "kernel.signals",
+      "kind": "SIGNAL",
+      "detail": "SIGSEGV default kill (no handler)"
+    },
+    {
+      "seq": 5,
+      "t_ms": 15,
+      "node": "userspace.shell",
+      "kind": "OUTPUT",
+      "detail": "IR0: userspace_segv smoke observed"
+    }
+  ]
+}

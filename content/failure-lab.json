@@ -1,0 +1,167 @@
+{
+  "title": "Break IR0",
+  "subtitle": "Cause a failure. Guess what happens first — then walk what the machine actually does.",
+  "scenarios": [
+    {
+      "id": "kernel-panic",
+      "title": "Kernel panic",
+      "command": "echo c > /sys/kernel/panic",
+      "hook": {
+        "prompt": "You forced a panic. What happens first?",
+        "options": [
+          { "text": "Only that process dies; the shell continues.", "correct": false },
+          { "text": "The kernel stops. It will not keep running.", "correct": true },
+          { "text": "The shell prints “command not found”.", "correct": false }
+        ]
+      },
+      "sequence": [
+        {
+          "label": "Something is unrecoverable",
+          "user": "The machine stops being usable. No prompt comes back.",
+          "kernel": "A subsystem calls panic() — the kernel will not continue."
+        },
+        {
+          "label": "Framebuffer clears",
+          "user": "The screen goes to a panic banner. Serial noise stays off this path.",
+          "kernel": "GUI panic path paints a dedicated surface, not the klog dump."
+        },
+        {
+          "label": "Readable failure",
+          "user": "Uptime, fault site, and a short shutdown hint.",
+          "kernel": "Serial/klog still get the register dump and stack for developers."
+        },
+        {
+          "label": "Halt",
+          "user": "The box sits there. You reboot.",
+          "kernel": "Smoke markers fire, then SYSTEM_SHUTDOWN_HALT."
+        }
+      ]
+    },
+    {
+      "id": "page-fault",
+      "title": "Page fault",
+      "command": "./crash   (NULL / unmapped address)",
+      "story_id": "null-dereference",
+      "hook": {
+        "prompt": "A program touches a bad address. What happens first?",
+        "options": [
+          { "text": "The whole kernel panics.", "correct": false },
+          { "text": "The CPU raises a page fault.", "correct": true },
+          { "text": "The shell itself exits.", "correct": false }
+        ]
+      },
+      "sequence": [
+        {
+          "label": "Bad address",
+          "user": "A program touches memory it must not.",
+          "kernel": "The CPU raises #PF. CR2 holds the address."
+        },
+        {
+          "label": "Classify the fault",
+          "user": "Nothing on screen yet — the kernel is still deciding.",
+          "kernel": "pf_user_segv: userspace, not present or forbidden."
+        },
+        {
+          "label": "SIGSEGV",
+          "user": "The process vanishes.",
+          "kernel": "Default action kills the task. wait status is WIFSIGNALED."
+        },
+        {
+          "label": "Shell continues",
+          "user": "Segmentation fault — then the prompt is back.",
+          "kernel": "Parent wait4 reaps the child. PID 1 / the shell keeps running."
+        }
+      ]
+    },
+    {
+      "id": "kill-process",
+      "title": "Kill a process",
+      "command": "kill -9 <pid>",
+      "hook": {
+        "prompt": "You sent SIGKILL. What happens first?",
+        "options": [
+          { "text": "The process can catch it and keep running.", "correct": false },
+          { "text": "The kernel queues a signal that cannot be caught.", "correct": true },
+          { "text": "The machine reboots.", "correct": false }
+        ]
+      },
+      "sequence": [
+        {
+          "label": "You send the signal",
+          "user": "kill -9 42",
+          "kernel": "sys_kill queues SIGKILL. It cannot be caught."
+        },
+        {
+          "label": "Default kill",
+          "user": "The process is gone.",
+          "kernel": "process_signal_default_kill → exit. A zombie waits for wait4."
+        },
+        {
+          "label": "Prompt returns",
+          "user": "The shell is idle again.",
+          "kernel": "The parent reaps. Job-control UX vs the exit path."
+        }
+      ]
+    },
+    {
+      "id": "blocked-syscall",
+      "title": "Interrupt a blocked syscall",
+      "command": "cat    then Ctrl+C",
+      "hook": {
+        "prompt": "cat is sitting there with no input. Where is it?",
+        "options": [
+          { "text": "Finished; the shell just looks idle.", "correct": false },
+          { "text": "Asleep in the kernel, blocked on read(0).", "correct": true },
+          { "text": "PID 1 has crashed.", "correct": false }
+        ]
+      },
+      "sequence": [
+        {
+          "label": "Blocked in the kernel",
+          "user": "cat sits there. No line, no return.",
+          "kernel": "read(0) sleeps: PROCESS_BLOCKED on TTY input."
+        },
+        {
+          "label": "Ctrl+C",
+          "user": "^C",
+          "kernel": "SIGINT. The waiter is woken; the syscall does not finish normally."
+        },
+        {
+          "label": "EINTR",
+          "user": "The command dies. You get the prompt.",
+          "kernel": "Interrupted syscall returns EINTR — restart or error, by the caller."
+        }
+      ]
+    },
+    {
+      "id": "fill-pipe",
+      "title": "Fill a pipe",
+      "command": "writer vs a full pipe buffer",
+      "hook": {
+        "prompt": "The writer is faster than the reader. What happens when the pipe fills?",
+        "options": [
+          { "text": "Extra bytes are thrown away.", "correct": false },
+          { "text": "The writer blocks (or gets EAGAIN).", "correct": true },
+          { "text": "The kernel panics.", "correct": false }
+        ]
+      },
+      "sequence": [
+        {
+          "label": "Producer writes",
+          "user": "A program writes faster than anyone reads.",
+          "kernel": "Bytes land in the pipe buffer."
+        },
+        {
+          "label": "Buffer is full",
+          "user": "The writer appears to hang.",
+          "kernel": "pipe full → block the writer (or EAGAIN if O_NONBLOCK)."
+        },
+        {
+          "label": "Consumer reads",
+          "user": "Output starts moving again.",
+          "kernel": "A read wakes the writer. Both ends keep a refcount."
+        }
+      ]
+    }
+  ]
+}

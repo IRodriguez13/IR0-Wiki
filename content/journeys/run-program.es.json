@@ -1,0 +1,75 @@
+{
+  "id": "run-program",
+  "action_id": "run-program",
+  "title": "Ejecutar un programa",
+  "subtitle": "¿Qué pasa cuando escribo ./hello?",
+  "what_you_see": "ivan@ir0:~$ ./hello\nHello!",
+  "why_it_matters": "execve es el momento en que el shell deja de parsear y pasa a lanzar. IR0 tiene que resolver el path, leer ELF, armar un espacio de direcciones, construir argv/envp/auxv y hacer iretq a ring 3 — y musl llega a main() sin saber que no está en Linux.",
+  "has_dual_view": true,
+  "dual_view": {
+    "user": "ivan@ir0:~$ ./hello\nHello!",
+    "kernel": "execve()\n  ↓ resolver path (VFS)\n  ↓ leer headers ELF\n  ↓ mappings + stack\n  ↓ argv / envp / auxv\n  ↓ iretq → ring 3\n  ↓ musl _start → main()"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "node": "userspace.shell",
+      "label": "Shell",
+      "what_ir0_does": "ash parsea ./hello y llama execve. Si sale bien, la imagen del shell se reemplaza; si no, ves ENOENT o un error de permisos.",
+      "why_it_matters": "Un exec simple no necesita fork — pero el job control suele forkear primero.",
+      "implementation": { "file": "ISD/out/x86_64/rootfs/minimal/bin/busybox", "label": "BusyBox ash" },
+      "deep_dive": { "file": "ISD/Documentation/ROOTFS_LAYOUT.md", "label": "rootfs ISD" }
+    },
+    {
+      "id": 2,
+      "node": "kernel.process.exec",
+      "label": "execve",
+      "what_ir0_does": "El syscall entra al dominio de procesos: valida el path, carga segmentos ELF PT_LOAD, arma el stack con aux vector, conserva la tabla de fd según CLOEXEC.",
+      "why_it_matters": "Un auxv mal armado rompe ifunc, TLS y libc que depende de eso.",
+      "implementation": { "file": "IR0/kernel/elf_loader.c", "symbol": "kexecve", "label": "cargador ELF" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/process.md", "label": "mandoc: exec" }
+    },
+    {
+      "id": 3,
+      "node": "kernel.vfs.lookup",
+      "label": "Resolver el path",
+      "what_ir0_does": "Camina la tabla de mounts desde cwd hasta ./hello en MINIX (o tmpfs). Abre el inode y chequea permiso de ejecución.",
+      "why_it_matters": "Todo exec es primero un walk de filesystem.",
+      "implementation": { "file": "IR0/fs/vfs.c", "symbol": "vfs_open", "label": "VFS" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/vfs.md", "label": "mandoc: vfs" }
+    },
+    {
+      "id": 4,
+      "node": "arch.mmu",
+      "label": "Espacio de direcciones",
+      "what_ir0_does": "Mappings nuevos para text/data/bss/stack. Se carga CR3 antes de entrar a usuario. Se aplican NX y el bit de user.",
+      "why_it_matters": "Exec es la operación de MM más pesada en uso normal.",
+      "implementation": { "file": "IR0/mm/paging.c", "label": "paging" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/mm.md", "label": "mandoc: mm" }
+    },
+    {
+      "id": 5,
+      "node": "userspace.libc",
+      "label": "musl _start",
+      "what_ir0_does": "La entrada estática o dinámica arma TLS, llama constructores y salta a main.",
+      "why_it_matters": "libc es la continuación real del protocolo de boot para programas de usuario.",
+      "implementation": { "file": "IR0/kernel/elf_loader.c", "label": "setup del aux vector" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/process.md", "label": "mandoc: exec / auxv" }
+    },
+    {
+      "id": 6,
+      "node": "userspace.program",
+      "label": "main()",
+      "what_ir0_does": "Corre tu programa. printf → write(1). Exit → exit_group → zombie hasta wait.",
+      "why_it_matters": "Todo lo de arriba existe para que esta línea sea aburrida.",
+      "implementation": { "file": "IR0/setup/pid1/init_tcc_power_halt.c", "label": "smoke hello en guest" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/syscalls.md", "label": "mandoc: syscalls" }
+    }
+  ],
+  "story_id": "hello-tcc",
+  "story_also": ["ls-root"],
+  "refs": [
+    { "symbol": "sys_exec", "path": "IR0/kernel/syscalls/process_syscalls.c" },
+    { "symbol": "kexecve", "path": "IR0/kernel/elf_loader.c" }
+  ]
+}

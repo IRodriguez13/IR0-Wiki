@@ -1,0 +1,60 @@
+{
+  "id": "fork-process",
+  "action_id": "fork-process",
+  "title": "fork()",
+  "subtitle": "Duplicar espacio de direcciones y tabla de fd — el padre espera, el hijo hace exec",
+  "what_you_see": "El prompt del shell vuelve solo cuando el hijo sale (salvo que esté en background). ls / usa fork+exec por dentro.",
+  "why_it_matters": "fork es cómo Unix compone procesos. IR0 clona el espacio de direcciones con copy-on-write, copia la tabla de fd, asigna un PID nuevo y retorna dos veces — una en el padre, una en el hijo.",
+  "diagram": "fork",
+  "has_dual_view": true,
+  "dual_view": {
+    "user": "$ ls /\n(listing)\n$ ",
+    "kernel": "fork()\n  ↓ duplicar mm + fds\n  ↓ hijo: execve\n  ↓ padre: wait4"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "node": "userspace.shell",
+      "diagram_phase": "parent",
+      "label": "El shell pide fork",
+      "what_ir0_does": "Wrapper libc clone/fork antes de execve para comandos externos.",
+      "why_it_matters": "Job control y pipelines multiplican los sitios de fork.",
+      "implementation": { "file": "IR0/kernel/syscalls/process_syscalls.c", "symbol": "sys_fork", "label": "sys_fork" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/process.md", "label": "mandoc: process" }
+    },
+    {
+      "id": 2,
+      "node": "kernel.process.fork",
+      "diagram_phase": "split",
+      "label": "fork",
+      "what_ir0_does": "Clona page tables con copy-on-write, duplica entradas de fd, encola al hijo en la runqueue.",
+      "why_it_matters": "Sale caro — los shells forkean seguido.",
+      "implementation": { "file": "IR0/kernel/process/fork.c", "label": "process fork" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/mm.md", "label": "mandoc: mm / COW" }
+    },
+    {
+      "id": 3,
+      "node": "kernel.process.exec",
+      "diagram_phase": "exec",
+      "label": "execve del hijo",
+      "what_ir0_does": "El hijo reemplaza su imagen con /bin/ls u otro binario.",
+      "why_it_matters": "El patrón clásico fork+exec.",
+      "implementation": { "file": "IR0/kernel/elf_loader.c", "symbol": "kexecve", "label": "exec en el hijo" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/process.md", "label": "mandoc: exec" }
+    },
+    {
+      "id": 4,
+      "node": "kernel.process.wait",
+      "diagram_phase": "wait",
+      "label": "wait4",
+      "what_ir0_does": "El padre se bloquea hasta que el hijo sale; el status codifica señal o código de salida.",
+      "why_it_matters": "Sin wait hay zombies — PID 1 tiene que recolectar huérfanos.",
+      "implementation": { "file": "IR0/kernel/syscalls/process_syscalls.c", "symbol": "sys_wait4", "label": "wait4" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/process.md", "label": "mandoc: process" }
+    }
+  ],
+  "story_id": "ls-root",
+  "refs": [
+    { "symbol": "sys_fork", "path": "IR0/kernel/syscalls/process_syscalls.c" }
+  ]
+}

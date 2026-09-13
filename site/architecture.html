@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/theme-init.js?v=7"></script>
+    <title>Explore IR0 — Architecture</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/journal.css?v=7">
+</head>
+<body>
+    <header class="masthead">
+        <div class="masthead-inner">
+            <div>
+                <div class="journal-title">Explore IR0</div>
+                <div class="journal-sub">Architecture (mini)</div>
+            </div>
+            <ul class="nav-links"></ul>
+        </div>
+    </header>
+    <div class="edition-bar" id="edition-bar"><span id="edition-text">Loading…</span></div>
+
+    <main class="page">
+        <div class="arch-hero">
+            <div>
+                <h1 id="arch-title">Architecture</h1>
+                <p id="arch-sub" class="section-note"></p>
+            </div>
+        </div>
+
+        <p class="section-note" id="arch-stack-note">Vertical stack — how a command or keypress travels through the machine. Not a force-directed graph.</p>
+        <div class="arch-stack" id="arch-layers"></div>
+
+        <h2 class="section-head" id="contracts-head">Linux userspace contracts</h2>
+        <div class="contracts-flow" id="contracts-flow"></div>
+        <p class="section-note" id="contracts-note"></p>
+
+        <h2 class="section-head" id="deep-dive-head">Deep dive (normative)</h2>
+        <ul id="arch-dives"></ul>
+    </main>
+    <footer class="footer-note"><a href="atlas.html" id="arch-map-link">Kernel map →</a></footer>
+    <script src="js/edition.js?v=7"></script>
+    <script src="js/explore-common.js?v=7"></script>
+    <script src="js/architecture.js?v=7"></script>
+</body>
+</html>

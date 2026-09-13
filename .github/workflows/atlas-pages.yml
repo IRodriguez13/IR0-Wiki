@@ -1,0 +1,57 @@
+name: Deploy IR0 Journal (GitHub Pages)
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: atlas-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout IR0 (optional sibling)
+        uses: actions/checkout@v4
+        with:
+          repository: IRodriguez13/IR0
+          path: IR0
+        continue-on-error: true
+
+      - name: Checkout ISD (optional sibling)
+        uses: actions/checkout@v4
+        with:
+          repository: IRodriguez13/ISD
+          path: ISD
+        continue-on-error: true
+
+      - name: Build site
+        env:
+          IR0_ROOT: ${{ github.workspace }}/IR0
+          ISD_ROOT: ${{ github.workspace }}/ISD
+        run: make atlas-deploy-check
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

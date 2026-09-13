@@ -1,0 +1,65 @@
+{
+  "id": "receive-signal",
+  "action_id": "receive-signal",
+  "title": "Receive a signal",
+  "subtitle": "NULL dereference → page fault → SIGSEGV → shell message",
+  "what_you_see": "$ ./bad\nSegmentation fault\n# ",
+  "why_it_matters": "Signals are how the kernel reports asynchronous events to userspace. A bad memory access must not hang the machine — it must classify the fault, deliver SIGSEGV, reap the child, and return control to the shell.",
+  "has_dual_view": true,
+  "dual_view": {
+    "user": "$ ./bad\nSegmentation fault",
+    "kernel": "#PF (not present, user)\n  ↓ pf_user_segv\n  ↓ SIGSEGV default kill\n  ↓ process_exit → zombie\n  ↓ wait4 → WIFSIGNALED"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "node": "userspace.program",
+      "label": "Bad access",
+      "what_ir0_does": "User code touches unmapped or forbidden virtual address. CPU raises #PF.",
+      "why_it_matters": "Every segfault story starts in ring 3.",
+      "implementation": { "file": "IR0/setup/pid1/userspace_segv.c", "label": "userspace_segv smoke" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/signals.md", "label": "mandoc: signals" }
+    },
+    {
+      "id": 2,
+      "node": "arch.page_fault",
+      "label": "CPU #PF",
+      "what_ir0_does": "x86-64 saves error code and faulting address (CR2). Vector dispatches to mm_page_fault_handle.",
+      "why_it_matters": "Architecture frame is evidence — not optional logging.",
+      "implementation": { "file": "IR0/mm/page_fault.c", "symbol": "mm_page_fault_handle", "label": "page fault entry" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/mm.md", "label": "mandoc: mm" }
+    },
+    {
+      "id": 3,
+      "node": "kernel.mm.page_fault",
+      "label": "Classify fault",
+      "what_ir0_does": "Demand paging, COW, or pf_user_segv when access is invalid. Smoke uses 0xDEADBEEF deliberately.",
+      "why_it_matters": "Same handler serves growth and crashes — classification must be exact.",
+      "implementation": { "file": "IR0/mm/page_fault.c", "symbol": "pf_user_segv", "label": "pf_user_segv" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/mm.md", "label": "mandoc: mm" }
+    },
+    {
+      "id": 4,
+      "node": "kernel.signals",
+      "label": "SIGSEGV",
+      "what_ir0_does": "Default action kills the process when no handler is installed. Ash later prints Segmentation fault from exit status.",
+      "why_it_matters": "POSIX semantics — parent must observe WIFSIGNALED.",
+      "implementation": { "file": "IR0/kernel/process/signals.c", "symbol": "process_signal_default_kill", "label": "signal delivery" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/signals.md", "label": "mandoc: signals" }
+    },
+    {
+      "id": 5,
+      "node": "userspace.shell",
+      "label": "Shell continues",
+      "what_ir0_does": "Parent reaps zombie via wait4. Prompt returns.",
+      "why_it_matters": "Isolation worked — kernel and shell survived the faulting process.",
+      "implementation": { "file": "IR0/kernel/syscalls/process_syscalls.c", "symbol": "sys_wait4", "label": "wait4" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/process.md", "label": "mandoc: process" }
+    }
+  ],
+  "story_id": "null-dereference",
+  "refs": [
+    { "symbol": "pf_user_segv", "path": "IR0/mm/page_fault.c" },
+    { "symbol": "process_signal_default_kill", "path": "IR0/kernel/process/signals.c" }
+  ]
+}

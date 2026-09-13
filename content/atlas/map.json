@@ -1,0 +1,339 @@
+{
+  "version": 1,
+  "edition": "0.0.1-rc5",
+  "layers": [
+    { "id": "userspace", "label": "Userspace", "order": 0 },
+    { "id": "boundary", "label": "Syscall boundary", "order": 1 },
+    { "id": "kernel", "label": "Kernel", "order": 2 },
+    { "id": "arch", "label": "Architecture", "order": 3 },
+    { "id": "hardware", "label": "Hardware / QEMU", "order": 4 }
+  ],
+  "nodes": [
+    {
+      "id": "userspace.shell",
+      "layer": "userspace",
+      "label": "Interactive shell",
+      "status": "implemented",
+      "summary": "BusyBox ash or ISD init drives command lines and job control.",
+      "stories": ["ls-root", "null-dereference", "hello-tcc"],
+      "symbols": []
+    },
+    {
+      "id": "userspace.libc",
+      "layer": "userspace",
+      "label": "LibC (musl)",
+      "status": "implemented",
+      "summary": "musl wraps syscalls and provides POSIX helpers for ls, printf, fork, exec.",
+      "stories": ["ls-root", "null-dereference", "hello-tcc"],
+      "symbols": []
+    },
+    {
+      "id": "userspace.program",
+      "layer": "userspace",
+      "label": "User program",
+      "status": "implemented",
+      "summary": "ELF binary under /bin — ls, userspace_segv, tcc, hello.",
+      "stories": ["ls-root", "null-dereference", "hello-tcc"],
+      "symbols": [
+        { "name": "main", "path": "IR0/setup/pid1/userspace_segv.c" }
+      ]
+    },
+    {
+      "id": "userspace.tcc",
+      "layer": "userspace",
+      "label": "TCC compiler",
+      "status": "implemented",
+      "summary": "Tiny C Compiler on ISD rootfs compiles hello.c in-guest.",
+      "stories": ["hello-tcc"],
+      "symbols": []
+    },
+    {
+      "id": "boundary.syscall_enter",
+      "layer": "boundary",
+      "label": "Syscall entry",
+      "status": "implemented",
+      "summary": "Ring 3 → ring 0 via syscall instruction; arguments in Linux x86-64 order.",
+      "stories": ["ls-root", "null-dereference", "hello-tcc"],
+      "symbols": [
+        { "name": "syscall_dispatch", "path": "IR0/kernel/syscalls/syscall_dispatch.c" }
+      ]
+    },
+    {
+      "id": "boundary.syscall_exit",
+      "layer": "boundary",
+      "label": "Syscall return",
+      "status": "implemented",
+      "summary": "Return to userspace with rax result or negative errno encoding.",
+      "stories": ["ls-root", "hello-tcc"],
+      "symbols": []
+    },
+    {
+      "id": "kernel.process.fork",
+      "layer": "kernel",
+      "label": "fork / clone",
+      "status": "implemented",
+      "summary": "Duplicate address space and file descriptor table for child processes.",
+      "stories": ["ls-root", "null-dereference"],
+      "symbols": [
+        { "name": "sys_fork", "path": "IR0/kernel/syscalls/process_syscalls.c" }
+      ]
+    },
+    {
+      "id": "kernel.process.exec",
+      "layer": "kernel",
+      "label": "exec",
+      "status": "partial",
+      "summary": "Load ELF, replace memory image, preserve fd table where CLOEXEC allows.",
+      "stories": ["ls-root", "hello-tcc", "null-dereference"],
+      "symbols": [
+        { "name": "sys_exec", "path": "IR0/kernel/syscalls/process_syscalls.c" },
+        { "name": "kexecve", "path": "IR0/kernel/elf_loader.c" }
+      ]
+    },
+    {
+      "id": "kernel.process.wait",
+      "layer": "kernel",
+      "label": "wait4",
+      "status": "implemented",
+      "summary": "Parent reaps zombie; WIFSIGNALED(SIGSEGV) for faulted children.",
+      "stories": ["null-dereference"],
+      "symbols": [
+        { "name": "sys_wait4", "path": "IR0/kernel/syscalls/process_syscalls.c" }
+      ]
+    },
+    {
+      "id": "kernel.process.exit",
+      "layer": "kernel",
+      "label": "process exit",
+      "status": "implemented",
+      "summary": "Teardown mm, fds, wake waiters; zombie until wait.",
+      "stories": ["null-dereference"],
+      "symbols": [
+        { "name": "process_exit", "path": "IR0/kernel/process/exit.c" }
+      ]
+    },
+    {
+      "id": "kernel.vfs.lookup",
+      "layer": "kernel",
+      "label": "VFS path lookup",
+      "status": "implemented",
+      "summary": "Walk mount table and resolve path components.",
+      "stories": ["ls-root", "hello-tcc"],
+      "symbols": [
+        { "name": "vfs_open", "path": "IR0/fs/vfs.c" }
+      ]
+    },
+    {
+      "id": "kernel.vfs.readdir",
+      "layer": "kernel",
+      "label": "VFS readdir",
+      "status": "implemented",
+      "summary": "Directory enumeration for getdents64.",
+      "stories": ["ls-root"],
+      "symbols": [
+        { "name": "sys_getdents64", "path": "IR0/kernel/syscalls/fs_syscalls.c" }
+      ]
+    },
+    {
+      "id": "kernel.fs.minix",
+      "layer": "kernel",
+      "label": "MINIX filesystem",
+      "status": "implemented",
+      "summary": "Primary on-disk FS for root and /bin.",
+      "stories": ["ls-root", "hello-tcc"],
+      "symbols": [
+        { "name": "minix_fs_readdir", "path": "IR0/fs/minix_fs.c" }
+      ]
+    },
+    {
+      "id": "kernel.tty.write",
+      "layer": "kernel",
+      "label": "TTY write",
+      "status": "implemented",
+      "summary": "Character output to virtual console.",
+      "stories": ["ls-root", "null-dereference"],
+      "symbols": [
+        { "name": "sys_write", "path": "IR0/kernel/syscalls/fs_syscalls.c" }
+      ]
+    },
+    {
+      "id": "kernel.mm.page_fault",
+      "layer": "kernel",
+      "label": "Page fault handler",
+      "status": "implemented",
+      "summary": "Demand paging, COW, or userspace SIGSEGV for invalid accesses.",
+      "stories": ["null-dereference"],
+      "symbols": [
+        { "name": "mm_page_fault_handle", "path": "IR0/mm/page_fault.c" },
+        { "name": "pf_user_segv", "path": "IR0/mm/page_fault.c" }
+      ]
+    },
+    {
+      "id": "kernel.signals",
+      "layer": "kernel",
+      "label": "Signal delivery",
+      "status": "partial",
+      "summary": "Default kill on SIGSEGV; ash prints Segmentation fault when exit_signal is set.",
+      "stories": ["null-dereference"],
+      "symbols": [
+        { "name": "process_signal_default_kill", "path": "IR0/kernel/process/signals.c" }
+      ]
+    },
+    {
+      "id": "arch.page_fault",
+      "layer": "arch",
+      "label": "CPU #PF exception",
+      "status": "implemented",
+      "summary": "x86-64 page fault vector saves frame and calls mm_page_fault_handle.",
+      "stories": ["null-dereference"],
+      "symbols": []
+    },
+    {
+      "id": "arch.mmu",
+      "layer": "arch",
+      "label": "MMU / page tables",
+      "status": "implemented",
+      "summary": "Per-process CR3; present/user/write bits classify faults.",
+      "stories": ["null-dereference"],
+      "symbols": []
+    },
+    {
+      "id": "hardware.qemu",
+      "layer": "hardware",
+      "label": "QEMU / serial",
+      "status": "implemented",
+      "summary": "Smokes and Atlas traces captured from guest serial and KTM lines.",
+      "stories": ["ls-root", "null-dereference", "hello-tcc"],
+      "symbols": []
+    },
+    {
+      "id": "hardware.ps2",
+      "layer": "hardware",
+      "label": "PS/2 keyboard",
+      "status": "implemented",
+      "summary": "i8042 controller presents scancode bytes on port 0x60.",
+      "stories": [],
+      "symbols": []
+    },
+    {
+      "id": "arch.irq1",
+      "layer": "arch",
+      "label": "IRQ1 (keyboard)",
+      "status": "implemented",
+      "summary": "PS/2 interrupt; atomic status+data read avoids scancode races.",
+      "stories": [],
+      "symbols": [
+        { "name": "keyboard_feed_scancode", "path": "IR0/interrupt/arch/keyboard.c" }
+      ]
+    },
+    {
+      "id": "kernel.input.layer",
+      "layer": "kernel",
+      "label": "Input layer",
+      "status": "implemented",
+      "summary": "Scancode decode and event fan-out to TTY and evdev queue.",
+      "stories": [],
+      "symbols": [
+        { "name": "keyboard_feed_scancode", "path": "IR0/interrupt/arch/keyboard.c" }
+      ]
+    },
+    {
+      "id": "kernel.input.events0",
+      "layer": "kernel",
+      "label": "/dev/events0",
+      "status": "implemented",
+      "summary": "Linux evdev-style input node for graphics clients and X.",
+      "stories": [],
+      "symbols": [
+        { "name": "dev_events0_read", "path": "IR0/fs/devfs.c" }
+      ]
+    },
+    {
+      "id": "kernel.tty.line_discipline",
+      "layer": "kernel",
+      "label": "TTY line discipline",
+      "status": "implemented",
+      "summary": "Canonical mode, echo, sleep until input arrives.",
+      "stories": [],
+      "symbols": [
+        { "name": "sys_read", "path": "IR0/kernel/syscalls/fs_syscalls.c" }
+      ]
+    },
+    {
+      "id": "kernel.boot",
+      "layer": "kernel",
+      "label": "Kernel boot",
+      "status": "implemented",
+      "summary": "Subsystem init until first exec of PID 1.",
+      "stories": [],
+      "symbols": []
+    },
+    {
+      "id": "userspace.runit",
+      "layer": "userspace",
+      "label": "runit PID 1",
+      "status": "implemented",
+      "summary": "Stage 1/2/3 service supervision on ISD rootfs.",
+      "stories": [],
+      "symbols": []
+    },
+    {
+      "id": "kernel.drivers.fb",
+      "layer": "kernel",
+      "label": "Framebuffer /dev/fb0",
+      "status": "partial",
+      "summary": "mmap MAP_SHARED for TinyX, Doom, console handoff.",
+      "stories": [],
+      "symbols": []
+    },
+    {
+      "id": "userspace.xserver",
+      "layer": "userspace",
+      "label": "TinyX / X server",
+      "status": "partial",
+      "summary": "Unmodified KDrive/TinyX on Linux UAPI devices.",
+      "stories": [],
+      "symbols": []
+    }
+  ],
+  "edges": [
+    { "from": "userspace.shell", "to": "kernel.process.fork" },
+    { "from": "userspace.shell", "to": "kernel.process.exec" },
+    { "from": "userspace.program", "to": "boundary.syscall_enter" },
+    { "from": "userspace.libc", "to": "boundary.syscall_enter" },
+    { "from": "boundary.syscall_enter", "to": "kernel.vfs.lookup" },
+    { "from": "boundary.syscall_enter", "to": "kernel.vfs.readdir" },
+    { "from": "boundary.syscall_enter", "to": "kernel.process.exec" },
+    { "from": "kernel.vfs.readdir", "to": "kernel.fs.minix" },
+    { "from": "kernel.vfs.lookup", "to": "kernel.fs.minix" },
+    { "from": "kernel.vfs.readdir", "to": "kernel.tty.write" },
+    { "from": "userspace.program", "to": "arch.page_fault" },
+    { "from": "arch.page_fault", "to": "kernel.mm.page_fault" },
+    { "from": "kernel.mm.page_fault", "to": "kernel.signals" },
+    { "from": "kernel.signals", "to": "kernel.process.exit" },
+    { "from": "kernel.process.exit", "to": "kernel.process.wait" },
+    { "from": "kernel.process.wait", "to": "userspace.shell" },
+    { "from": "userspace.tcc", "to": "kernel.fs.minix" },
+    { "from": "boundary.syscall_exit", "to": "userspace.libc" },
+    { "from": "hardware.ps2", "to": "arch.irq1" },
+    { "from": "arch.irq1", "to": "kernel.input.layer" },
+    { "from": "kernel.input.layer", "to": "kernel.input.events0" },
+    { "from": "kernel.input.layer", "to": "kernel.tty.line_discipline" },
+    { "from": "kernel.tty.line_discipline", "to": "boundary.syscall_enter" },
+    { "from": "kernel.boot", "to": "kernel.process.exec" },
+    { "from": "kernel.process.exec", "to": "userspace.runit" },
+    { "from": "userspace.runit", "to": "userspace.shell" },
+    { "from": "userspace.xserver", "to": "kernel.drivers.fb" },
+    { "from": "userspace.xserver", "to": "kernel.input.events0" }
+  ],
+  "edition_diff": {
+    "0.0.1-pre-rc2": {
+      "0.0.1-pre-rc3": {
+        "added_nodes": ["userspace.tcc"],
+        "changed_status": [
+          { "id": "kernel.signals", "from": "experimental", "to": "partial" }
+        ]
+      }
+    }
+  }
+}

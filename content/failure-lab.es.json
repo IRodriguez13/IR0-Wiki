@@ -1,0 +1,167 @@
+{
+  "title": "Romper IR0",
+  "subtitle": "Provocá una falla. Adiviná qué pasa primero — después recorré lo que hace la máquina.",
+  "scenarios": [
+    {
+      "id": "kernel-panic",
+      "title": "Pánico del kernel",
+      "command": "echo c > /sys/kernel/panic",
+      "hook": {
+        "prompt": "Forzaste un pánico. ¿Qué pasa primero?",
+        "options": [
+          { "text": "Solo muere ese proceso; el shell sigue.", "correct": false },
+          { "text": "El kernel se detiene. No sigue corriendo.", "correct": true },
+          { "text": "El shell imprime “command not found”.", "correct": false }
+        ]
+      },
+      "sequence": [
+        {
+          "label": "Algo no tiene recuperación",
+          "user": "La máquina deja de servir. No vuelve el prompt.",
+          "kernel": "Un subsistema llama panic() — el kernel no continúa."
+        },
+        {
+          "label": "El framebuffer se limpia",
+          "user": "La pantalla pasa a un banner de pánico. El ruido serial no es este camino.",
+          "kernel": "El path GUI pinta una superficie dedicada, no el dump de klog."
+        },
+        {
+          "label": "Falla legible",
+          "user": "Uptime, sitio del fault y una pista corta de apagado.",
+          "kernel": "Serial/klog siguen recibiendo registros y stack para quien desarrolla."
+        },
+        {
+          "label": "Halt",
+          "user": "La caja se queda ahí. Reiniciás.",
+          "kernel": "Disparan los markers del smoke y después SYSTEM_SHUTDOWN_HALT."
+        }
+      ]
+    },
+    {
+      "id": "page-fault",
+      "title": "Page fault",
+      "command": "./crash   (NULL / dirección no mapeada)",
+      "story_id": "null-dereference",
+      "hook": {
+        "prompt": "Un programa toca una dirección inválida. ¿Qué pasa primero?",
+        "options": [
+          { "text": "Pánico de todo el kernel.", "correct": false },
+          { "text": "La CPU levanta un page fault.", "correct": true },
+          { "text": "El propio shell sale.", "correct": false }
+        ]
+      },
+      "sequence": [
+        {
+          "label": "Dirección inválida",
+          "user": "Un programa toca memoria que no debe.",
+          "kernel": "La CPU levanta #PF. CR2 guarda la dirección."
+        },
+        {
+          "label": "Clasificar el fault",
+          "user": "Todavía no hay nada en pantalla — el kernel está decidiendo.",
+          "kernel": "pf_user_segv: userspace, no presente o prohibido."
+        },
+        {
+          "label": "SIGSEGV",
+          "user": "El proceso desaparece.",
+          "kernel": "La acción por defecto mata la tarea. El wait queda WIFSIGNALED."
+        },
+        {
+          "label": "El shell sigue",
+          "user": "Segmentation fault — y vuelve el prompt.",
+          "kernel": "El padre hace wait4 y recolecta al hijo. PID 1 / el shell siguen."
+        }
+      ]
+    },
+    {
+      "id": "kill-process",
+      "title": "Matar un proceso",
+      "command": "kill -9 <pid>",
+      "hook": {
+        "prompt": "Mandaste SIGKILL. ¿Qué pasa primero?",
+        "options": [
+          { "text": "El proceso puede atraparlo y seguir.", "correct": false },
+          { "text": "El kernel encola una señal que no se puede atrapar.", "correct": true },
+          { "text": "La máquina reinicia.", "correct": false }
+        ]
+      },
+      "sequence": [
+        {
+          "label": "Mandás la señal",
+          "user": "kill -9 42",
+          "kernel": "sys_kill encola SIGKILL. No se puede atrapar."
+        },
+        {
+          "label": "Kill por defecto",
+          "user": "El proceso ya no está.",
+          "kernel": "process_signal_default_kill → exit. Un zombie espera wait4."
+        },
+        {
+          "label": "Vuelve el prompt",
+          "user": "El shell otra vez está idle.",
+          "kernel": "El padre recolecta. UX de job-control vs el path de salida."
+        }
+      ]
+    },
+    {
+      "id": "blocked-syscall",
+      "title": "Interrumpir un syscall bloqueado",
+      "command": "cat    y después Ctrl+C",
+      "hook": {
+        "prompt": "cat está ahí, sin input. ¿Dónde está?",
+        "options": [
+          { "text": "Ya terminó; el shell solo parece idle.", "correct": false },
+          { "text": "Dormido en el kernel, bloqueado en read(0).", "correct": true },
+          { "text": "PID 1 se cayó.", "correct": false }
+        ]
+      },
+      "sequence": [
+        {
+          "label": "Bloqueado en el kernel",
+          "user": "cat se queda. Ni línea ni return.",
+          "kernel": "read(0) duerme: PROCESS_BLOCKED en input TTY."
+        },
+        {
+          "label": "Ctrl+C",
+          "user": "^C",
+          "kernel": "SIGINT. Despiertan al waiter; el syscall no termina normal."
+        },
+        {
+          "label": "EINTR",
+          "user": "El comando muere. Volvés al prompt.",
+          "kernel": "El syscall interrumpido devuelve EINTR — restart o error, lo decide el caller."
+        }
+      ]
+    },
+    {
+      "id": "fill-pipe",
+      "title": "Llenar un pipe",
+      "command": "un writer contra un pipe lleno",
+      "hook": {
+        "prompt": "El writer es más rápido que el reader. ¿Qué pasa cuando el pipe se llena?",
+        "options": [
+          { "text": "Se tiran los bytes de más.", "correct": false },
+          { "text": "El writer se bloquea (o recibe EAGAIN).", "correct": true },
+          { "text": "El kernel entra en pánico.", "correct": false }
+        ]
+      },
+      "sequence": [
+        {
+          "label": "El productor escribe",
+          "user": "Un programa escribe más rápido de lo que alguien lee.",
+          "kernel": "Los bytes caen en el buffer del pipe."
+        },
+        {
+          "label": "El buffer está lleno",
+          "user": "El writer parece colgado.",
+          "kernel": "pipe lleno → bloquea al writer (o EAGAIN si O_NONBLOCK)."
+        },
+        {
+          "label": "El consumidor lee",
+          "user": "La salida vuelve a moverse.",
+          "kernel": "Un read despierta al writer. Los dos extremos tienen refcount."
+        }
+      ]
+    }
+  ]
+}

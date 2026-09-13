@@ -1,0 +1,23 @@
+name: IR0 Atlas
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  validate-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sync edition (no sibling repos in CI)
+        run: make atlas-sync-edition
+
+      - name: Validate graph + build site data
+        run: make atlas-deploy-check

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/theme-init.js?v=7"></script>
+    <title>Explore IR0 — Journey</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/journal.css?v=7">
+</head>
+<body>
+    <header class="masthead">
+        <div class="masthead-inner">
+            <div>
+                <div class="journal-title">Explore IR0</div>
+                <div class="journal-sub">Interactive journey</div>
+            </div>
+            <ul class="nav-links"></ul>
+        </div>
+    </header>
+    <div class="edition-bar" id="edition-bar"><span id="edition-text">Loading…</span></div>
+
+    <main class="page">
+        <header class="story-header">
+            <h1 id="journey-title">Loading…</h1>
+            <p id="journey-subtitle"></p>
+            <div class="journey-template">
+                <h3 class="detail-kicker" data-i18n-journey="journey.what_you_see">What you see</h3>
+                <pre class="see-box" id="journey-see"></pre>
+                <h3 class="detail-kicker" data-i18n-journey="journey.why_matters">Why it matters</h3>
+                <p id="journey-why"></p>
+                <p class="journey-replay" id="journey-replay" hidden>
+                    <a class="btn" id="journey-story-link" href="#">Replay QEMU trace →</a>
+                </p>
+                <p class="journey-maps">
+                    <a id="journey-map-link" href="atlas.html" hidden></a>
+                    <a id="journey-arch-link" href="architecture.html"></a>
+                </p>
+                <div class="journey-diagram" id="journey-diagram" hidden></div>
+            </div>
+        </header>
+
+        <div class="view-toggle" id="dual-toggle" hidden>
+            <button type="button" class="active" data-view="user" data-i18n-journey="journey.user_view">User view</button>
+            <button type="button" data-view="kernel" data-i18n-journey="journey.kernel_view">Kernel view</button>
+        </div>
+        <pre class="dual-panel" id="dual-view-panel" hidden></pre>
+
+        <div class="journey-layout">
+            <div class="journey-flow-col">
+                <h2 class="section-head" data-i18n-journey="journey.path_title">Path through IR0</h2>
+                <div class="journey-flow" id="journey-flow"></div>
+                <div class="player-controls">
+                    <button type="button" id="btn-prev" class="secondary">◀ prev</button>
+                    <button type="button" id="btn-next">next ▶</button>
+                    <span id="step-counter">1 / 1</span>
+                </div>
+            </div>
+            <div class="journey-detail-col">
+                <div class="step-detail" id="journey-detail"></div>
+            </div>
+        </div>
+    </main>
+    <footer class="footer-note"><a href="index.html">← All journeys</a></footer>
+    <script src="js/edition.js?v=7"></script>
+    <script src="js/explore-common.js?v=7"></script>
+    <script src="js/journey.js?v=7"></script>
+</body>
+</html>

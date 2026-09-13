@@ -1,0 +1,84 @@
+{
+  "title": "IR0 through time",
+  "subtitle": "Milestones on the path to a usable Unix-like system — not a release changelog.",
+  "milestones": [
+    {
+      "id": "first-boot",
+      "label": "First boot",
+      "image": "assets/isd-firstboot.png",
+      "summary": "Kernel reaches userspace init. No shell yet — proof the boot chain and syscall surface are alive.",
+      "required": ["Multiboot/ISO", "serial console", "minimal init path"]
+    },
+    {
+      "id": "ring3",
+      "label": "First ring 3 process",
+      "image": null,
+      "summary": "User mode entry with a real CR3 and iretq. Everything after this is “a program on IR0”, not kernel self-test.",
+      "required": ["Paging", "ELF or flat binary loader", "syscall return path"]
+    },
+    {
+      "id": "fork-exec",
+      "label": "fork / exec",
+      "image": null,
+      "summary": "Processes become composable: shell can spawn children and replace their image.",
+      "required": ["process fork", "execve", "wait4", "fd table copy"]
+    },
+    {
+      "id": "musl",
+      "label": "musl libc",
+      "image": null,
+      "summary": "Real POSIX userspace — printf, malloc, pthread path — without rewriting every program for IR0.",
+      "required": ["Linux-compatible syscall ABI", "loader + aux vector"]
+    },
+    {
+      "id": "busybox",
+      "label": "BusyBox",
+      "image": "assets/isd-shell-session.png",
+      "summary": "ash, ls, cat on a MINIX rootfs. The machine becomes operable from a prompt.",
+      "required": ["ISD rootfs", "MINIX FS", "TTY read/write"]
+    },
+    {
+      "id": "runit",
+      "label": "runit PID 1",
+      "image": "assets/isd-top.png",
+      "summary": "Service supervision replaces one-shot init harnesses. Persistent product shape.",
+      "required": ["fork/exec stable", "getty", "ISD stage scripts"]
+    },
+    {
+      "id": "persistent-install",
+      "label": "Persistent installation",
+      "image": null,
+      "summary": "disk.img survives reboot; first-boot account creation on real rootfs.",
+      "required": ["MINIX on disk", "install-to-disk", "runit stage 1/2/3"]
+    },
+    {
+      "id": "doom",
+      "label": "Doom",
+      "image": "assets/isd-doom.png",
+      "summary": "Fullscreen client on /dev/fb0 + input — graphics tier proof, not a toy blit.",
+      "required": ["mmap fb", "evdev/events", "musl + game port"]
+    },
+    {
+      "id": "arm64",
+      "label": "ARM64 userspace",
+      "image": null,
+      "summary": "Same ABI story on a second architecture — not a second kernel rewrite for every feature.",
+      "required": ["arch port", "cross toolchain", "smoke parity"]
+    },
+    {
+      "id": "tinyx",
+      "label": "TinyX root window",
+      "image": null,
+      "image_note": "Historic gray root-window capture reserved for this milestone — pedagogically more honest than a polished desktop mock.",
+      "summary": "Unmodified TinyX/KDrive on IR0 Linux UAPI. Third-party software exposed a read(2) contract bug — fixed in the kernel, not in X.",
+      "required": ["/dev/fb0", "unix sockets", "poll/epoll", "ext2 HOME for startx smoke"]
+    },
+    {
+      "id": "next",
+      "label": "?",
+      "image": null,
+      "summary": "What comes next is whatever the next smoke turns green.",
+      "required": []
+    }
+  ]
+}

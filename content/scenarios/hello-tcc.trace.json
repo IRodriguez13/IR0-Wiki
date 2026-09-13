@@ -1,0 +1,65 @@
+{
+  "scenario": "hello-tcc",
+  "edition": "0.0.1-pre-rc3",
+  "source": "captured-serial",
+  "kernel_commit": "d85557a",
+  "log_file": "/tmp/tcc-power-halt-smoke.log",
+  "events": [
+    {
+      "seq": 1,
+      "t_ms": 3,
+      "node": "userspace.shell",
+      "kind": "INPUT",
+      "detail": "init_tcc_power_halt.c"
+    },
+    {
+      "seq": 2,
+      "t_ms": 6,
+      "node": "userspace.tcc",
+      "kind": "COMPILE",
+      "detail": "TCC_POWER_LINK_OK"
+    },
+    {
+      "seq": 3,
+      "t_ms": 9,
+      "node": "userspace.tcc",
+      "kind": "COMPILE",
+      "detail": "TCC linked /tmp/ph"
+    },
+    {
+      "seq": 4,
+      "t_ms": 12,
+      "node": "kernel.process.exec",
+      "kind": "SYSCALL_ENTER",
+      "detail": "execve ./tmp/ph"
+    },
+    {
+      "seq": 5,
+      "t_ms": 15,
+      "node": "userspace.program",
+      "kind": "RUN",
+      "detail": "guest raw syscalls + write"
+    },
+    {
+      "seq": 6,
+      "t_ms": 18,
+      "node": "userspace.shell",
+      "kind": "TAG",
+      "detail": "POWER_TCC_KTM_OK"
+    },
+    {
+      "seq": 7,
+      "t_ms": 21,
+      "node": "kernel.process.exec",
+      "kind": "SYSCALL_ENTER",
+      "detail": "POWER_TCC_HALT_CALL"
+    },
+    {
+      "seq": 8,
+      "t_ms": 24,
+      "node": "hardware.qemu",
+      "kind": "HALT",
+      "detail": "[#000154] [USERSPACE] [0.828] [INFO] [SMOKE] SYSTEM_SHUTDOWN_HALT"
+    }
+  ]
+}

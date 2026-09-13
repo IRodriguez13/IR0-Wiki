@@ -1,0 +1,74 @@
+{
+  "id": "open-file",
+  "action_id": "open-file",
+  "title": "Open a file",
+  "subtitle": "What happens when I run ls /?",
+  "what_you_see": "ivan@ir0:~$ ls /\nbin  etc  home  sbin  usr  …",
+  "why_it_matters": "Every directory listing is open + getdents in a loop. VFS must route to MINIX, return dentries, and write formatted names to stdout via the TTY.",
+  "has_dual_view": true,
+  "dual_view": {
+    "user": "ivan@ir0:~$ ls /\nbin  dev  etc  home …",
+    "kernel": "fork (optional)\n  ↓ execve /bin/ls\n  ↓ openat(/, O_DIRECTORY)\n  ↓ getdents64 loop\n  ↓ write(1, names…)"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "node": "userspace.shell",
+      "label": "Shell",
+      "what_ir0_does": "ash finds /bin/ls, forks or execve's, waits for child.",
+      "why_it_matters": "ls is a separate program — the kernel sees exec, not the shell builtin alone.",
+      "implementation": { "file": "ISD/out/x86_64/rootfs/minimal/bin/busybox", "label": "BusyBox ls" },
+      "deep_dive": { "file": "ISD/Documentation/ROOTFS_LAYOUT.md", "label": "ISD rootfs" }
+    },
+    {
+      "id": 2,
+      "node": "kernel.process.exec",
+      "label": "exec /bin/ls",
+      "what_ir0_does": "Load BusyBox ELF, shared multi-call binary dispatches to ls applet.",
+      "why_it_matters": "Same exec path as any other program.",
+      "implementation": { "file": "IR0/kernel/elf_loader.c", "symbol": "kexecve", "label": "exec" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/process.md", "label": "mandoc: exec" }
+    },
+    {
+      "id": 3,
+      "node": "kernel.vfs.lookup",
+      "label": "openat /",
+      "what_ir0_does": "Path walk to root inode. O_DIRECTORY ensures directory semantics.",
+      "why_it_matters": "Mount namespaces and .. handling live here.",
+      "implementation": { "file": "IR0/fs/vfs.c", "symbol": "vfs_open", "label": "VFS open" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/vfs.md", "label": "mandoc: vfs" }
+    },
+    {
+      "id": 4,
+      "node": "kernel.vfs.readdir",
+      "label": "getdents64",
+      "what_ir0_does": "Loop readdir until EOF. libc formats names for stdout.",
+      "why_it_matters": "Classic VFS → backend pattern.",
+      "implementation": { "file": "IR0/kernel/syscalls/fs_syscalls.c", "symbol": "sys_getdents64", "label": "getdents64" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/vfs.md", "label": "mandoc: vfs" }
+    },
+    {
+      "id": 5,
+      "node": "kernel.fs.minix",
+      "label": "MINIX readdir",
+      "what_ir0_does": "Read directory zone entries from disk image. FASE58L smoke asserts FASE58L_LS_PATH_OK.",
+      "why_it_matters": "Rootfs on disk is real MINIX — not a fake listing.",
+      "implementation": { "file": "IR0/fs/minix_fs.c", "symbol": "minix_fs_readdir", "label": "minix_fs_readdir" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/filesystems.md", "label": "mandoc: filesystems" }
+    },
+    {
+      "id": 6,
+      "node": "kernel.tty.write",
+      "label": "write stdout",
+      "what_ir0_does": "Formatted names go to fd 1 → virtual console.",
+      "why_it_matters": "Output path is the same for ls, printf, and panic banners.",
+      "implementation": { "file": "IR0/kernel/syscalls/fs_syscalls.c", "symbol": "sys_write", "label": "sys_write" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/tty.md", "label": "mandoc: tty" }
+    }
+  ],
+  "story_id": "ls-root",
+  "refs": [
+    { "symbol": "vfs_open", "path": "IR0/fs/vfs.c" },
+    { "symbol": "minix_fs_readdir", "path": "IR0/fs/minix_fs.c" }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "scenario": "ls-root",
+  "edition": "0.0.1-pre-rc3",
+  "source": "captured-serial",
+  "kernel_commit": "d85557a",
+  "log_file": "/tmp/fase58l-busybox-smoke.log",
+  "events": [
+    {
+      "seq": 1,
+      "t_ms": 3,
+      "node": "userspace.shell",
+      "kind": "INPUT",
+      "detail": "FASE58L_START"
+    },
+    {
+      "seq": 2,
+      "t_ms": 6,
+      "node": "userspace.program",
+      "kind": "EXEC",
+      "detail": "busybox ls /"
+    },
+    {
+      "seq": 3,
+      "t_ms": 9,
+      "node": "kernel.tty.write",
+      "kind": "OUTPUT",
+      "detail": "FASE58L_LS_ROOT_OK"
+    },
+    {
+      "seq": 4,
+      "t_ms": 12,
+      "node": "userspace.shell",
+      "kind": "INPUT",
+      "detail": "FASE58L harness: /bin/ls /"
+    },
+    {
+      "seq": 5,
+      "t_ms": 15,
+      "node": "kernel.process.fork",
+      "kind": "FORK",
+      "detail": "run_capture fork for ls"
+    },
+    {
+      "seq": 6,
+      "t_ms": 18,
+      "node": "kernel.process.exec",
+      "kind": "SYSCALL_ENTER",
+      "detail": "execvp /bin/ls"
+    },
+    {
+      "seq": 7,
+      "t_ms": 21,
+      "node": "kernel.vfs.lookup",
+      "kind": "VFS",
+      "detail": "openat / O_DIRECTORY"
+    },
+    {
+      "seq": 8,
+      "t_ms": 24,
+      "node": "kernel.vfs.readdir",
+      "kind": "VFS",
+      "detail": "getdents64 loop"
+    },
+    {
+      "seq": 9,
+      "t_ms": 27,
+      "node": "kernel.fs.minix",
+      "kind": "FS",
+      "detail": "minix_fs_readdir /"
+    },
+    {
+      "seq": 10,
+      "t_ms": 30,
+      "node": "kernel.tty.write",
+      "kind": "OUTPUT",
+      "detail": "FASE58L_LS_PATH_OK"
+    }
+  ]
+}

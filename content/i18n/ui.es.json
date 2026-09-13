@@ -1,0 +1,119 @@
+{
+  "brand": {
+    "title": "Explorar IR0",
+    "tagline": "Desarmá IR0 mientras corre"
+  },
+  "nav": {
+    "explore": "explorar",
+    "break": "romper IR0",
+    "map": "mapa del kernel",
+    "arch": "arquitectura",
+    "misc": "misc"
+  },
+  "toolbar": {
+    "back": "Volver",
+    "theme_light": "Modo claro",
+    "theme_dark": "Modo oscuro",
+    "lang_switch": "English"
+  },
+  "banner": {
+    "guide_not_spec": "Guía, no spec."
+  },
+  "index": {
+    "section_actions": "¿Qué querés hacer?",
+    "section_journeys": "Recorridos destacados",
+    "section_traces": "Replays de trazas QEMU",
+    "section_traces_note": "Evidencia de smokes reales — recorré eventos serial/KTM paso a paso.",
+    "section_also": "Misc",
+    "intro_what": "IR0 es un kernel Unix-like independiente. No es un fork de Linux ni una distro — ISD es el rootfs y el producto userspace.",
+    "intro_philosophy": "Donde puede, IR0 honra los contratos que los programas ya hablan: ABI de syscalls Linux, /dev/fb0, evdev, TTY. El trabajo es que el kernel esté bien, no parchear cada app.",
+    "intro_guide": "Este sitio es una guía, no la spec. Los contratos viven en IR0/Documentation y los mandocs de la edición clavada.",
+    "aside_docs_title": "Documentación vs este sitio",
+    "aside_docs_body": "IR0/Documentation y los mandocs explican cómo está construido IR0. Explorar IR0 muestra qué pasa cuando usás la máquina — y te enlaza a la spec.",
+    "aside_hierarchy_title": "Jerarquía",
+    "aside_hierarchy_body": "Este sitio cuenta la historia · el código la prueba · los mandocs guardan el contrato.",
+    "aside_classic": "Wiki clásica",
+    "explore_btn": "Explorar →",
+    "home_link": "← Explorar"
+  },
+  "journey": {
+    "what_you_see": "Qué ves",
+    "why_matters": "Por qué importa",
+    "path_title": "Camino por IR0",
+    "what_ir0_does": "Qué hace IR0",
+    "replay_trace": "Reproducir traza QEMU →",
+    "on_map": "Este paso en el mapa del kernel →",
+    "architecture": "Pila de arquitectura →",
+    "prev": "◀ ant",
+    "next": "sig ▶",
+    "user_view": "Vista usuario",
+    "kernel_view": "Vista kernel",
+    "all_journeys": "← Todos los recorridos",
+    "see_impl": "Ver implementación → {label}",
+    "deep_dive_link": "Profundizar → {label}",
+    "not_found": "Recorrido no encontrado: {id}",
+    "fork_parent": "padre",
+    "fork_child": "hijo",
+    "fork_arrow": "fork"
+  },
+  "edition": {
+    "bar": "Edición {edition} · kernel {kernel} · ISD {isd} · generado {generated}",
+    "cover": "Edición {edition} · kernel {kernel}"
+  },
+  "read": {
+    "articles": "Artículos"
+  },
+  "story": {
+    "back_to_journey": "← Volver al recorrido",
+    "other_stories": "Otras historias:",
+    "path_map": "Camino en el mapa del kernel",
+    "play": "▶ play",
+    "pause": "⏸ pausa",
+    "prev": "◀ ant",
+    "next": "sig ▶"
+  },
+  "atlas": {
+    "title": "Mapa del kernel",
+    "subtitle": "Catálogo por capas — no es un grafo force-directed.",
+    "intro_prefix": "Elegí un nodo para ver resumen y enlaces aguas arriba/abajo. Empezá por los",
+    "intro_link": "recorridos por acción",
+    "intro_suffix": "para paths narrativos.",
+    "select_node": "Elegí un nodo para ver su resumen e historias relacionadas.",
+    "nodes": "nodos",
+    "from": "Desde:",
+    "to": "Hacia:",
+    "stories": "Historias:",
+    "symbols": "Símbolos:",
+    "all_layers": "Todas las capas",
+    "no_path": "Este relato no tiene camino en el mapa."
+  },
+  "architecture": {
+    "stack_note": "Arriba es lo que corrés. Abajo es la máquina. Cada banda se apoya en la de abajo.",
+    "calls_into": "se apoya en",
+    "relies_on": "habla por",
+    "contracts_title": "Contratos userspace Linux",
+    "deep_dive": "Profundizar (normativo)",
+    "kernel_map_link": "Mapa del kernel →"
+  },
+  "break": {
+    "pick": "Provocá una falla",
+    "sequence": "Qué hace la máquina",
+    "step_user": "Vos ves",
+    "step_kernel": "IR0 hace",
+    "replay": "Reproducir una traza real →",
+    "locked": "Todavía no",
+    "guess": "¿Qué pasa primero?",
+    "correct": "Sí — ahora recorré el resto.",
+    "wrong": "Eso no. Probá otra.",
+    "continue": "Ver qué pasa →"
+  },
+  "misc": {
+    "title": "Misc",
+    "subtitle": "Notas, mapas y la wiki vieja — saltá con los chips.",
+    "linux": "¿Es Linux?",
+    "journal": "Journal",
+    "arch": "Arquitectura",
+    "map": "Mapa del kernel",
+    "archive": "Wiki clásica (archivo)"
+  }
+}

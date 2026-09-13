@@ -1,0 +1,78 @@
+{
+  "title": "Explorar IR0",
+  "tagline": "Desarmá IR0 mientras corre",
+  "mission": "La documentación del kernel explica cómo está construido IR0. Explorar IR0 muestra qué pasa adentro cuando usás la computadora.",
+  "actions": [
+    {
+      "id": "boot-ir0",
+      "label": "Arrancar IR0",
+      "verb": "Arrancar",
+      "status": "implemented",
+      "journey": "boot-ir0",
+      "summary": "Del ISO al primer prompt del shell."
+    },
+    {
+      "id": "run-program",
+      "label": "Ejecutar un programa",
+      "verb": "Ejecutar",
+      "status": "implemented",
+      "journey": "run-program",
+      "story": "hello-tcc",
+      "summary": "Qué pasa cuando escribís ./hello."
+    },
+    {
+      "id": "press-a-key",
+      "label": "Presionar una tecla",
+      "verb": "Presionar",
+      "status": "implemented",
+      "journey": "press-a-key",
+      "summary": "Una tecla, desde el teclado hasta el byte que lee el shell."
+    },
+    {
+      "id": "open-file",
+      "label": "Abrir un archivo",
+      "verb": "Abrir",
+      "status": "implemented",
+      "journey": "open-file",
+      "story": "ls-root",
+      "summary": "ls / — del shell al VFS y al disco."
+    },
+    {
+      "id": "fork-process",
+      "label": "fork()",
+      "verb": "fork",
+      "status": "partial",
+      "journey": "fork-process",
+      "summary": "El proceso se parte en dos — el padre espera, el hijo corre."
+    },
+    {
+      "id": "receive-signal",
+      "label": "Recibir una señal",
+      "verb": "Señal",
+      "status": "implemented",
+      "journey": "receive-signal",
+      "story": "null-dereference",
+      "summary": "Un puntero malo, un segfault, y el shell vuelve."
+    },
+    {
+      "id": "start-x",
+      "label": "Iniciar X",
+      "verb": "Iniciar",
+      "status": "partial",
+      "journey": "start-x",
+      "summary": "startx — framebuffer e input, sin parchear X."
+    },
+    {
+      "id": "break-ir0",
+      "label": "Romper IR0",
+      "verb": "Romper",
+      "status": "implemented",
+      "page": "break.html",
+      "summary": "Provocá un pánico o un fault y mirá los dos lados."
+    }
+  ],
+  "meta_pages": [
+    { "id": "is-it-linux", "label": "¿Es Linux?", "href": "is-it-linux.html", "summary": "Dónde IR0 sigue a Linux, y dónde no." },
+    { "id": "reading", "label": "Journal", "href": "read.html", "summary": "Notas cortas atadas al trabajo del kernel y de ISD." }
+  ]
+}

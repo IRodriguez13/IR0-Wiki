@@ -1,0 +1,78 @@
+{
+  "id": "press-a-key",
+  "action_id": "press-a-key",
+  "title": "Presionar una tecla",
+  "subtitle": "Del scancode PS/2 al byte que devuelve read() en el shell",
+  "what_you_see": "Escribís en ash, nano o vi. Los caracteres hacen eco en la consola virtual. Nada sugiere una docena de capas — pero cada tecla cruza hardware, interrupciones, input, TTY y un read bloqueante en userspace.",
+  "why_it_matters": "Escribir es donde un OS empieza a sentirse real. Una tecla tiene que llegar al controlador, a la interrupción, a la capa de input, al TTY y a un read bloqueado — sin perder ni duplicar el scancode.",
+  "has_dual_view": false,
+  "steps": [
+    {
+      "id": 1,
+      "node": "hardware.ps2",
+      "label": "Teclado PS/2",
+      "what_ir0_does": "El controlador i8042 deja un scancode en su buffer de salida. QEMU (o el hardware) presenta los puertos 0x60/0x64 al guest.",
+      "why_it_matters": "Cada tecla empieza como señal eléctrica, no como ASCII.",
+      "implementation": { "file": "IR0/interrupt/arch/keyboard.c", "symbol": "keyboard_poll_ps2", "label": "keyboard.c" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/input.md", "label": "mandoc: input" }
+    },
+    {
+      "id": 2,
+      "node": "arch.irq1",
+      "label": "IRQ1",
+      "what_ir0_does": "El controlador PS/2 levanta IRQ1. IR0 lee status y data juntos para que el handler y cualquier poll no consuman el mismo scancode dos veces.",
+      "why_it_matters": "Teclas duplicadas o perdidas suelen nacer de esta carrera, no de “un eco mal hecho”.",
+      "implementation": { "file": "IR0/interrupt/arch/keyboard.c", "symbol": "keyboard_feed_scancode", "label": "handler IRQ" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/tty.md", "label": "mandoc: tty" }
+    },
+    {
+      "id": 3,
+      "node": "kernel.input.layer",
+      "label": "Capa de input de IR0",
+      "what_ir0_does": "La traducción Set-1 produce eventos de tecla. El backend puede espejar a `/dev/events0` mientras la consola consume caracteres para el TTY.",
+      "why_it_matters": "Clientes gráficos y shells comparten un teclado sin un driver por consumidor.",
+      "implementation": { "file": "IR0/kernel/lib/input_backend.c", "label": "input backend" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/input.md", "label": "mandoc: input" }
+    },
+    {
+      "id": 4,
+      "node": "kernel.input.events0",
+      "label": "/dev/events0",
+      "what_ir0_does": "Camino de lectura estilo evdev para programas que quieren eventos estructurados (Doom, X). Distinto del stream de bytes del TTY.",
+      "why_it_matters": "Doom y X necesitan que este dispositivo se comporte como Linux. El shell no — lee bytes del TTY.",
+      "implementation": { "file": "IR0/fs/devfs.c", "symbol": "dev_events0_read", "label": "dev_events0_read" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/vfs.md", "label": "mandoc: vfs / devfs" }
+    },
+    {
+      "id": 5,
+      "node": "kernel.tty.line_discipline",
+      "label": "Disciplina de línea TTY",
+      "what_ir0_does": "Modo canónico, eco, backspace, y sleep cuando el buffer de línea está vacío. Los readers bloqueados esperan hasta que el IRQ los despierte.",
+      "why_it_matters": "Por esto Ctrl+C y la edición de línea se sienten a Unix.",
+      "implementation": { "file": "IR0/kernel/lib/console.c", "label": "consola / TTY" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/tty.md", "label": "mandoc: tty" }
+    },
+    {
+      "id": 6,
+      "node": "boundary.syscall_enter",
+      "label": "read(0, …)",
+      "what_ir0_does": "musl hace read sobre el fd 0. La capa de syscalls enruta al backend TTY; puede bloquear hasta keyboard_feed_scancode → stdin_wake_check.",
+      "why_it_matters": "El borde entre “el driver me despertó” y “libc devolvió un char” es la lección de OS.",
+      "implementation": { "file": "IR0/kernel/syscalls/fs_syscalls.c", "symbol": "sys_read", "label": "sys_read" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/syscalls.md", "label": "mandoc: syscalls" }
+    },
+    {
+      "id": 7,
+      "node": "userspace.shell",
+      "label": "ash / nano / vi",
+      "what_ir0_does": "El programa recibe bytes y los dibuja. Job control y edición de línea son userspace — el kernel solo garantiza entrega fiel.",
+      "why_it_matters": "Separación: transporte en el kernel, política en userspace.",
+      "implementation": { "file": "ISD/out/x86_64/rootfs/minimal/bin/busybox", "label": "BusyBox (rootfs ISD)" },
+      "deep_dive": { "file": "ISD/Documentation/ROOTFS_LAYOUT.md", "label": "layout del rootfs ISD" }
+    }
+  ],
+  "refs": [
+    { "symbol": "keyboard_feed_scancode", "path": "IR0/interrupt/arch/keyboard.c" },
+    { "symbol": "sys_read", "path": "IR0/kernel/syscalls/fs_syscalls.c" }
+  ]
+}
