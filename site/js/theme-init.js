@@ -1,6 +1,7 @@
 /**
  * Apply saved theme before first paint (avoid flash).
  * Light mouse-wheel lerp (trackpad / reduced-motion keep native scroll).
+ * Keep ease high so the page does not skate after the wheel stops.
  */
 (function () {
     'use strict';
@@ -20,7 +21,8 @@
         return;
     }
 
-    var ease = 0.42;
+    /* Higher = closer to native. 0.42 still lagged after the wheel stopped. */
+    var ease = 0.58;
     var current = window.scrollY || 0;
     var target = current;
     var running = false;
@@ -54,7 +56,7 @@
 
     function tick() {
         current += (target - current) * ease;
-        if (Math.abs(target - current) < 0.5) {
+        if (Math.abs(target - current) < 1) {
             current = target;
             running = false;
         } else {
@@ -69,6 +71,12 @@
         e.preventDefault();
         var delta = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
         target = clamp(target + delta);
+        var maxLag = Math.max(120, window.innerHeight * 0.4);
+        if (target > current + maxLag) {
+            target = current + maxLag;
+        } else if (target < current - maxLag) {
+            target = current - maxLag;
+        }
         if (!running) {
             running = true;
             requestAnimationFrame(tick);

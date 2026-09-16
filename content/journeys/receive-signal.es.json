@@ -5,6 +5,7 @@
   "subtitle": "NULL → page fault → SIGSEGV → mensaje del shell",
   "what_you_see": "$ ./bad\nSegmentation fault\n# ",
   "why_it_matters": "Las señales son cómo el kernel reporta eventos asíncronos a userspace. Un acceso de memoria inválido no debe colgar la máquina — tiene que clasificar el fault, entregar SIGSEGV, recolectar al hijo y devolver el control al shell.",
+  "diagram": "signal",
   "has_dual_view": true,
   "dual_view": {
     "user": "$ ./bad\nSegmentation fault",
@@ -14,6 +15,7 @@
     {
       "id": 1,
       "node": "userspace.program",
+      "diagram_phase": "access",
       "label": "Acceso inválido",
       "what_ir0_does": "El código de usuario toca una dirección virtual no mapeada o prohibida. La CPU levanta #PF.",
       "why_it_matters": "Toda historia de segfault empieza en ring 3.",
@@ -23,6 +25,7 @@
     {
       "id": 2,
       "node": "arch.page_fault",
+      "diagram_phase": "pf",
       "label": "#PF de la CPU",
       "what_ir0_does": "x86-64 guarda el código de error y la dirección (CR2). El vector despacha a mm_page_fault_handle.",
       "why_it_matters": "El frame de arquitectura es evidencia — no un log opcional.",
@@ -32,6 +35,7 @@
     {
       "id": 3,
       "node": "kernel.mm.page_fault",
+      "diagram_phase": "classify",
       "label": "Clasificar el fault",
       "what_ir0_does": "Demand paging, COW, o pf_user_segv si el acceso es inválido. El smoke usa 0xDEADBEEF a propósito.",
       "why_it_matters": "El mismo handler sirve crecimiento y crashes — la clasificación tiene que ser exacta.",
@@ -41,6 +45,7 @@
     {
       "id": 4,
       "node": "kernel.signals",
+      "diagram_phase": "sig",
       "label": "SIGSEGV",
       "what_ir0_does": "La acción por defecto mata el proceso si no hay handler. Ash después imprime Segmentation fault según el exit status.",
       "why_it_matters": "Semántica POSIX — el padre tiene que ver WIFSIGNALED.",
@@ -50,6 +55,7 @@
     {
       "id": 5,
       "node": "userspace.shell",
+      "diagram_phase": "shell",
       "label": "El shell sigue",
       "what_ir0_does": "El padre recolecta el zombie con wait4. Vuelve el prompt.",
       "why_it_matters": "La isolation funcionó — kernel y shell sobrevivieron al proceso que falló.",

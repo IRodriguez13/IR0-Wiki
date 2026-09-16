@@ -1,0 +1,59 @@
+{
+  "id": "cat-proc-version",
+  "action_id": "cat-proc-version",
+  "title": "cat /proc/version",
+  "subtitle": "The kernel names itself — one line, not a man page",
+  "what_you_see": "$ cat /proc/version\nIR0 version 0.0.1-rc5 … (built DATE TIME by user@host with gcc)",
+  "why_it_matters": "This is how the running system identifies itself. The string comes from IR0_VERSION_STRING and the build stamp — the same source uname(2) uses. Explore is pinned to that edition.",
+  "diagram": "proc",
+  "has_dual_view": true,
+  "dual_view": {
+    "user": "$ cat /proc/version\nIR0 version 0.0.1-rc5 …",
+    "kernel": "open(\"/proc/version\")\n  ↓ proc_version_read\n  ↓ write(1, line)"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "node": "userspace.shell",
+      "diagram_phase": "shell",
+      "label": "You type the command",
+      "what_ir0_does": "ash forks cat. The path is /proc/version — a pseudo-file, not MINIX.",
+      "why_it_matters": "Same open/read/write as any file. The backend is procfs.",
+      "implementation": { "file": "IR0/setup/pid1/cmd_stress_smoke.c", "label": "cat /proc/version smoke" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/vfs.md", "label": "mandoc: vfs" }
+    },
+    {
+      "id": 2,
+      "node": "kernel.vfs.lookup",
+      "diagram_phase": "lookup",
+      "label": "VFS lookup",
+      "what_ir0_does": "Path walk hits the /proc mount. No disk inode for this file.",
+      "why_it_matters": "Pseudo-fs and on-disk FS share the open/read contract.",
+      "implementation": { "file": "IR0/fs/vfs.c", "symbol": "vfs_open", "label": "vfs_open" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/vfs.md", "label": "mandoc: vfs" }
+    },
+    {
+      "id": 3,
+      "node": "kernel.fs.proc",
+      "diagram_phase": "proc",
+      "label": "proc_version_read",
+      "what_ir0_does": "Builds one line: IR0 version, utsname, build date/time, user@host, compiler.",
+      "why_it_matters": "Not a placeholder. ktest proc_version_contract opens this path.",
+      "implementation": { "file": "IR0/fs/procfs.c", "symbol": "proc_version_read", "label": "proc_version_read" },
+      "deep_dive": { "file": "IR0/includes/ir0/version.h", "label": "version stamp" }
+    },
+    {
+      "id": 4,
+      "node": "kernel.tty.write",
+      "diagram_phase": "write",
+      "label": "The line hits the TTY",
+      "what_ir0_does": "cat writes the buffer to fd 1. You read the edition the kernel was built as.",
+      "why_it_matters": "Guide edition and /proc/version should tell the same story.",
+      "implementation": { "file": "IR0/kernel/syscalls/fs_syscalls.c", "symbol": "sys_write", "label": "sys_write" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/tty.md", "label": "mandoc: tty" }
+    }
+  ],
+  "refs": [
+    { "symbol": "proc_version_read", "path": "IR0/fs/procfs.c" }
+  ]
+}

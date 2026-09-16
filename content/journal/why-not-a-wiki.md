@@ -1,10 +1,10 @@
 # Why this is not a wiki
 
-> Edition 0.0.1-pre-rc3 · narrative layer
+> Edition 0.0.1-rc5 · narrative layer
 
 A classical wiki is a graph of pages. You click links, read prose, and hope the text still matches the code. That model fails fast on a kernel that changes every week.
 
-**IR0 Atlas / IR0 Journal** is something else:
+**Explore IR0** is something else:
 
 | Mode | What you get |
 |------|----------------|

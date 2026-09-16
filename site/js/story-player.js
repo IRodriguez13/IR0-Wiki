@@ -185,6 +185,28 @@
             '<div><strong>Kernel</strong><p>' + escapeHtml(story.compare.kernel) + '</p></div>';
     }
 
+    function paintTraceNote() {
+        var captured = (state.trace && state.trace.edition) ||
+            (state.story && state.story.edition) || '';
+        var guide = (window.IR0Edition && window.IR0Edition.get &&
+            window.IR0Edition.get() && window.IR0Edition.get().edition) || '';
+        var note = document.getElementById('story-trace-edition');
+        if (!note) return;
+        if (!captured || !window.IR0Explore) {
+            note.hidden = true;
+            return;
+        }
+        note.hidden = false;
+        var line = window.IR0Explore.fill(window.IR0Explore.t('story.trace_edition'), {
+            captured: captured,
+            guide: guide || '?'
+        });
+        if (guide && captured !== guide) {
+            line += ' — ' + window.IR0Explore.t('story.trace_stale');
+        }
+        note.textContent = line;
+    }
+
     function applyStoryChrome() {
         if (!window.IR0Explore) return;
         var prev = document.getElementById('btn-prev');
@@ -203,6 +225,7 @@
         }
         var foot = document.querySelector('.footer-note a[href="index.html"]');
         if (foot) foot.textContent = window.IR0Explore.t('index.home_link');
+        paintTraceNote();
     }
 
     function initControls() {
@@ -239,6 +262,7 @@
             document.getElementById('story-title').textContent = state.story.title;
             document.getElementById('story-subtitle').textContent = state.story.subtitle;
             document.getElementById('story-cmd').textContent = state.story.command;
+            paintTraceNote();
             var jWrap = document.getElementById('story-journey-wrap');
             var jLink = document.getElementById('story-journey-link');
             if (jWrap && jLink && state.story.journey_id) {

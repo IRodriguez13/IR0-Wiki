@@ -1,6 +1,6 @@
 # IR0, ISD, and the three-tree boundary
 
-> **Edition:** 0.0.1-pre-rc3  
+> **Edition:** 0.0.1-rc5  
 > **Source of truth:** `ISD/Documentation/DISTRO_CONTRACT.md`
 
 The Atlas spans multiple repositories on purpose:
@@ -28,4 +28,4 @@ Run `make atlas-sync-edition` before publishing.
 - **ls-root** — ISD BusyBox + IR0 VFS/MINIX  
 - **hello-tcc** — ISD TCC package + IR0 exec/write/reboot  
 
-No single repo holds the full picture; the Atlas exists to show the join.
+No single repo holds the full picture; Explore exists to show the join.

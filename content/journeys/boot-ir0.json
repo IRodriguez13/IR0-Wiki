@@ -5,12 +5,15 @@
   "subtitle": "ISO → kernel → runit → login shell",
   "what_you_see": "QEMU or bare metal shows boot messages, then runit stages, then a login prompt or first-boot wizard on the framebuffer.",
   "why_it_matters": "Boot is the contract between firmware, kernel, and PID 1. IR0 uses a userspace-init ISO path: kernel brings up MM lazily, mounts root from disk, execs /sbin/init (runit-init).",
+  "related": { "href": "timeline.html", "label_key": "misc.timeline" },
   "has_dual_view": false,
   "steps": [
     {
       "id": 1,
       "node": "hardware.qemu",
       "label": "Firmware / GRUB",
+      "image": "assets/isd-firstboot.png",
+      "image_alt": "IR0 first boot on the framebuffer",
       "what_ir0_does": "Multiboot or ISO boot loads kernel-x64-userspace.bin. Serial and framebuffer consoles come online.",
       "why_it_matters": "Smokes assume this entry — Atlas traces start after init is scheduled.",
       "implementation": { "file": "IR0/kernel/main.c", "label": "kernel main" },
@@ -38,6 +41,8 @@
       "id": 4,
       "node": "userspace.runit",
       "label": "runit stages",
+      "image": "assets/isd-top.png",
+      "image_alt": "runit and top on ISD",
       "what_ir0_does": "/etc/runit/1 → stage 2 → getty or first-boot services. RUNIT_STAGE2_OK is the smoke gate.",
       "why_it_matters": "Product shape vs one-shot test init.",
       "implementation": { "file": "ISD/scripts/build-services.sh", "label": "ISD runit stubs" },
@@ -47,9 +52,11 @@
       "id": 5,
       "node": "userspace.shell",
       "label": "Login shell",
+      "image": "assets/isd-shell-session.png",
+      "image_alt": "Login shell on ISD",
       "what_ir0_does": "getty → ash after first-boot account creation or existing passwd.",
       "why_it_matters": "The machine is now “yours” — everything in Explore IR0 assumes this point.",
-      "implementation": { "file": "ISD/out/x86_64/rootfs/minimal/bin/busybox", "label": "getty + ash" },
+      "implementation": { "file": "ISD/Documentation/ROOTFS_LAYOUT.md", "label": "getty + ash" },
       "deep_dive": { "file": "IR0/Documentation/mandocs/en/tty.md", "label": "mandoc: tty" }
     }
   ],

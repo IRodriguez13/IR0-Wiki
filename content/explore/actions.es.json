@@ -12,6 +12,15 @@
       "summary": "Del ISO al primer prompt del shell."
     },
     {
+      "id": "first-hour-isd",
+      "label": "Primera hora en ISD",
+      "verb": "Sentate",
+      "status": "implemented",
+      "journey": "first-hour-isd",
+      "story": "hello-tcc",
+      "summary": "Login, $HOME y después compilá algo en la caja."
+    },
+    {
       "id": "run-program",
       "label": "Ejecutar un programa",
       "verb": "Ejecutar",
@@ -19,6 +28,14 @@
       "journey": "run-program",
       "story": "hello-tcc",
       "summary": "Qué pasa cuando escribís ./hello."
+    },
+    {
+      "id": "cat-proc-version",
+      "label": "cat /proc/version",
+      "verb": "cat",
+      "status": "implemented",
+      "journey": "cat-proc-version",
+      "summary": "El kernel se nombra en una sola línea."
     },
     {
       "id": "press-a-key",
@@ -46,6 +63,14 @@
       "summary": "El proceso se parte en dos — el padre espera, el hijo corre."
     },
     {
+      "id": "pipe-ls-wc",
+      "label": "ls | wc",
+      "verb": "pipe",
+      "status": "implemented",
+      "journey": "pipe-ls-wc",
+      "summary": "Dos procesos, un buffer — el pipeline de Unix."
+    },
+    {
       "id": "receive-signal",
       "label": "Recibir una señal",
       "verb": "Señal",
@@ -53,6 +78,14 @@
       "journey": "receive-signal",
       "story": "null-dereference",
       "summary": "Un puntero malo, un segfault, y el shell vuelve."
+    },
+    {
+      "id": "mmap-fb0",
+      "label": "mmap /dev/fb0",
+      "verb": "Pintar",
+      "status": "partial",
+      "journey": "mmap-fb0",
+      "summary": "Un proceso pinta la pantalla — clase Doom, no un blit de juguete."
     },
     {
       "id": "start-x",

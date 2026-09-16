@@ -1,0 +1,51 @@
+{
+  "articles": [
+    {
+      "id": "kernel-page-faults",
+      "file": "kernel-page-faults.md",
+      "title": "Page faults de userspace y SIGSEGV",
+      "repo": "IR0",
+      "source": "IR0/mm/page_fault.c, setup/pid1/init_segv_smoke.c",
+      "subsystem": ["mm", "signals", "process"]
+    },
+    {
+      "id": "kernel-vfs-ls",
+      "file": "kernel-vfs-ls.md",
+      "title": "De ls / al readdir de MINIX",
+      "repo": "IR0",
+      "source": "IR0/fs/vfs.c, fs/minix_fs.c, setup/pid1/fase58l_busybox_smoke.c",
+      "subsystem": ["vfs", "syscalls"]
+    },
+    {
+      "id": "three-trees",
+      "file": "three-trees.md",
+      "title": "IR0, ISD y el límite de los tres árboles",
+      "repo": "ISD",
+      "source": "ISD/Documentation/DISTRO_CONTRACT.md",
+      "subsystem": ["meta", "isd"]
+    },
+    {
+      "id": "isd-rootfs",
+      "file": "isd-rootfs.md",
+      "title": "Layout del rootfs de ISD",
+      "repo": "ISD",
+      "source": "ISD/Documentation/ROOTFS_LAYOUT.md",
+      "subsystem": ["userspace", "isd"]
+    },
+    {
+      "id": "isd-toolchain-tcc",
+      "file": "isd-toolchain-tcc.md",
+      "title": "Toolchain y TCC invitado",
+      "repo": "ISD",
+      "source": "ISD/Documentation/TOOLCHAIN.md, IR0 smoke-tcc-power-halt",
+      "subsystem": ["userspace", "isd"]
+    },
+    {
+      "id": "why-not-a-wiki",
+      "file": "why-not-a-wiki.md",
+      "title": "Por qué esto no es una wiki",
+      "repo": "IR0-Wiki",
+      "subsystem": ["meta"]
+    }
+  ]
+}

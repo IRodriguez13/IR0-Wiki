@@ -1,13 +1,13 @@
 # Toolchain and guest TCC
 
-> **Edition:** 0.0.1-pre-rc3  
+> **Edition:** 0.0.1-rc5  
 > **Source of truth:** `ISD/Documentation/TOOLCHAIN.md`, `IR0/setup/pid1/init_tcc_power_halt.c`
 
 ISD cross-compiles packages with musl for `x86_64-linux-musl` (see `make toolchain-check ARCH=x86_64`). IR0 smokes then inject the resulting rootfs into `disk.img` / ISO.
 
 ## Guest-native C with TinyCC
 
-The **hello-tcc** Atlas story follows the TCC power-halt harness:
+The **hello-tcc** Explore story follows the TCC power-halt harness:
 
 1. runit starts `init_tcc_power_halt.c` on ISD rootfs  
 2. harness writes C source to `/tmp/ph.c`  

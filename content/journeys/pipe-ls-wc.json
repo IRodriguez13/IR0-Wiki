@@ -1,0 +1,70 @@
+{
+  "id": "pipe-ls-wc",
+  "action_id": "pipe-ls-wc",
+  "title": "ls | wc",
+  "subtitle": "Two processes, one buffer — the Unix pipeline",
+  "what_you_see": "$ ls | wc\n     12      12     84",
+  "why_it_matters": "A pipe is how the shell composes programs without a temp file. IR0 allocates an in-memory buffer; the writer blocks when it fills, the reader sees EOF when the last writer closes.",
+  "diagram": "pipe",
+  "has_dual_view": true,
+  "dual_view": {
+    "user": "$ ls | wc",
+    "kernel": "pipe2()\n  ↓ fork ls  (write end)\n  ↓ fork wc  (read end)\n  ↓ parent wait4"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "node": "userspace.shell",
+      "diagram_phase": "shell",
+      "label": "The shell sees a pipeline",
+      "what_ir0_does": "ash parses `ls | wc` and will spawn two children around one pipe.",
+      "why_it_matters": "Job control and pipelines are why shells fork so often.",
+      "implementation": { "file": "IR0/kernel/syscalls/process_syscalls.c", "symbol": "sys_fork", "label": "sys_fork" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/process.md", "label": "mandoc: process" }
+    },
+    {
+      "id": 2,
+      "node": "kernel.ipc.pipe",
+      "diagram_phase": "create",
+      "label": "pipe2",
+      "what_ir0_does": "sys_pipe2 → pipe_create. Two fds: read end and write end, same buffer, refcounts on each end.",
+      "why_it_matters": "Fill-a-pipe in Break IR0 is this buffer hitting capacity.",
+      "implementation": { "file": "IR0/kernel/syscalls/io_syscalls.c", "symbol": "sys_pipe2", "label": "sys_pipe2" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/ipc.md", "label": "mandoc: ipc" }
+    },
+    {
+      "id": 3,
+      "node": "kernel.process.fork",
+      "diagram_phase": "writer",
+      "label": "Writer: ls",
+      "what_ir0_does": "Child 1 dups the write end onto stdout, execs ls, lists the directory into the pipe.",
+      "why_it_matters": "ls never knows about wc — it just writes fd 1.",
+      "implementation": { "file": "IR0/kernel/lib/pipe.c", "symbol": "pipe_create", "label": "pipe buffer" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/ipc.md", "label": "mandoc: ipc" }
+    },
+    {
+      "id": 4,
+      "node": "kernel.process.exec",
+      "diagram_phase": "reader",
+      "label": "Reader: wc",
+      "what_ir0_does": "Child 2 dups the read end onto stdin, execs wc, counts until EOF.",
+      "why_it_matters": "EOF happens when the last writer closes — not when the buffer is empty mid-stream.",
+      "implementation": { "file": "IR0/kernel/syscalls/io_syscalls.c", "symbol": "sys_pipe", "label": "sys_pipe" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/ipc.md", "label": "mandoc: ipc" }
+    },
+    {
+      "id": 5,
+      "node": "kernel.process.wait",
+      "diagram_phase": "wait",
+      "label": "Parent waits",
+      "what_ir0_does": "The shell wait4s both children. Prompt returns with wc's numbers.",
+      "why_it_matters": "Same wait path as fork() — pipelines are fork + pipe + exec, not a special syscall.",
+      "implementation": { "file": "IR0/kernel/syscalls/process_syscalls.c", "symbol": "sys_wait4", "label": "wait4" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/process.md", "label": "mandoc: process" }
+    }
+  ],
+  "refs": [
+    { "symbol": "sys_pipe2", "path": "IR0/kernel/syscalls/io_syscalls.c" },
+    { "symbol": "pipe_create", "path": "IR0/kernel/lib/pipe.c" }
+  ]
+}

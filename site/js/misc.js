@@ -50,6 +50,8 @@
             document.getElementById('chip-journal').textContent = window.IR0Explore.t('misc.journal');
             document.getElementById('chip-arch').textContent = window.IR0Explore.t('misc.arch');
             document.getElementById('chip-map').textContent = window.IR0Explore.t('misc.map');
+            var timeline = document.getElementById('chip-timeline');
+            if (timeline) timeline.textContent = window.IR0Explore.t('misc.timeline');
             var classic = document.getElementById('chip-classic');
             classic.textContent = window.IR0Explore.t('misc.archive');
             classic.href = window.IR0Explore.getLocale() === 'es' ? '../index_es.html' : '../index.html';
@@ -63,7 +65,7 @@
             paintMiscChrome();
             return Promise.all([
                 window.IR0Explore.loadLocalizedText('guides/is-it-linux.md'),
-                fetch(window.IR0Explore.dataBase() + 'journal/index.json').then(function (r) { return r.json(); })
+                window.IR0Explore.loadLocalizedJson('journal/index.json')
             ]).then(function (pair) {
                 renderLinux(pair[0]);
                 renderJournal(pair[1]);

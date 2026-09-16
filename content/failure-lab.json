@@ -23,7 +23,9 @@
         {
           "label": "Framebuffer clears",
           "user": "The screen goes to a panic banner. Serial noise stays off this path.",
-          "kernel": "GUI panic path paints a dedicated surface, not the klog dump."
+          "kernel": "GUI panic path paints a dedicated surface, not the klog dump.",
+          "image": "assets/isd-panic-gtk.png",
+          "image_alt": "IR0 panic banner on the framebuffer"
         },
         {
           "label": "Readable failure",

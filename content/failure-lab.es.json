@@ -23,7 +23,9 @@
         {
           "label": "El framebuffer se limpia",
           "user": "La pantalla pasa a un banner de pánico. El ruido serial no es este camino.",
-          "kernel": "El path GUI pinta una superficie dedicada, no el dump de klog."
+          "kernel": "El path GUI pinta una superficie dedicada, no el dump de klog.",
+          "image": "assets/isd-panic-gtk.png",
+          "image_alt": "Banner de pánico de IR0 en el framebuffer"
         },
         {
           "label": "Falla legible",

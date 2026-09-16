@@ -96,8 +96,7 @@
     }
 
     function loadArticle(id) {
-        return fetch(base() + 'journal/index.json')
-            .then(function (r) { return r.json(); })
+        return window.IR0Explore.loadLocalizedJson('journal/index.json')
             .then(function (idx) {
                 renderIndex(idx.articles);
                 var meta = idx.articles.filter(function (a) { return a.id === id; })[0];
@@ -108,11 +107,7 @@
                     sub.textContent = (meta.repo || '') +
                         (meta.source ? ' · ' + meta.source : '');
                 }
-                return fetch(base() + 'journal/' + meta.file);
-            })
-            .then(function (r) {
-                if (!r.ok) throw new Error('article file');
-                return r.text();
+                return window.IR0Explore.loadLocalizedText('journal/' + meta.file);
             })
             .then(function (md) {
                 document.getElementById('article-root').innerHTML = simpleMarkdown(md);

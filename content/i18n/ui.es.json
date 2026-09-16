@@ -54,7 +54,22 @@
     "not_found": "Recorrido no encontrado: {id}",
     "fork_parent": "padre",
     "fork_child": "hijo",
-    "fork_arrow": "fork"
+    "fork_arrow": "fork",
+    "pipe_writer": "ls",
+    "pipe_buf": "pipe",
+    "pipe_reader": "wc",
+    "sig_program": "programa",
+    "sig_kernel": "kernel",
+    "sig_shell": "shell",
+    "mmap_proc": "proceso",
+    "mmap_fb": "/dev/fb0",
+    "mmap_pixels": "píxeles",
+    "proc_cat": "cat",
+    "proc_node": "/proc/version",
+    "proc_line": "IR0 version …",
+    "isd_firstboot": "firstboot",
+    "isd_login": "login",
+    "isd_tcc": "tcc"
   },
   "edition": {
     "bar": "Edición {edition} · kernel {kernel} · ISD {isd} · generado {generated}",
@@ -66,6 +81,8 @@
   "story": {
     "back_to_journey": "← Volver al recorrido",
     "other_stories": "Otras historias:",
+    "trace_edition": "Traza capturada en {captured} · edición de la guía {guide}",
+    "trace_stale": "Los eventos serial son de un smoke más viejo. El recorrido sigue siendo el path real.",
     "path_map": "Camino en el mapa del kernel",
     "play": "▶ play",
     "pause": "⏸ pausa",
@@ -114,6 +131,7 @@
     "journal": "Journal",
     "arch": "Arquitectura",
     "map": "Mapa del kernel",
+    "timeline": "IR0 en el tiempo",
     "archive": "Wiki clásica (archivo)"
   }
 }

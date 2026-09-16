@@ -12,6 +12,15 @@
       "summary": "From the ISO to the first shell prompt."
     },
     {
+      "id": "first-hour-isd",
+      "label": "First hour on ISD",
+      "verb": "Sit down",
+      "status": "implemented",
+      "journey": "first-hour-isd",
+      "story": "hello-tcc",
+      "summary": "Login, $HOME, then compile something on the box."
+    },
+    {
       "id": "run-program",
       "label": "Run a program",
       "verb": "Run",
@@ -19,6 +28,14 @@
       "journey": "run-program",
       "story": "hello-tcc",
       "summary": "What happens when you type ./hello."
+    },
+    {
+      "id": "cat-proc-version",
+      "label": "cat /proc/version",
+      "verb": "cat",
+      "status": "implemented",
+      "journey": "cat-proc-version",
+      "summary": "The kernel names itself in one line."
     },
     {
       "id": "press-a-key",
@@ -46,6 +63,14 @@
       "summary": "The process splits in two — parent waits, child runs."
     },
     {
+      "id": "pipe-ls-wc",
+      "label": "ls | wc",
+      "verb": "pipe",
+      "status": "implemented",
+      "journey": "pipe-ls-wc",
+      "summary": "Two processes, one buffer — the Unix pipeline."
+    },
+    {
       "id": "receive-signal",
       "label": "Receive a signal",
       "verb": "Signal",
@@ -53,6 +78,14 @@
       "journey": "receive-signal",
       "story": "null-dereference",
       "summary": "A bad pointer, a segfault, and the shell comes back."
+    },
+    {
+      "id": "mmap-fb0",
+      "label": "mmap /dev/fb0",
+      "verb": "Paint",
+      "status": "partial",
+      "journey": "mmap-fb0",
+      "summary": "A process paints the screen — Doom-class, not a toy blit."
     },
     {
       "id": "start-x",

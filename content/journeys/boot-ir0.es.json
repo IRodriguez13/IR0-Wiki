@@ -5,12 +5,15 @@
   "subtitle": "ISO → kernel → runit → shell de login",
   "what_you_see": "QEMU o el metal muestra mensajes de boot, después las etapas de runit, y un login o el wizard de first-boot en el framebuffer.",
   "why_it_matters": "El boot es el contrato entre firmware, kernel y PID 1. IR0 usa un ISO con init en userspace: el kernel levanta MM con pereza, monta el root del disco y hace exec de /sbin/init (runit-init).",
+  "related": { "href": "timeline.html", "label_key": "misc.timeline" },
   "has_dual_view": false,
   "steps": [
     {
       "id": 1,
       "node": "hardware.qemu",
       "label": "Firmware / GRUB",
+      "image": "assets/isd-firstboot.png",
+      "image_alt": "First boot de IR0 en el framebuffer",
       "what_ir0_does": "Multiboot o el boot del ISO carga kernel-x64-userspace.bin. Entran serial y consolas framebuffer.",
       "why_it_matters": "Los smokes asumen esta entrada — las trazas del Atlas empiezan cuando init ya está en agenda.",
       "implementation": { "file": "IR0/kernel/main.c", "label": "kernel main" },
@@ -38,6 +41,8 @@
       "id": 4,
       "node": "userspace.runit",
       "label": "Etapas de runit",
+      "image": "assets/isd-top.png",
+      "image_alt": "runit y top en ISD",
       "what_ir0_does": "/etc/runit/1 → stage 2 → getty o servicios de first-boot. RUNIT_STAGE2_OK es el gate del smoke.",
       "why_it_matters": "Forma de producto vs un init de prueba de un solo tiro.",
       "implementation": { "file": "ISD/scripts/build-services.sh", "label": "stubs runit de ISD" },
@@ -47,9 +52,11 @@
       "id": 5,
       "node": "userspace.shell",
       "label": "Shell de login",
+      "image": "assets/isd-shell-session.png",
+      "image_alt": "Shell de login en ISD",
       "what_ir0_does": "getty → ash después de crear la cuenta en first-boot o con un passwd ya existente.",
       "why_it_matters": "La máquina ya es “tuya” — todo Explorar IR0 asume este punto.",
-      "implementation": { "file": "ISD/out/x86_64/rootfs/minimal/bin/busybox", "label": "getty + ash" },
+      "implementation": { "file": "ISD/Documentation/ROOTFS_LAYOUT.md", "label": "getty + ash" },
       "deep_dive": { "file": "IR0/Documentation/mandocs/en/tty.md", "label": "mandoc: tty" }
     }
   ],

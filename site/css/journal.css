@@ -1417,6 +1417,100 @@ a.misc-chip {
     text-decoration: line-through;
 }
 
+.step-photo {
+    display: block;
+    width: 100%;
+    max-width: 36rem;
+    border: 1px solid var(--rule);
+    margin: 0.75rem 0 1rem;
+}
+
+.journey-diagram[data-kind="pipe"][data-phase="shell"] .pipe-buf,
+.journey-diagram[data-kind="pipe"][data-phase="shell"] .pipe-reader {
+    opacity: 0.22;
+}
+
+.journey-diagram[data-kind="pipe"][data-phase="create"] .pipe-buf {
+    border-color: var(--accent-flow);
+}
+
+.journey-diagram[data-kind="pipe"][data-phase="writer"] .pipe-writer,
+.journey-diagram[data-kind="pipe"][data-phase="writer"] .pipe-buf {
+    border-color: var(--accent-flow);
+}
+
+.journey-diagram[data-kind="pipe"][data-phase="reader"] .pipe-reader,
+.journey-diagram[data-kind="pipe"][data-phase="reader"] .pipe-buf {
+    border-color: var(--accent-flow);
+}
+
+.journey-diagram[data-kind="pipe"][data-phase="wait"] .pipe-writer {
+    opacity: 0.4;
+}
+
+.journey-diagram[data-kind="signal"][data-phase="access"] .sig-kern,
+.journey-diagram[data-kind="signal"][data-phase="access"] .sig-shell {
+    opacity: 0.22;
+}
+
+.journey-diagram[data-kind="signal"][data-phase="pf"] .sig-kern,
+.journey-diagram[data-kind="signal"][data-phase="classify"] .sig-kern {
+    border-color: var(--accent-flow);
+}
+
+.journey-diagram[data-kind="signal"][data-phase="sig"] .sig-prog {
+    text-decoration: line-through;
+    opacity: 0.45;
+}
+
+.journey-diagram[data-kind="signal"][data-phase="shell"] .sig-shell {
+    border-color: var(--accent-flow);
+}
+
+.journey-diagram[data-kind="mmap"][data-phase="open"] .mmap-fb {
+    border-color: var(--accent-flow);
+}
+
+.journey-diagram[data-kind="mmap"][data-phase="open"] .mmap-px {
+    opacity: 0.22;
+}
+
+.journey-diagram[data-kind="mmap"][data-phase="mmap"] .mmap-proc,
+.journey-diagram[data-kind="mmap"][data-phase="mmap"] .mmap-fb {
+    border-color: var(--accent-flow);
+}
+
+.journey-diagram[data-kind="mmap"][data-phase="pixels"] .mmap-px {
+    border-color: var(--accent-flow);
+}
+
+.journey-diagram[data-kind="proc"][data-phase="shell"] .proc-node,
+.journey-diagram[data-kind="proc"][data-phase="shell"] .proc-line {
+    opacity: 0.22;
+}
+
+.journey-diagram[data-kind="proc"][data-phase="lookup"] .proc-node,
+.journey-diagram[data-kind="proc"][data-phase="proc"] .proc-node {
+    border-color: var(--accent-flow);
+}
+
+.journey-diagram[data-kind="proc"][data-phase="write"] .proc-line {
+    border-color: var(--accent-flow);
+}
+
+.journey-diagram[data-kind="isd"][data-phase="firstboot"] .isd-login,
+.journey-diagram[data-kind="isd"][data-phase="firstboot"] .isd-tcc {
+    opacity: 0.22;
+}
+
+.journey-diagram[data-kind="isd"][data-phase="login"] .isd-login {
+    border-color: var(--accent-flow);
+}
+
+.journey-diagram[data-kind="isd"][data-phase="tcc"] .isd-tcc {
+    border-color: var(--accent-flow);
+}
+
 .misc-journal-list {
     list-style: none;
     line-height: 1.9;

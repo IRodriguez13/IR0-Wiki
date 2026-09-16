@@ -54,7 +54,22 @@
     "not_found": "Journey not found: {id}",
     "fork_parent": "parent",
     "fork_child": "child",
-    "fork_arrow": "fork"
+    "fork_arrow": "fork",
+    "pipe_writer": "ls",
+    "pipe_buf": "pipe",
+    "pipe_reader": "wc",
+    "sig_program": "program",
+    "sig_kernel": "kernel",
+    "sig_shell": "shell",
+    "mmap_proc": "process",
+    "mmap_fb": "/dev/fb0",
+    "mmap_pixels": "pixels",
+    "proc_cat": "cat",
+    "proc_node": "/proc/version",
+    "proc_line": "IR0 version …",
+    "isd_firstboot": "firstboot",
+    "isd_login": "login",
+    "isd_tcc": "tcc"
   },
   "edition": {
     "bar": "Edition {edition} · kernel {kernel} · ISD {isd} · generated {generated}",
@@ -66,6 +81,8 @@
   "story": {
     "back_to_journey": "← Back to the journey",
     "other_stories": "Other stories:",
+    "trace_edition": "Trace captured at {captured} · guide edition {guide}",
+    "trace_stale": "Serial events are from an older smoke. The walk is still the real path.",
     "path_map": "Path through kernel map",
     "play": "▶ play",
     "pause": "⏸ pause",
@@ -114,6 +131,7 @@
     "journal": "Journal",
     "arch": "Architecture",
     "map": "Kernel map",
+    "timeline": "IR0 through time",
     "archive": "Classic wiki (archive)"
   }
 }

@@ -112,8 +112,15 @@
             return;
         }
         var step = current.sequence[stepIndex];
+        var photo = '';
+        if (step.image) {
+            photo = '<img class="step-photo" src="' + window.IR0Explore.dataBase() + step.image +
+                '" alt="' + window.IR0Explore.escapeHtml(step.image_alt || step.label) +
+                '" loading="lazy">';
+        }
         el.innerHTML =
             '<h2 style="margin-top:0">' + window.IR0Explore.escapeHtml(step.label) + '</h2>' +
+            photo +
             '<h3 class="detail-kicker">' + window.IR0Explore.escapeHtml(tr('break.step_user', 'You see')) + '</h3>' +
             '<p>' + window.IR0Explore.escapeHtml(step.user) + '</p>' +
             '<h3 class="detail-kicker">' + window.IR0Explore.escapeHtml(tr('break.step_kernel', 'IR0 does')) + '</h3>' +

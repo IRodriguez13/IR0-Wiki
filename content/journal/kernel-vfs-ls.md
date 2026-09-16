@@ -1,6 +1,6 @@
 # From ls / to MINIX readdir
 
-> **Edition:** 0.0.1-pre-rc3  
+> **Edition:** 0.0.1-rc5  
 > **Source of truth:** `IR0/fs/vfs.c`, `IR0/fs/minix_fs.c`, `IR0/kernel/syscalls/fs_syscalls.c`
 
 ## Userspace path

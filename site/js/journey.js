@@ -79,6 +79,7 @@
 
         detail.innerHTML =
             '<h2>' + window.IR0Explore.escapeHtml(step.label) + '</h2>' +
+            stepPhoto(step) +
             '<h3 class="detail-kicker">' + window.IR0Explore.t('journey.what_ir0_does') + '</h3>' +
             '<p>' + window.IR0Explore.escapeHtml(step.what_ir0_does) + '</p>' +
             '<h3 class="detail-kicker">' + window.IR0Explore.t('journey.why_matters') + '</h3>' +
@@ -117,27 +118,94 @@
         }
     }
 
+    function stepPhoto(step) {
+        if (!step || !step.image) return '';
+        var src = window.IR0Explore.dataBase() + step.image;
+        var alt = step.image_alt || step.label || '';
+        return '<img class="step-photo" src="' + src + '" alt="' +
+            window.IR0Explore.escapeHtml(alt) + '" loading="lazy">';
+    }
+
+    function box(cls, key) {
+        return '<div class="fork-proc ' + cls + '">' +
+            window.IR0Explore.escapeHtml(window.IR0Explore.t(key)) + '</div>';
+    }
+
+    function arrow(text) {
+        return '<div class="fork-arrow" aria-hidden="true">' +
+            window.IR0Explore.escapeHtml(text) + '</div>';
+    }
+
     function renderDiagram() {
         var host = document.getElementById('journey-diagram');
         if (!host) return;
-        if (journey.diagram !== 'fork') {
+        var kind = journey.diagram;
+        var step = journey.steps[stepIndex] || {};
+        var phase = step.diagram_phase || '';
+        var inner = '';
+
+        if (kind === 'fork') {
+            inner = '<div class="fork-row">' +
+                box('fork-parent', 'journey.fork_parent') +
+                arrow(window.IR0Explore.t('journey.fork_arrow')) +
+                box('fork-child', 'journey.fork_child') +
+                '</div>';
+            if (!phase) phase = 'parent';
+        } else if (kind === 'pipe') {
+            inner = '<div class="fork-row">' +
+                box('pipe-writer', 'journey.pipe_writer') +
+                arrow('→') +
+                box('pipe-buf', 'journey.pipe_buf') +
+                arrow('→') +
+                box('pipe-reader', 'journey.pipe_reader') +
+                '</div>';
+            if (!phase) phase = 'shell';
+        } else if (kind === 'signal') {
+            inner = '<div class="fork-row">' +
+                box('sig-prog', 'journey.sig_program') +
+                arrow('#PF') +
+                box('sig-kern', 'journey.sig_kernel') +
+                arrow('SIGSEGV') +
+                box('sig-shell', 'journey.sig_shell') +
+                '</div>';
+            if (!phase) phase = 'access';
+        } else if (kind === 'mmap') {
+            inner = '<div class="fork-row">' +
+                box('mmap-proc', 'journey.mmap_proc') +
+                arrow('mmap') +
+                box('mmap-fb', 'journey.mmap_fb') +
+                arrow('→') +
+                box('mmap-px', 'journey.mmap_pixels') +
+                '</div>';
+            if (!phase) phase = 'open';
+        } else if (kind === 'proc') {
+            inner = '<div class="fork-row">' +
+                box('proc-cat', 'journey.proc_cat') +
+                arrow('open') +
+                box('proc-node', 'journey.proc_node') +
+                arrow('write') +
+                box('proc-line', 'journey.proc_line') +
+                '</div>';
+            if (!phase) phase = 'shell';
+        } else if (kind === 'isd') {
+            inner = '<div class="fork-row">' +
+                box('isd-fb', 'journey.isd_firstboot') +
+                arrow('→') +
+                box('isd-login', 'journey.isd_login') +
+                arrow('→') +
+                box('isd-tcc', 'journey.isd_tcc') +
+                '</div>';
+            if (!phase) phase = 'firstboot';
+        } else {
             host.hidden = true;
             host.innerHTML = '';
             return;
         }
-        var step = journey.steps[stepIndex] || {};
-        var phase = step.diagram_phase || 'parent';
+
         host.hidden = false;
+        host.setAttribute('data-kind', kind);
         host.setAttribute('data-phase', phase);
-        host.innerHTML =
-            '<div class="fork-row">' +
-            '<div class="fork-proc fork-parent">' +
-            window.IR0Explore.escapeHtml(window.IR0Explore.t('journey.fork_parent')) + '</div>' +
-            '<div class="fork-arrow" aria-hidden="true">' +
-            window.IR0Explore.escapeHtml(window.IR0Explore.t('journey.fork_arrow')) + '</div>' +
-            '<div class="fork-proc fork-child">' +
-            window.IR0Explore.escapeHtml(window.IR0Explore.t('journey.fork_child')) + '</div>' +
-            '</div>' +
+        host.innerHTML = inner +
             '<p class="fork-caption">' + window.IR0Explore.escapeHtml(step.label || '') + '</p>';
     }
 
@@ -203,6 +271,24 @@
         if (archLink) {
             archLink.textContent = window.IR0Explore.t('journey.architecture');
             archLink.hidden = false;
+        }
+
+        var maps = document.querySelector('.journey-maps');
+        var extra = document.getElementById('journey-related');
+        if (maps && journey.related && journey.related.href) {
+            if (!extra) {
+                extra = document.createElement('a');
+                extra.id = 'journey-related';
+                maps.appendChild(document.createTextNode(' · '));
+                maps.appendChild(extra);
+            }
+            extra.href = journey.related.href;
+            extra.textContent = journey.related.label_key
+                ? window.IR0Explore.t(journey.related.label_key)
+                : (journey.related.label || journey.related.href);
+            extra.hidden = false;
+        } else if (extra) {
+            extra.hidden = true;
         }
     }
 

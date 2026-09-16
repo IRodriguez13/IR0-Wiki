@@ -1,0 +1,84 @@
+{
+  "title": "IR0 en el tiempo",
+  "subtitle": "Hitos hacia un Unix usable — no es un changelog de releases.",
+  "milestones": [
+    {
+      "id": "first-boot",
+      "label": "Primer boot",
+      "image": "assets/isd-firstboot.png",
+      "summary": "El kernel llega al init de userspace. Todavía no hay shell — prueba de que la cadena de boot y la superficie de syscalls están vivas.",
+      "required": ["Multiboot/ISO", "consola serial", "path mínimo de init"]
+    },
+    {
+      "id": "ring3",
+      "label": "Primer proceso en ring 3",
+      "image": null,
+      "summary": "Entrada a modo usuario con un CR3 real e iretq. Todo lo que sigue es “un programa en IR0”, no un autotest del kernel.",
+      "required": ["Paging", "loader ELF o binario plano", "retorno de syscall"]
+    },
+    {
+      "id": "fork-exec",
+      "label": "fork / exec",
+      "image": null,
+      "summary": "Los procesos se componen: el shell puede crear hijos y reemplazar su imagen.",
+      "required": ["process fork", "execve", "wait4", "copia de la tabla de fds"]
+    },
+    {
+      "id": "musl",
+      "label": "musl libc",
+      "image": null,
+      "summary": "Userspace POSIX de verdad — printf, malloc, pthread — sin reescribir cada programa para IR0.",
+      "required": ["ABI de syscalls compatible con Linux", "loader + aux vector"]
+    },
+    {
+      "id": "busybox",
+      "label": "BusyBox",
+      "image": "assets/isd-shell-session.png",
+      "summary": "ash, ls, cat sobre un rootfs MINIX. La máquina se opera desde un prompt.",
+      "required": ["rootfs ISD", "MINIX FS", "TTY read/write"]
+    },
+    {
+      "id": "runit",
+      "label": "runit PID 1",
+      "image": "assets/isd-top.png",
+      "summary": "La supervisión de servicios reemplaza inits de un solo tiro. Forma de producto persistente.",
+      "required": ["fork/exec estable", "getty", "scripts de stage ISD"]
+    },
+    {
+      "id": "persistent-install",
+      "label": "Instalación persistente",
+      "image": null,
+      "summary": "disk.img sobrevive el reboot; first-boot crea la cuenta en el rootfs real.",
+      "required": ["MINIX en disco", "install-to-disk", "runit stage 1/2/3"]
+    },
+    {
+      "id": "doom",
+      "label": "Doom",
+      "image": "assets/isd-doom.png",
+      "summary": "Cliente fullscreen sobre /dev/fb0 + input — prueba del tier gráfico, no un blit de juguete.",
+      "required": ["mmap fb", "evdev/events", "musl + port del juego"]
+    },
+    {
+      "id": "arm64",
+      "label": "Userspace ARM64",
+      "image": null,
+      "summary": "La misma historia de ABI en una segunda arquitectura — no un segundo kernel por cada feature.",
+      "required": ["port de arch", "toolchain cruzada", "paridad de smokes"]
+    },
+    {
+      "id": "tinyx",
+      "label": "Ventana raíz de TinyX",
+      "image": null,
+      "image_note": "La captura histórica de la root window gris queda reservada para este hito — más honesta que un mock de escritorio pulido.",
+      "summary": "TinyX/KDrive sin parches sobre UAPI Linux de IR0. Software de terceros expuso un bug de read(2) — el arreglo fue en el kernel, no en X.",
+      "required": ["/dev/fb0", "unix sockets", "poll/epoll", "HOME ext2 para el smoke de startx"]
+    },
+    {
+      "id": "next",
+      "label": "?",
+      "image": null,
+      "summary": "Lo que sigue es lo que el próximo smoke ponga en verde.",
+      "required": []
+    }
+  ]
+}

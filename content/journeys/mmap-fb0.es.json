@@ -1,0 +1,52 @@
+{
+  "id": "mmap-fb0",
+  "action_id": "mmap-fb0",
+  "title": "mmap /dev/fb0",
+  "subtitle": "Un proceso pinta la pantalla — clase Doom, no un blit de juguete",
+  "what_you_see": "Píxeles en el framebuffer. Doom, TinyX, o un probe que llena /dev/fb0 después del mmap.",
+  "why_it_matters": "Userspace no habla con la GPU por una API privada de IR0. Abre /dev/fb0, hace mmap MAP_SHARED y escribe píxeles. El kernel mapea el framebuffer físico en ese proceso.",
+  "diagram": "mmap",
+  "has_dual_view": true,
+  "dual_view": {
+    "user": "open(\"/dev/fb0\")\nmmap(…, MAP_SHARED, fd, 0)\n*fb = color;",
+    "kernel": "dev_fb0_open\n  ↓ sys_mmap device_id 15\n  ↓ map fb_phys into the process"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "node": "userspace.program",
+      "diagram_phase": "open",
+      "label": "open /dev/fb0",
+      "what_ir0_does": "Un slot real de fd_table (devfs, device_id 15). El mismo nodo que usan TinyX y Doom.",
+      "why_it_matters": "No hace falta un ioctl gráfico de IR0 para obtener el mapeo.",
+      "implementation": { "file": "IR0/fs/devfs.c", "symbol": "dev_fb0_open", "label": "dev_fb0_open" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/graphics.md", "label": "mandoc: graphics" }
+    },
+    {
+      "id": 2,
+      "node": "kernel.mm.mmap",
+      "diagram_phase": "mmap",
+      "label": "mmap MAP_SHARED",
+      "what_ir0_does": "sys_mmap ve el fd de fb0 y mapea páginas de fb_phys en el VA del proceso. Offset 0 es el inicio del framebuffer.",
+      "why_it_matters": "Un fd malo o VBE muerto devuelve ENODEV/EBADF — errores honestos, no un mapa fingido.",
+      "implementation": { "file": "IR0/kernel/syscalls/mm_syscalls.c", "symbol": "sys_mmap", "label": "sys_mmap" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/mm.md", "label": "mandoc: mm" }
+    },
+    {
+      "id": 3,
+      "node": "kernel.drivers.fb",
+      "diagram_phase": "pixels",
+      "label": "Las escrituras son píxeles",
+      "what_ir0_does": "Los stores del mapping pegan en el framebuffer lineal. El probe (FASE58C) o DoomGeneric blitán sin compositor.",
+      "why_it_matters": "Prueba T2: un cliente fullscreen, no un sprite del kernel.",
+      "implementation": { "file": "IR0/setup/pid1/ktm_fbdev_gui_smoke.c", "label": "probe GUI fbdev" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/graphics.md", "label": "mandoc: graphics" },
+      "image": "assets/isd-doom.png",
+      "image_alt": "Doom en el framebuffer de IR0"
+    }
+  ],
+  "refs": [
+    { "symbol": "sys_mmap", "path": "IR0/kernel/syscalls/mm_syscalls.c" },
+    { "symbol": "dev_fb0_open", "path": "IR0/fs/devfs.c" }
+  ]
+}

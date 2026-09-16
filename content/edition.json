@@ -2,7 +2,7 @@
   "title": "Explore IR0",
   "subtitle": "Take IR0 apart while it's running",
   "edition": "0.0.1-rc5",
-  "generated": "2026-09-13",
+  "generated": "2026-09-16",
   "normative_notice": "This site is an explanatory guide, not normative documentation. For specs see IR0/Documentation and mandocs at the pinned commit.",
   "repos": {
     "kernel": {
@@ -19,7 +19,7 @@
     "wiki": {
       "name": "IR0-Wiki",
       "path": "..",
-      "commit": "fa08fff"
+      "commit": "a5932a0"
     }
   },
   "editions": [
@@ -28,7 +28,7 @@
       "label": "0.0.1-rc5",
       "kernel_commit": "1c3b990e",
       "isd_commit": "74424b5",
-      "generated": "2026-09-13",
+      "generated": "2026-09-16",
       "current": true
     },
     {

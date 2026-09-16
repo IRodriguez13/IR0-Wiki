@@ -278,13 +278,49 @@
       "symbols": []
     },
     {
+      "id": "kernel.fs.proc",
+      "layer": "kernel",
+      "label": "/proc",
+      "status": "implemented",
+      "summary": "Pseudo-fs. /proc/version is one line: IR0 version, build id, date, host, compiler.",
+      "stories": [],
+      "symbols": [
+        { "name": "proc_version_read", "path": "IR0/fs/procfs.c" }
+      ]
+    },
+    {
+      "id": "kernel.ipc.pipe",
+      "layer": "kernel",
+      "label": "pipe / pipe2",
+      "status": "implemented",
+      "summary": "Anonymous pipe buffer. Writer blocks (or EAGAIN) when full; reader EOF when writers drop.",
+      "stories": [],
+      "symbols": [
+        { "name": "sys_pipe", "path": "IR0/kernel/syscalls/io_syscalls.c" },
+        { "name": "pipe_create", "path": "IR0/kernel/lib/pipe.c" }
+      ]
+    },
+    {
+      "id": "kernel.mm.mmap",
+      "layer": "kernel",
+      "label": "mmap",
+      "status": "partial",
+      "summary": "Anonymous mappings and file-backed mmap. /dev/fb0 maps framebuffer physical pages into the process.",
+      "stories": [],
+      "symbols": [
+        { "name": "sys_mmap", "path": "IR0/kernel/syscalls/mm_syscalls.c" }
+      ]
+    },
+    {
       "id": "kernel.drivers.fb",
       "layer": "kernel",
       "label": "Framebuffer /dev/fb0",
       "status": "partial",
       "summary": "mmap MAP_SHARED for TinyX, Doom, console handoff.",
       "stories": [],
-      "symbols": []
+      "symbols": [
+        { "name": "dev_fb0_open", "path": "IR0/fs/devfs.c" }
+      ]
     },
     {
       "id": "userspace.xserver",
@@ -324,7 +360,14 @@
     { "from": "kernel.process.exec", "to": "userspace.runit" },
     { "from": "userspace.runit", "to": "userspace.shell" },
     { "from": "userspace.xserver", "to": "kernel.drivers.fb" },
-    { "from": "userspace.xserver", "to": "kernel.input.events0" }
+    { "from": "userspace.xserver", "to": "kernel.input.events0" },
+    { "from": "kernel.vfs.lookup", "to": "kernel.fs.proc" },
+    { "from": "kernel.fs.proc", "to": "kernel.tty.write" },
+    { "from": "userspace.shell", "to": "kernel.ipc.pipe" },
+    { "from": "kernel.ipc.pipe", "to": "kernel.process.fork" },
+    { "from": "userspace.program", "to": "kernel.mm.mmap" },
+    { "from": "kernel.mm.mmap", "to": "kernel.drivers.fb" },
+    { "from": "userspace.program", "to": "kernel.drivers.fb" }
   ],
   "edition_diff": {
     "0.0.1-pre-rc2": {

@@ -123,6 +123,12 @@
     function githubFileUrl(edition, relPath) {
         var k = edition && edition.repos && edition.repos.kernel;
         if (!k) return '#';
+        if (relPath.indexOf('ISD/') === 0) {
+            var i = edition.repos.isd;
+            if (!i) return '#';
+            return 'https://github.com/IRodriguez13/ISD/blob/' + i.commit + '/' +
+                relPath.replace(/^ISD\//, '');
+        }
         var sub = relPath.replace(/^IR0\//, '');
         return 'https://github.com/IRodriguez13/IR0/blob/' + k.commit + '/' + sub;
     }

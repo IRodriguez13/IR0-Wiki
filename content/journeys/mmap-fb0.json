@@ -1,0 +1,52 @@
+{
+  "id": "mmap-fb0",
+  "action_id": "mmap-fb0",
+  "title": "mmap /dev/fb0",
+  "subtitle": "A process paints the screen — Doom-class, not a blit toy",
+  "what_you_see": "Pixels on the framebuffer. Doom, TinyX, or a probe that fills /dev/fb0 after mmap.",
+  "why_it_matters": "Userspace does not talk to the GPU through a private IR0 API. It opens /dev/fb0, mmap MAP_SHARED, and writes pixels. The kernel maps the physical framebuffer into that process.",
+  "diagram": "mmap",
+  "has_dual_view": true,
+  "dual_view": {
+    "user": "open(\"/dev/fb0\")\nmmap(…, MAP_SHARED, fd, 0)\n*fb = color;",
+    "kernel": "dev_fb0_open\n  ↓ sys_mmap device_id 15\n  ↓ map fb_phys into the process"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "node": "userspace.program",
+      "diagram_phase": "open",
+      "label": "open /dev/fb0",
+      "what_ir0_does": "A real fd_table slot (devfs, device_id 15). Same node TinyX and Doom use.",
+      "why_it_matters": "No IR0-specific graphics ioctl required to get a mapping.",
+      "implementation": { "file": "IR0/fs/devfs.c", "symbol": "dev_fb0_open", "label": "dev_fb0_open" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/graphics.md", "label": "mandoc: graphics" }
+    },
+    {
+      "id": 2,
+      "node": "kernel.mm.mmap",
+      "diagram_phase": "mmap",
+      "label": "mmap MAP_SHARED",
+      "what_ir0_does": "sys_mmap sees the fb0 fd and maps fb_phys pages into the process VA. Offset 0 is the start of the framebuffer.",
+      "why_it_matters": "Wrong fd or a dead VBE backend returns ENODEV/EBADF — honest errors, not a fake map.",
+      "implementation": { "file": "IR0/kernel/syscalls/mm_syscalls.c", "symbol": "sys_mmap", "label": "sys_mmap" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/mm.md", "label": "mandoc: mm" }
+    },
+    {
+      "id": 3,
+      "node": "kernel.drivers.fb",
+      "diagram_phase": "pixels",
+      "label": "Writes become pixels",
+      "what_ir0_does": "Stores through the mapping hit the linear framebuffer. The probe (FASE58C) or DoomGeneric blits without a compositor.",
+      "why_it_matters": "T2 proof: a fullscreen client, not a kernel-side sprite.",
+      "implementation": { "file": "IR0/setup/pid1/ktm_fbdev_gui_smoke.c", "label": "fbdev GUI probe" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/graphics.md", "label": "mandoc: graphics" },
+      "image": "assets/isd-doom.png",
+      "image_alt": "Doom on IR0 framebuffer"
+    }
+  ],
+  "refs": [
+    { "symbol": "sys_mmap", "path": "IR0/kernel/syscalls/mm_syscalls.c" },
+    { "symbol": "dev_fb0_open", "path": "IR0/fs/devfs.c" }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "id": "cat-proc-version",
+  "action_id": "cat-proc-version",
+  "title": "cat /proc/version",
+  "subtitle": "El kernel se nombra — una línea, no un man",
+  "what_you_see": "$ cat /proc/version\nIR0 version 0.0.1-rc5 … (built DATE TIME by user@host with gcc)",
+  "why_it_matters": "Así se identifica el sistema en marcha. La cadena sale de IR0_VERSION_STRING y el stamp de build — la misma fuente que uname(2). Explore está clavado a esa edición.",
+  "diagram": "proc",
+  "has_dual_view": true,
+  "dual_view": {
+    "user": "$ cat /proc/version\nIR0 version 0.0.1-rc5 …",
+    "kernel": "open(\"/proc/version\")\n  ↓ proc_version_read\n  ↓ write(1, line)"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "node": "userspace.shell",
+      "diagram_phase": "shell",
+      "label": "Escribís el comando",
+      "what_ir0_does": "ash hace fork de cat. El path es /proc/version — un pseudo-archivo, no MINIX.",
+      "why_it_matters": "Mismo open/read/write que cualquier archivo. El backend es procfs.",
+      "implementation": { "file": "IR0/setup/pid1/cmd_stress_smoke.c", "label": "smoke cat /proc/version" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/vfs.md", "label": "mandoc: vfs" }
+    },
+    {
+      "id": 2,
+      "node": "kernel.vfs.lookup",
+      "diagram_phase": "lookup",
+      "label": "Lookup del VFS",
+      "what_ir0_does": "El walk del path cae en el mount de /proc. Este archivo no tiene inode de disco.",
+      "why_it_matters": "Pseudo-fs y FS en disco comparten el contrato de open/read.",
+      "implementation": { "file": "IR0/fs/vfs.c", "symbol": "vfs_open", "label": "vfs_open" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/vfs.md", "label": "mandoc: vfs" }
+    },
+    {
+      "id": 3,
+      "node": "kernel.fs.proc",
+      "diagram_phase": "proc",
+      "label": "proc_version_read",
+      "what_ir0_does": "Arma una línea: IR0 version, utsname, fecha/hora de build, user@host, compilador.",
+      "why_it_matters": "No es un placeholder. El ktest proc_version_contract abre este path.",
+      "implementation": { "file": "IR0/fs/procfs.c", "symbol": "proc_version_read", "label": "proc_version_read" },
+      "deep_dive": { "file": "IR0/includes/ir0/version.h", "label": "stamp de versión" }
+    },
+    {
+      "id": 4,
+      "node": "kernel.tty.write",
+      "diagram_phase": "write",
+      "label": "La línea llega al TTY",
+      "what_ir0_does": "cat escribe el buffer en fd 1. Ves la edición con la que se compiló el kernel.",
+      "why_it_matters": "La edición de la guía y /proc/version deberían contar lo mismo.",
+      "implementation": { "file": "IR0/kernel/syscalls/fs_syscalls.c", "symbol": "sys_write", "label": "sys_write" },
+      "deep_dive": { "file": "IR0/Documentation/mandocs/en/tty.md", "label": "mandoc: tty" }
+    }
+  ],
+  "refs": [
+    { "symbol": "proc_version_read", "path": "IR0/fs/procfs.c" }
+  ]
+}

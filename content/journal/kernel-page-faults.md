@@ -1,6 +1,6 @@
 # Userspace page faults and SIGSEGV
 
-> **Edition:** 0.0.1-pre-rc3  
+> **Edition:** 0.0.1-rc5  
 > **Source of truth:** `IR0/mm/page_fault.c`, `IR0/kernel/process/signals.c`, `IR0/kernel/process/exit.c`
 
 When a ring-3 program touches an unmapped address, the CPU raises **#PF**. IR0's portable handler is `mm_page_fault_handle()`:
@@ -25,6 +25,6 @@ For user faults where the address is not heap, stack, or mmap — and not eligib
 
 ## Kernel vs userspace fault
 
-A fault in ring 0 with no recovery path → **panic**. A fault in ring 3 → **only that process dies**. The Atlas story compares both outcomes.
+A fault in ring 0 with no recovery path → **panic**. A fault in ring 3 → **only that process dies**. The Explore story compares both outcomes.
 
 See: [NULL dereference story](../site/story.html?id=null-dereference)

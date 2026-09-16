@@ -5,6 +5,7 @@
   "subtitle": "NULL dereference → page fault → SIGSEGV → shell message",
   "what_you_see": "$ ./bad\nSegmentation fault\n# ",
   "why_it_matters": "Signals are how the kernel reports asynchronous events to userspace. A bad memory access must not hang the machine — it must classify the fault, deliver SIGSEGV, reap the child, and return control to the shell.",
+  "diagram": "signal",
   "has_dual_view": true,
   "dual_view": {
     "user": "$ ./bad\nSegmentation fault",
@@ -14,6 +15,7 @@
     {
       "id": 1,
       "node": "userspace.program",
+      "diagram_phase": "access",
       "label": "Bad access",
       "what_ir0_does": "User code touches unmapped or forbidden virtual address. CPU raises #PF.",
       "why_it_matters": "Every segfault story starts in ring 3.",
@@ -23,6 +25,7 @@
     {
       "id": 2,
       "node": "arch.page_fault",
+      "diagram_phase": "pf",
       "label": "CPU #PF",
       "what_ir0_does": "x86-64 saves error code and faulting address (CR2). Vector dispatches to mm_page_fault_handle.",
       "why_it_matters": "Architecture frame is evidence — not optional logging.",
@@ -32,6 +35,7 @@
     {
       "id": 3,
       "node": "kernel.mm.page_fault",
+      "diagram_phase": "classify",
       "label": "Classify fault",
       "what_ir0_does": "Demand paging, COW, or pf_user_segv when access is invalid. Smoke uses 0xDEADBEEF deliberately.",
       "why_it_matters": "Same handler serves growth and crashes — classification must be exact.",
@@ -41,6 +45,7 @@
     {
       "id": 4,
       "node": "kernel.signals",
+      "diagram_phase": "sig",
       "label": "SIGSEGV",
       "what_ir0_does": "Default action kills the process when no handler is installed. Ash later prints Segmentation fault from exit status.",
       "why_it_matters": "POSIX semantics — parent must observe WIFSIGNALED.",
@@ -50,6 +55,7 @@
     {
       "id": 5,
       "node": "userspace.shell",
+      "diagram_phase": "shell",
       "label": "Shell continues",
       "what_ir0_does": "Parent reaps zombie via wait4. Prompt returns.",
       "why_it_matters": "Isolation worked — kernel and shell survived the faulting process.",

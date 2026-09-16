@@ -1,0 +1,55 @@
+{
+  "id": "first-hour-isd",
+  "action_id": "first-hour-isd",
+  "title": "Primera hora en ISD",
+  "subtitle": "Login, $HOME y después compilá algo — la distro, no el kernel",
+  "what_you_see": "First-boot pide un usuario, después un getty, después un prompt en tu home. tcc compila un archivo tuyo.",
+  "why_it_matters": "ISD es el producto que arrancás: rootfs, runit, cuentas, /home. IR0 solo pone los syscalls. Todavía no hay logo de ISD — la máquina es la marca.",
+  "diagram": "isd",
+  "has_dual_view": true,
+  "dual_view": {
+    "user": "firstboot → login\n$ pwd\n/home/ivan\n$ tcc -o hello hello.c",
+    "kernel": "runit PID 1\n  ↓ getty / ash\n  ↓ MINIX /home\n  ↓ exec tcc (paquete ISD)"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "node": "userspace.runit",
+      "diagram_phase": "firstboot",
+      "label": "Cuenta de first-boot",
+      "what_ir0_does": "ir0_firstboot pide usuario/hostname/password (o un seed en el lab). Markers: /var/lib/ir0/firstboot.done.",
+      "why_it_matters": "No hay cuenta implícita en un TTY real. La distro crea el usuario; el kernel no.",
+      "implementation": { "file": "ISD/services/ir0_firstboot.c", "label": "ir0_firstboot" },
+      "deep_dive": { "file": "ISD/Documentation/FIRSTBOOT.md", "label": "firstboot ISD" },
+      "image": "assets/isd-firstboot.png",
+      "image_alt": "First boot de ISD"
+    },
+    {
+      "id": 2,
+      "node": "userspace.shell",
+      "diagram_phase": "login",
+      "label": "Shell de login",
+      "what_ir0_does": "getty y después ash. Tenés prompt. $HOME es /home/<user> en el rootfs MINIX.",
+      "why_it_matters": "Es el mismo prompt donde termina Arrancar IR0 — ahora es tuyo.",
+      "implementation": { "file": "ISD/Documentation/ROOTFS_LAYOUT.md", "label": "ISD /home" },
+      "deep_dive": { "file": "ISD/Documentation/ROOTFS_LAYOUT.md", "label": "layout del rootfs" },
+      "image": "assets/isd-shell-session.png",
+      "image_alt": "Sesión de shell ISD"
+    },
+    {
+      "id": 3,
+      "node": "userspace.tcc",
+      "diagram_phase": "tcc",
+      "label": "Compilar en $HOME",
+      "what_ir0_does": "TCC invitado (paquete ISD) lee tu .c con open/read, escribe un ELF, execve lo corre.",
+      "why_it_matters": "La primera hora termina cuando podés construir algo en la caja, no cuando el kernel imprimió un banner.",
+      "implementation": { "file": "ISD/Documentation/TOOLCHAIN.md", "label": "toolchain ISD" },
+      "deep_dive": { "file": "ISD/Documentation/TOOLCHAIN.md", "label": "toolchain ISD" },
+      "image": "assets/isd-vi-editor.png",
+      "image_alt": "vi en ISD"
+    }
+  ],
+  "story_id": "hello-tcc",
+  "related": { "href": "timeline.html", "label_key": "misc.timeline" },
+  "refs": []
+}
