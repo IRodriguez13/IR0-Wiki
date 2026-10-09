@@ -19,13 +19,13 @@
       "id": "ir0-kernel",
       "label": "IR0 kernel",
       "role": "This project — implements the contracts",
-      "items": ["arch (x86_64, aarch64)", "MM & page fault", "scheduler", "syscalls (Linux ABI subset)", "VFS + MINIX/tmpfs", "devfs (/dev/fb0, events0, tty)", "drivers"]
+      "items": ["arch (x86_64, aarch64)", "MM: fork COW & page fault", "scheduler + signals", "syscalls (Linux-shaped ABI)", "VFS: MINIX, FAT16, EXT2 RO, tmpfs", "devfs (/dev/fb0, events0, tty)", "pipes & virtio"]
     },
     {
       "id": "hardware",
       "label": "Hardware / QEMU",
       "role": "The machine underneath",
-      "items": ["PS/2 keyboard & mouse", "virtio-blk / IDE", "framebuffer", "serial"]
+      "items": ["PS/2 keyboard & mouse", "ATA / AHCI / virtio-blk", "virtio-9p / virtio-net", "framebuffer", "serial"]
     }
   ],
   "contracts": {

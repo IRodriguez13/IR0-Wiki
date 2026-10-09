@@ -52,7 +52,7 @@
       "node": "userspace.xserver",
       "label": "Root window de TinyX",
       "what_ir0_does": "El servidor dibuja la root window y acepta clientes. La captura gris documenta el primer éxito.",
-      "why_it_matters": "Hito honesto — no se reemplaza por un desktop pulido de mentira.",
+      "why_it_matters": "Hito real: TinyX sobre el framebuffer del kernel — la root window gris que viste en QEMU.",
       "implementation": { "file": "IR0/tests/ktm/userdev/ktm_x11_evdev_fb_case.c", "label": "caso KTM X11" },
       "deep_dive": { "file": "IR0/Documentation/README.md", "label": "screenshots del README IR0" }
     }

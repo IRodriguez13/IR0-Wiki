@@ -82,7 +82,7 @@
       "id": "kernel.process.exec",
       "layer": "kernel",
       "label": "exec",
-      "status": "partial",
+      "status": "implemented",
       "summary": "Load ELF, replace memory image, preserve fd table where CLOEXEC allows.",
       "stories": ["ls-root", "hello-tcc", "null-dereference"],
       "symbols": [
@@ -172,7 +172,7 @@
       "id": "kernel.signals",
       "layer": "kernel",
       "label": "Signal delivery",
-      "status": "partial",
+      "status": "implemented",
       "summary": "Default kill on SIGSEGV; ash prints Segmentation fault when exit_signal is set.",
       "stories": ["null-dereference"],
       "symbols": [
@@ -304,7 +304,7 @@
       "id": "kernel.mm.mmap",
       "layer": "kernel",
       "label": "mmap",
-      "status": "partial",
+      "status": "implemented",
       "summary": "Anonymous mappings and file-backed mmap. /dev/fb0 maps framebuffer physical pages into the process.",
       "stories": [],
       "symbols": [
@@ -315,7 +315,7 @@
       "id": "kernel.drivers.fb",
       "layer": "kernel",
       "label": "Framebuffer /dev/fb0",
-      "status": "partial",
+      "status": "implemented",
       "summary": "mmap MAP_SHARED for TinyX, Doom, console handoff.",
       "stories": [],
       "symbols": [
@@ -326,7 +326,7 @@
       "id": "userspace.xserver",
       "layer": "userspace",
       "label": "TinyX / X server",
-      "status": "partial",
+      "status": "implemented",
       "summary": "Unmodified KDrive/TinyX on Linux UAPI devices.",
       "stories": [],
       "symbols": []

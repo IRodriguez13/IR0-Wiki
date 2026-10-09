@@ -28,7 +28,7 @@
       "diagram_phase": "mmap",
       "label": "mmap MAP_SHARED",
       "what_ir0_does": "sys_mmap sees the fb0 fd and maps fb_phys pages into the process VA. Offset 0 is the start of the framebuffer.",
-      "why_it_matters": "Wrong fd or a dead VBE backend returns ENODEV/EBADF — honest errors, not a fake map.",
+      "why_it_matters": "Wrong fd or a dead VBE backend returns ENODEV/EBADF — the kernel reports the failure instead of inventing a map.",
       "implementation": { "file": "IR0/kernel/syscalls/mm_syscalls.c", "symbol": "sys_mmap", "label": "sys_mmap" },
       "deep_dive": { "file": "IR0/Documentation/mandocs/en/mm.md", "label": "mandoc: mm" }
     },

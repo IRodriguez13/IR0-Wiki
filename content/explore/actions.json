@@ -58,9 +58,9 @@
       "id": "fork-process",
       "label": "fork()",
       "verb": "fork",
-      "status": "partial",
+      "status": "implemented",
       "journey": "fork-process",
-      "summary": "The process splits in two — parent waits, child runs."
+      "summary": "The process splits in two — parent waits, child runs (fork COW)."
     },
     {
       "id": "pipe-ls-wc",
@@ -83,7 +83,7 @@
       "id": "mmap-fb0",
       "label": "mmap /dev/fb0",
       "verb": "Paint",
-      "status": "partial",
+      "status": "implemented",
       "journey": "mmap-fb0",
       "summary": "A process paints the screen — Doom-class, not a toy blit."
     },
@@ -91,7 +91,7 @@
       "id": "start-x",
       "label": "Start X",
       "verb": "Start",
-      "status": "partial",
+      "status": "implemented",
       "journey": "start-x",
       "summary": "startx — framebuffer and input, without patching X."
     },

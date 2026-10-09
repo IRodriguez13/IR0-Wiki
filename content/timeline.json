@@ -6,7 +6,7 @@
       "id": "first-boot",
       "label": "First boot",
       "image": "assets/isd-firstboot.png",
-      "summary": "Kernel reaches userspace init. No shell yet — proof the boot chain and syscall surface are alive.",
+      "summary": "Kernel reaches userspace init (runit). Proof the boot chain and syscall surface are alive.",
       "required": ["Multiboot/ISO", "serial console", "minimal init path"]
     },
     {
@@ -69,7 +69,7 @@
       "id": "tinyx",
       "label": "TinyX root window",
       "image": null,
-      "image_note": "Historic gray root-window capture reserved for this milestone — pedagogically more honest than a polished desktop mock.",
+      "image_note": "Historic gray root-window capture for this milestone — the real framebuffer the moment TinyX painted the first window.",
       "summary": "Unmodified TinyX/KDrive on IR0 Linux UAPI. Third-party software exposed a read(2) contract bug — fixed in the kernel, not in X.",
       "required": ["/dev/fb0", "unix sockets", "poll/epoll", "ext2 HOME for startx smoke"]
     },

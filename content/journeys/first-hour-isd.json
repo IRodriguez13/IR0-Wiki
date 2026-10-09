@@ -4,7 +4,7 @@
   "title": "First hour on ISD",
   "subtitle": "Login, $HOME, then compile something — the distro, not the kernel",
   "what_you_see": "First-boot asks for a user, then a getty, then a prompt in your home. tcc will compile a file you own.",
-  "why_it_matters": "ISD is the product you boot: rootfs, runit, accounts, /home. IR0 only supplies the syscalls. No ISD logo yet — the machine is the brand.",
+  "why_it_matters": "ISD is the product you boot: rootfs, runit, accounts, /home. IR0 supplies the syscalls; the machine in QEMU is the brand.",
   "diagram": "isd",
   "has_dual_view": true,
   "dual_view": {

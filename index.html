@@ -103,7 +103,7 @@
                     but I understand that's in the very long term.
                     <br>
                     <br>
-                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank" rel="noopener noreferrer">This
+                    <a href="https://github.com/IRodriguez13/IR0" target="_blank" rel="noopener noreferrer">This
                         is its GitHub Repository.</a>
                     <br>
                     <a href="https://discord.gg/XZ84aPXtxh" target="_blank" rel="noopener noreferrer">Discord
@@ -112,32 +112,30 @@
             </div>
 
             <div class="info-card">
-                <h2>Main Implemented Features</h2>
+                <h2>What IR0 does today</h2>
                 <ul class="feature-list">
-                    <li>✅ Monolithic modular kernel for x86-64 architecture</li>
-                    <li>✅ Complete virtual memory management with paging (MMU)</li>
-                    <li>✅ Complete interrupt and exception system (64 IDT vectors)</li>
-                    <li>✅ Round Robin Scheduler (simple implementation)</li>
-                    <li>✅ Complete process system with fork(), exit(), waitpid()</li>
-                    <li>✅ 23 implemented syscalls (from basic to memory management)</li>
-                    <li>✅ Complete MINIX filesystem with VFS (Virtual File System)</li>
-                    <li>✅ Hardware drivers: PS/2 (keyboard/mouse), ATA/IDE, Sound Blaster 16, VGA</li>
-                    <li>✅ Interactive shell in Ring 3 with built-in commands</li>
-                    <li>✅ Freestanding LibC with printf(), malloc(), free()</li>
-                    <li>✅ Multi-target build system (Desktop/Server/IoT/Embedded)</li>
+                    <li>Unix-like x86-64 kernel (C / ASM; C++/Rust drivers where configured)</li>
+                    <li>Multiboot → ISD userspace: runit PID1 + BusyBox ash (<code>make first-boot</code> / <code>make run</code>)</li>
+                    <li>Memory: PMM, 4-level paging, page faults, fork COW, lazy anon mmap/brk</li>
+                    <li>Processes: fork/exec/wait, signals, credentials, fd table</li>
+                    <li>Configurable scheduler (round-robin / priority) with blocking-syscall sleep</li>
+                    <li>Linux-shaped userspace ABI where it matters (syscalls, errno, /dev)</li>
+                    <li>VFS: MINIX (root), tmpfs, FAT16, EXT2 read-only, /proc /sys /dev /heart</li>
+                    <li>IPC: pipes; TTY and PS/2 input; framebuffer <code>/dev/fb0</code> and events</li>
+                    <li>Product: in-guest TinyCC, BusyBox, TinyX / Doom on framebuffer</li>
+                    <li>QEMU hardware: PS/2, ATA/AHCI, virtio (9p/net), SB16, serial</li>
                 </ul>
             </div>
 
             <div class="info-card">
                 <h2>Project Status</h2>
-                <p><strong>Version:</strong> 0.0.1 pre-release 3<br>
-                    <strong>Architecture:</strong> x86-64 (primary), x86-32 (experimental), ARM32 (planned)<br>
-                    <strong>Bootloader:</strong> GRUB<br>
-                    <strong>License:</strong> GNU General Public License v3.0<br>
-                    <strong>Development Status:</strong> Active Development<br>
+                <p><strong>Line:</strong> 0.0.1 (pre-release toward stable ship)<br>
+                    <strong>Architecture:</strong> x86-64 (primary); aarch64 in-tree<br>
+                    <strong>Userspace product:</strong> ISD (sibling repo) — rootfs, runit, BusyBox<br>
+                    <strong>Bootloader:</strong> GRUB / multiboot<br>
                     <strong>License:</strong> GNU GPL v3.0<br>
-                    <strong>Type:</strong> Monolithic Modular Kernel<br>
-                    <strong>ASM Syntax:</strong> Intel (NASM)
+                    <strong>Type:</strong> Monolithic modular kernel<br>
+                    <strong>Current focus:</strong> uniprocessor QEMU/VM, product via ISD
                 </p>
             </div>
         </section>
@@ -363,7 +361,7 @@
                 <h2>Directory Structure</h2>
                 <p>
                     How the file structure can change constantly, I prefer you consult it in the
-                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank"
+                    <a href="https://github.com/IRodriguez13/IR0" target="_blank"
                         rel="noopener noreferrer">GitHub Repository</a>.
                 </p>
 
@@ -632,13 +630,13 @@
                     <li><strong>Page Directory</strong> - Isolated virtual address space</li>
                 </ul>
                 
-                <h3>Implementation Notes</h3>
+                <h3>Memory capabilities</h3>
                 <ul class="feature-list">
-                    <li><strong>No Copy-on-Write:</strong> Fork operations don't use COW (intentional limitation)</li>
-                    <li><strong>No Swap:</strong> All memory is physical (no disk swapping)</li>
-                    <li><strong>Simple Algorithms:</strong> First-fit for both PMM and heap (not optimized)</li>
-                    <li><strong>No NUMA:</strong> Assumes uniform memory access</li>
-                    <li><strong>Single CPU:</strong> No SMP-aware memory management</li>
+                    <li><strong>Fork COW:</strong> user pages shared on fork; writes copy (<code>PAGE_COW</code>, <code>make smoke-mm-cow-lazy</code>)</li>
+                    <li><strong>Lazy alloc:</strong> anon mmap/brk on demand in the page-fault handler</li>
+                    <li><strong>Uaccess:</strong> kernel↔user copies via helpers (<code>copy_*_user</code>), not raw memcpy</li>
+                    <li><strong>Isolation:</strong> one CR3 / page directory per process</li>
+                    <li><strong>Focus:</strong> uniprocessor QEMU/VM — resident physical memory (no swap)</li>
                 </ul>
             </div>
             
@@ -699,23 +697,22 @@
                     <li>Ensures signals are processed synchronously before process execution continues</li>
                 </ul>
                 
-                <h3>Limitations</h3>
+                <h3>Available policies</h3>
                 <ul class="feature-list">
-                    <li><strong>No Priorities:</strong> All processes have equal priority</li>
-                    <li><strong>No Nice Values:</strong> Cannot adjust process priority</li>
-                    <li><strong>Cooperative Multitasking:</strong> Processes must yield voluntarily</li>
-                    <li><strong>No Preemption:</strong> Timer interrupts don't trigger context switches</li>
-                    <li><strong>Simple Queue:</strong> Linked list, not optimized for many processes</li>
-                    <li><strong>No Load Balancing:</strong> Single CPU only (no SMP support)</li>
+                    <li><strong>round_robin</strong> and <strong>priority</strong> (defconfig) as real backends</li>
+                    <li>Blocking syscalls (poll/pause/nanosleep) sleep on wait queues</li>
+                    <li>x86-64 assembly context switch with CR3 switch</li>
+                    <li>Signal handling integrated before each switch</li>
                 </ul>
             </div>
 
             <div class="info-card">
                 <h2>Project Status</h2>
-                <p><strong>Version:</strong> v0.0.01 pre-release candidate 1<br>
-                    <strong>Architecture:</strong> x86-64 (primary), x86-32 (experimental), ARM (in development)<br>
+                <p><strong>Line:</strong> 0.0.1 (pre-release)<br>
+                    <strong>Architecture:</strong> x86-64 primary; aarch64 in-tree<br>
+                    <strong>Userspace:</strong> ISD (runit + BusyBox)<br>
                     <strong>License:</strong> GNU GPL v3.0<br>
-                    <strong>Type:</strong> Monolithic Modular Kernel
+                    <strong>Type:</strong> Monolithic modular kernel
                 </p>
             </div>
 
@@ -742,7 +739,7 @@
                 <h3>✅ Memory Management</h3>
                 <ul class="feature-list">
                     <li>Virtual memory with paging (MMU)</li>
-                    <li>Kernel heap allocator (simple + advanced WIP)</li>
+                    <li>Kernel heap allocator + fork COW + lazy mmap/brk</li>
                     <li>Memory protection (Ring 0/3 isolation)</li>
                     <li>Memory layout: Kernel (1MB-8MB), Heap (8MB-32MB), User (1GB+)</li>
                     <li>Page fault handling with CR2 fault address reading</li>
@@ -978,137 +975,52 @@ SYS_EXEC(56)        - Execute program</pre>
             </div>
 
             <div class="info-card">
-                <h2>🐚 Shell System</h2>
-                <h3>✅ Interactive Shell</h3>
+                <h2>Userspace and ISD</h2>
+                <h3>Guest product</h3>
                 <ul class="feature-list">
-                    <li>Command-line interface in Ring 3 (user mode)</li>
-                    <li>Built-in commands: ls, ps, cat, mkdir, rmdir, touch, rm, fork, clear, help, exit, malloc, sbrk,
-                        exec</li>
+                    <li>PID1 <strong>runit</strong> + <strong>BusyBox ash</strong> on <code>/dev/console</code></li>
+                    <li>BusyBox applets (ls, cat, pipes, top, …) on the kernel ABI</li>
+                    <li>In-guest TinyCC: compile and run on the box</li>
+                    <li>ISD profiles: <code>minimal</code>, <code>development</code>, <code>desktop</code></li>
                 </ul>
-
-                <h3>✅ Shell Features</h3>
+                <h3>How to boot</h3>
                 <ul class="feature-list">
-                    <li>Command parsing and execution</li>
-                    <li>Process management integration</li>
-                    <li>Filesystem operation support</li>
-                    <li>Memory management testing</li>
-                    <li>Error handling and feedback</li>
+                    <li><code>make first-boot PROFILE=minimal</code> — bootstrap ISD + image</li>
+                    <li><code>make run PROFILE=minimal</code> — QEMU GTK with ISD disk</li>
+                    <li>Layout: sibling repos <code>IR0/</code> and <code>ISD/</code></li>
+                </ul>
+            </div>
+
+                        <div class="info-card">
+                <h2>Networking and hostshare</h2>
+                <ul class="feature-list">
+                    <li>virtio-net and sockets on the product / smoke path</li>
+                    <li>virtio-9p hostshare: mount host directories in the guest</li>
+                    <li>Contracts documented in the IR0 tree (<code>virtio.md</code>, session smokes)</li>
                 </ul>
             </div>
 
             <div class="info-card">
-                <h2>🌐 Network System</h2>
-                <h3>� Custom TCP/IP Stack (Planned)</h3>
+                <h2>Build and validation</h2>
                 <ul class="feature-list">
-                    <li>Designing an in-house IPv4/TCP/UDP pipeline</li>
-                    <li>Lightweight socket interface wired into IR0 syscalls</li>
-                    <li>Ethernet driver bring-up before higher-level protocols</li>
-                    <li>Focus on correctness over feature count for the first release</li>
-                </ul>
-                <p><small><strong>Status:</strong> There is no network connectivity yet; groundwork is in progress to
-                        code the entire stack ourselves.</small></p>
-            </div>
-
-            <div class="info-card">
-                <h2>🔧 Build System</h2>
-                <h3>✅ Multi-Target Build</h3>
-                <ul class="feature-list">
-                    <li>Desktop target (full features, 256MB heap, 1024 processes)</li>
-                    <li>Server target (optimized networking, 1GB heap, 4096 processes)</li>
-                    <li>IoT target (power management, 16MB heap, 64 processes)</li>
-                    <li>Embedded target (minimal features, 4MB heap, 16 processes)</li>
-                </ul>
-
-                <h3>✅ Multi-Architecture</h3>
-                <ul class="feature-list">
-                    <li>x86-64 production support</li>
-                    <li>x86-32 experimental support</li>
-                    <li>ARM development framework</li>
-                    <li>Architecture abstraction layer (HAL)</li>
+                    <li><code>make kernel-x64.bin</code> / <code>make run</code> — build and QEMU</li>
+                    <li><code>make menuconfig</code> — drivers, FS, scheduler, init</li>
+                    <li>Gates: <code>arch-guard</code>, build matrix, QEMU / KTM smokes</li>
+                    <li>Primary architecture x86-64; aarch64 in-tree</li>
                 </ul>
             </div>
 
             <div class="info-card">
-                <h2>⚠️ Current Limitations</h2>
-                <h3>❌ Not Yet Implemented</h3>
+                <h2>Capabilities by area</h2>
                 <ul class="feature-list">
-                    <li>SMP (Symmetric Multiprocessing) support</li>
-                    <li>Dynamic kernel modules</li>
-                    <li>Advanced IPC (pipes, message queues)</li>
-                    <li>Network stack (TCP/IP)</li>
-                    <li>USB support</li>
-                    <li>Advanced GUI/Window manager</li>
-                    <li>Signal handling</li>
-                    <li>Copy-on-write memory</li>
-                    <li>Swap memory support</li>
-                    <li>Advanced filesystem features (ext2/3/4)</li>
+                    <li><strong>MM:</strong> fork COW, page faults, brk/mmap</li>
+                    <li><strong>Processes:</strong> signals, wait/reap, reparent to init</li>
+                    <li><strong>FS:</strong> MINIX rw, FAT16, EXT2 RO, tmpfs, pseudo-FS</li>
+                    <li><strong>IPC / TTY:</strong> pipes, termios, PS/2 → TTY</li>
+                    <li><strong>Graphics:</strong> <code>/dev/fb0</code>, TinyX, Doom</li>
+                    <li><strong>Docs:</strong> see <code>Documentation/</code> in this repo (IR0 mirror)</li>
                 </ul>
-
-                <h3>⚠️ Known Issues</h3>
-                <ul class="feature-list">
-                    <li>Fork() context switching needs refinement</li>
-                    <li>Limited ELF loader functionality</li>
-                    <li>No zombie process reaping in init</li>
-                    <li>Basic memory allocator (advanced versions in development)</li>
-                    <li>Single CPU support only</li>
-                </ul>
-            </div>
-
-            <div class="info-card">
-                <h2>📊 Technical Specifications</h2>
-                <h3>Memory Layout</h3>
-                <div class="code-block">
-                    <pre>Kernel Space: 0x100000 - 0x800000 (1MB-8MB)
-Heap Space:   0x800000 - 0x2000000 (8MB-32MB, 24MB total)
-User Space:   0x40000000+ (1GB+)</pre>
-                </div>
-
-                <h3>Performance Metrics</h3>
-                <ul class="feature-list">
-                    <li>Context switch time: ~microseconds (assembly optimized)</li>
-                    <li>Scheduler complexity: O(log n) with Red-Black Tree</li>
-                    <li>Memory allocation: O(1) for simple allocator</li>
-                    <li>Interrupt latency: Minimal with optimized ISRs</li>
-                </ul>
-
-                <h3>Resource Limits (Desktop Target)</h3>
-                <ul class="feature-list">
-                    <li>Maximum processes: 1024</li>
-                    <li>Maximum threads: 4096</li>
-                    <li>Heap size: 256MB</li>
-                    <li>Scheduler quantum: 10ms</li>
-                    <li>I/O buffer size: 64KB</li>
-                </ul>
-            </div>
-
-            <div class="info-card">
-                <h2>🎯 Roadmap</h2>
-                <h3>Short Term (Next Release)</h3>
-                <ul class="feature-list">
-                    <li>Fix fork() context switching issues</li>
-                    <li>Implement proper zombie reaping</li>
-                    <li>Bootstrap the in-house TCP/IP stack</li>
-                    <li>Improve ELF loader</li>
-                    <li>Add USB framework</li>
-                </ul>
-
-                <h3>Medium Term</h3>
-                <ul class="feature-list">
-                    <li>SMP support</li>
-                    <li>Advanced GUI system</li>
-                    <li>Basic networking expansion (more protocols, optimizations)</li>
-                    <li>Dynamic kernel modules</li>
-                    <li>Advanced IPC mechanisms</li>
-                </ul>
-
-                <h3>Long Term</h3>
-                <ul class="feature-list">
-                    <li>Native application support (Doom, GCC, Bash)</li>
-                    <li>Complete POSIX compatibility</li>
-                    <li>Advanced filesystem support</li>
-                    <li>Hardware abstraction improvements</li>
-                    <li>Performance optimizations</li>
-                </ul>
+                <p>Current focus: <strong>uniprocessor</strong> QEMU/VM, userspace product via <strong>ISD</strong>.</p>
             </div>
         </section>
 
@@ -1537,7 +1449,7 @@ make unibuild FILES="fs/ramfs.c fs/vfs.c"</pre>
                     <br>
                     <br>
                     The best way to understand the internal operation is by reviewing the source code in the
-                    <a href="https://github.com/IRodriguez13/IR0-Kernel" target="_blank" rel="noopener noreferrer"
+                    <a href="https://github.com/IRodriguez13/IR0" target="_blank" rel="noopener noreferrer"
                         class="link-repo">GitHub Repository</a>.
                 </p>
             </div>
@@ -1557,41 +1469,30 @@ make unibuild FILES="fs/ramfs.c fs/vfs.c"</pre>
                     <li>Basic process state management (Ready, Running, Blocked)</li>
                     <li>Optimized context switching in assembly</li>
                 </ul>
-                <h3>Upcoming Improvements:</h3>
+                <h3>Scheduler notes</h3>
                 <ul class="feature-list">
-                    <li>Preemptive scheduler implementation</li>
-                    <li>CFS algorithm for fair CPU distribution</li>
-                    <li>Real-time scheduling support</li>
-                    <li>Load balancing between cores</li>
+                    <li>Policy selected via <code>CONFIG_SCHEDULER_POLICY</code> (RR / priority)</li>
+                    <li>Blocked syscalls yield through wait queues</li>
+                    <li>See <code>Documentation/SCHEDULING.md</code></li>
                 </ul>
                 <p><strong>Files:</strong> scheduler/scheduler.c, scheduler/task.h, scheduler/switch/switch.asm</p>
             </div>
 
             <div class="info-card">
-                <h2>💾 Filesystem</h2>
+                <h2>Filesystem (VFS)</h2>
                 <p>
-                    Own filesystem based on <a href="https://es.wikipedia.org/wiki/Ext2" target="_blank"
-                        rel="noopener noreferrer">EXT2</a> but with modern innovations. The distinctive feature
-                    is the integration of a vectorial database to optimize file search and indexing operations.
+                    Centralized VFS: policy (open/read/write/chmod/chown) lives in
+                    <code>fs/vfs.c</code>; backends implement the operations.
                 </p>
-                <h3>Technical Features:</h3>
+                <h3>Active backends</h3>
                 <ul class="feature-list">
-                    <li>Hierarchical directory structure</li>
-                    <li>Support for files up to 2TB</li>
-                    <li>Journaling for failure recovery</li>
-                    <li>Transparent file compression</li>
-                    <li>Vectorial indexing for fast searches</li>
+                    <li><strong>MINIX</strong> — product rootfs (rw)</li>
+                    <li><strong>tmpfs</strong> — volatile in-memory</li>
+                    <li><strong>FAT16</strong> — on-disk mount</li>
+                    <li><strong>EXT2</strong> — read-only mount</li>
+                    <li><strong>Pseudo:</strong> /proc, /sys, /dev, /heart</li>
                 </ul>
-                <h3>Innovations:</h3>
-                <ul class="feature-list">
-                    <li>Integration with <a href="https://github.com/victor-base/libvictor" target="_blank"
-                            rel="noopener noreferrer">libvictor</a> for semantic searches</li>
-                    <li>Intelligent cache based on access patterns</li>
-                    <li>Extended metadata support</li>
-                    <li>File-level encryption</li>
-                </ul>
-                <p><strong>Status:</strong> Active development</p>
-                <p><strong>Files:</strong> fs/ext2.c, fs/victor_index.c, fs/journal.c</p>
+                <p><strong>Block:</strong> ATA + AHCI. Details in <code>Documentation/FILESYSTEM.md</code>.</p>
             </div>
 
             <div class="info-card">

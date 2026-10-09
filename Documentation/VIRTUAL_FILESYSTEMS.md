@@ -1,273 +1,267 @@
-# Virtual Filesystems in IR0 Kernel
+# IR0 Virtual Filesystems
 
-This document provides detailed information about the pseudo-filesystems (virtual filesystems) implemented in the IR0 kernel. For complete filesystem subsystem documentation, see `FILESYSTEM.md`.
+> **Last verified:** 2026-09-04
+> **Source of truth:** `fs/procfs.c`, `fs/sysfs.c`, `fs/devfs.c`, `fs/heartfs.c`,
+> `fs/pseudo_fs_registry.c`, `fs/pseudo_fs_nodes.c`,
+> `kernel/syscalls/mm_syscalls.c` (`sys_sysinfo`),
+> `fs/vfs.c` (`vfs_statfs`), `includes/ir0/statfs.h`,
+> `kernel/test/test_procfs.c` (`procfs_pid_maps` ktest),
+> [`PSEUDO_FS_HEART.md`](PSEUDO_FS_HEART.md),
+> [`KLOG.md`](KLOG.md) (`/proc/kmsg`, `/dev/kmsg`)
 
-IR0 Kernel implements several virtual filesystems that provide access to kernel information and devices through the standard file interface. These filesystems follow the Unix philosophy of "everything is a file."
+This document focuses on pseudo-filesystems exposed through VFS.
 
-## Available Virtual Filesystems
+## `/heart`
 
-### 1. `/proc` - Process Information Filesystem
+IR0-only unified read-only facade (does **not** replace `/proc` or `/sys`).
+See [`PSEUDO_FS_HEART.md`](PSEUDO_FS_HEART.md) for layout, gates, and ARCH-3 notes.
 
-The `/proc` filesystem provides access to kernel and process information through virtual files. All files are read-only and dynamically generated.
+## `/proc`
 
-#### System Information Files
+`procfs` exposes runtime kernel and process data.
 
-- **`/proc/meminfo`** - Memory usage statistics
-  - Shows total and used physical memory
-  - Displays heap allocator statistics
-  - Includes frame allocation information
+### Common Endpoints
 
-- **`/proc/ps`** - Process list
-  - Lists all running processes
-  - Shows PID, state, and process names
-  - Similar to the `ps` command output
+- `/proc/meminfo` — includes `MemAvailable`, `Buffers` and `Cached`
+- `/proc/uptime`
+- `/proc/stat` — aggregate + `cpu0` jiffy lines for BusyBox `top` (see below)
+- `/proc/loadavg`
+- `/proc/version`
+- `/proc/filesystems`
+- `/proc/mounts`
+- `/proc/drivers`
+- `/proc/interrupts`
+- `/proc/blockdevices`
+- `/proc/partitions`
+- `/proc/kmsg` — structured klog records (`klog_read_records`, see [`KLOG.md`](KLOG.md))
+- `/proc/[pid]/status`
+- `/proc/[pid]/cmdline`
+- `/proc/[pid]/stat` — Linux `proc(5)` field order (CPU counters still mostly 0)
+- `/proc/[pid]/maps` — mapped memory regions (heap, mmap, stack) from `mm_struct`
+- `/proc/[pid]/statm` — page-count summary (`size resident shared text lib data dt`)
+- `/proc/self/...` — resolves to the calling process PID (Linux style)
+- `/proc/self` — symlink (`DT_LNK` in `ls /proc`); `readlink` target is the
+  decimal PID string (Linux `proc(5)`)
+- `/proc/[pid]/exe` — symlink to the absolute path last passed to `execve`
+  (`process_t.exe_path`, set in `elf_loader.c`)
 
-- **`/proc/netinfo`** - Network information
-  - Displays network interface information
-  - Shows ARP cache entries
-  - Network configuration details
+### `/proc/[pid]/maps` and `/proc/[pid]/statm`
 
-- **`/proc/drivers`** - Driver information
-  - Lists all registered kernel drivers
-  - Shows driver names, versions, and languages (C/C++/Rust)
-  - Driver status information
+Both files are served by the dynamic `/proc` matcher
+(`proc_pid_file_match` in `fs/pseudo_fs_nodes.c`) and read a locked snapshot of
+`mm_struct` (`proc_fs_snap_acquire` in `fs/procfs.c`).
 
-- **`/proc/status`** - Current process status
-  - Information about the current process
-  - Process state, PID, memory usage
-  - Equivalent to `/proc/self/status`
+`maps` uses the Linux `proc(5)` line layout
+`start-end perms offset dev inode  pathname` and emits only regions IR0
+actually tracks, with real bounds and prot bits:
 
-- **`/proc/uptime`** - System uptime
-  - System uptime in seconds
-  - Time since kernel boot
-
-- **`/proc/version`** - Kernel version
-  - Kernel version string
-  - Build information (date, time, user, host, compiler)
-
-- **`/proc/cpuinfo`** - CPU information
-  - Processor details
-  - Architecture information
-
-- **`/proc/loadavg`** - System load average
-  - System load statistics
-  - CPU utilization metrics
-
-- **`/proc/filesystems`** - Supported filesystems
-  - Lists all registered filesystems
-  - Shows virtual filesystems (nodev) and physical filesystems
-  - Format: `nodev <name>` for virtual filesystems, `<name>` for physical
-
-- **`/proc/cmdline`** - Current process command line
-  - Command line arguments for the current process
-  - Equivalent to `/proc/self/cmdline`
-
-#### Process-Specific Files
-
-- **`/proc/[pid]/status`** - Process status by PID
-  - Detailed information about a specific process
-  - Replace `[pid]` with the process ID
-
-- **`/proc/[pid]/cmdline`** - Process command line by PID
-  - Command line arguments for a specific process
-  - Replace `[pid]` with the process ID
-
-#### Usage Examples
-
-```bash
-# View memory information
-cat /proc/meminfo
-
-# List all processes
-cat /proc/ps
-
-# Check system uptime
-cat /proc/uptime
-
-# View kernel version
-cat /proc/version
-
-# Get current process status
-cat /proc/status
-
-# Get process status by PID
-cat /proc/1/status
+```text
+<heap_start>-<heap_end> rw-p 00000000 00:00 0          [heap]
+<mmap_addr>-<mmap_end>  <r/w/x><p|s> 00000000 00:00 0
+<stack_start>-<end>     rw-p 00000000 00:00 0          [stack]
 ```
 
----
+`offset`/`dev`/`inode` are `0`/`00:00`/`0` because user mappings are not backed
+by on-disk inodes yet. Nothing is fabricated — a kernel thread with no user
+`mm` produces an empty `maps`.
 
-### 2. `/dev` - Device Filesystem
+`statm` reports real total virtual size (`size`, in pages) and resident pages
+(`resident`, from `mm_count_resident_user_pages`); `shared`, `text`, `lib`,
+`data` and `dt` are `0` (no per-segment accounting yet).
 
-The `/dev` filesystem provides access to hardware devices through special device files. This implements the Unix "everything is a file" philosophy for device access.
+Runnable proof: the `procfs_pid_maps` ktest (`kernel/test/test_procfs.c`) opens
+`/proc/self/maps` and `/proc/self/statm` via `sys_open`/`sys_read` and asserts
+the format under `make kernel-tests`.
 
-#### Standard Device Nodes
+### `/proc/[pid]/fd` and `/proc/[pid]/environ`
 
-- **`/dev/null`** - Null device
-  - **Read**: Always returns EOF (end of file)
-  - **Write**: Accepts all data and discards it
-  - **Use case**: Redirecting output to discard it (`> /dev/null`)
+- **`/proc/<pid>/fd/`** — directory listing numeric symlinks `0..63` for in-use
+  `fd_table` slots (`proc_readdir` + `DT_LNK`). Each `/proc/<pid>/fd/N` resolves
+  via `readlink(2)` / `proc_readlink()` to `fd_entry.path` when set, or
+  synthetics such as `[pipe]` / `[socket]` when the slot has no path string.
+- **`/proc/<pid>/environ`** — NUL-separated environment blob copied at exec into
+  `process_t.saved_environ` (`process_saved_environ_set` in `elf_loader.c`);
+  inherited on fork. Empty for kernel threads with no exec-time env.
 
-- **`/dev/zero`** - Zero device
-  - **Read**: Returns zeros (null bytes)
-  - **Write**: Accepts data but doesn't store it
-  - **Use case**: Creating zero-filled buffers
+Runnable proof: `procfs_pid_fd` and `procfs_pid_environ` ktests in
+`kernel/test/test_procfs.c`.
 
-- **`/dev/console`** - System console
-  - **Read**: Console input (not fully implemented)
-  - **Write**: Outputs to VGA text mode display
-  - **Permissions**: 0620 (read/write for owner and group)
+### `/proc/self` and `/proc/[pid]/exe` symlinks
 
-- **`/dev/tty`** - Current terminal
-  - **Read/Write**: Same as `/dev/console`
-  - **Use case**: Terminal device access
-  - **Permissions**: 0620
+- **`/proc/self`** — visible in `ls /proc` as `self` (`proc_readdir` +
+  `DT_LNK`). `readlink("/proc/self")` returns the caller's PID as decimal text;
+  `stat` reports `S_IFLNK`. Opening `/proc/self` as a directory lists the same
+  entries as `/proc/<pid>/` for the calling task.
+- **`/proc/<pid>/exe`** — listed under each live PID directory (`DT_LNK`).
+  `readlink` returns `process_t.exe_path` when set at exec; `-ENOENT` when the
+  task has no recorded executable (e.g. kernel thread).
 
-- **`/dev/kmsg`** - Kernel message buffer
-  - **Read**: Reads from circular kernel message buffer
-  - **Write**: Writes to kernel message buffer
-  - **Use case**: Kernel logging and message retrieval
-  - **Permissions**: 0600 (read/write for owner only)
-  - **Buffer size**: 4KB circular buffer
+Runnable proof: `procfs_self_symlink` and `procfs_pid_exe` ktests in
+`kernel/test/test_procfs.c`.
 
-- **`/dev/audio`** - Audio device
-  - **Read**: Audio input (not fully implemented)
-  - **Write**: Sends audio data to Sound Blaster driver
-  - **IOCTL**: Audio control (volume, play, stop)
-  - **Permissions**: 0660
+### `/sys/kernel/mm`
 
-- **`/dev/mouse`** - Mouse device
-  - **Read**: Returns mouse state (x, y, buttons)
-  - **IOCTL**: Mouse control (get state, set sensitivity)
-  - **Permissions**: 0660
-  - **Format**: Returns 3 integers (x, y, button state)
+Read-only kernel MM snapshot (same PMM + heap sources as `/proc/meminfo`):
+`MemTotal`, `MemFree`, `MemAvailable`, `MemUsed`, raw frame counters
+(`PmmTotalFrames`, `PmmUsedFrames`, `PmmFreeFrames`), `Slab`, `SlabTotal`,
+`SlabAllocs`, `PageSize`, `KStackMinFree`, `IrqNestMax`, `KStackPeak`.
+Registered in `fs/pseudo_fs_nodes.c` as `/sys/kernel/mm`.
 
-- **`/dev/net`** - Network device
-  - **Read**: Network status (not fully implemented)
-  - **Write**: Network commands (ping, ifconfig)
-  - **IOCTL**: Network control (send ping, get/set config)
-  - **Permissions**: 0660
+### `/proc` intermediate directories
 
-- **`/dev/disk`** - Disk device
-  - **Read**: Reads from disk at offset
-  - **Write**: Writes to disk at offset
-  - **IOCTL**: Disk control (read/write sector, get geometry)
-  - **Permissions**: 0660
+Registry subdirectories such as `/proc/net` and `/proc/bluetooth` have no exact
+node but hold registered leaves. `proc_stat()` reports them as real directories
+(`S_IFDIR | 0555`) with a live timestamp via `pseudo_fs_path_has_children()`, so
+`stat`/`ls -ld` behave like Linux instead of returning `ENOENT`.
 
-#### Usage Examples
+### `/proc/stat` (BusyBox `top`)
 
-```bash
-# Discard output
-command > /dev/null
+Registered via `pseudo_fs_register("/proc", "stat", …)` → `proc_stat_read()`.
 
-# Create zero-filled file
-dd if=/dev/zero of=zeros.bin bs=1024 count=1
+Contract (Linux `proc_stat(5)` / BusyBox `read_cpu_jiffy`):
 
-# Write to console
-echo "Hello" > /dev/console
-
-# Read kernel messages
-cat /dev/kmsg
-
-# Send audio data
-cat audio.raw > /dev/audio
+```text
+cpu  user nice system idle iowait irq softirq steal
+cpu0 user nice system idle iowait irq softirq steal
+…
 ```
 
----
+- Jiffies use `CONFIG_TICK_RATE_HZ`; idle from `clock_get_idle_milliseconds()`.
+- Non-idle time is split user/system heuristically (no per-process cputime yet).
+- Guest check: `python3 scripts/smoke_proc_stat_top.py` (ISD development disk +
+  `top -bn1`).
 
-### 3. RAMFS - RAM Filesystem
+### `/proc` readdir and `getdents`
 
-RAMFS is a simple in-memory filesystem for boot files and temporary data. All data is stored in kernel memory and is lost on reboot.
+`proc_readdir("/proc")` lists **numeric PID directories first**, then `pid/`, then
+static registry children. Reason: `sys_getdents` uses `GETDENTS_BATCH_MAX` (24)
+on a stack-sized `vfs_dirent` array; filling the batch with static names alone
+left BusyBox `top`/`ps` with **no** digit dirents → `no process info in /proc`.
+Static files remain openable by path even when truncated from a directory listing.
 
-#### Features
+### Notes
 
-- In-memory storage (no persistence)
-- Simple file-based interface
-- Maximum 64 files
-- Maximum 4KB per file
-- Maximum 255 characters per filename
+- Data is generated at read time.
+- Numeric formatting was hardened for 64-bit values.
+- Opens install real `fd_table` slots (`is_pseudo`); no global virtual fds for new opens.
+- Path-based readdir for `/proc`, `/proc/pid`, `/proc/pid/N` via `proc_readdir()`.
+- `/proc/kmsg` mirrors the same event ring as serial (not the legacy textual-only path).
 
-#### Usage
+### Memory and uptime reporting
 
-RAMFS is typically mounted at boot time for temporary file storage. Files can be created, read, and written like any regular filesystem.
+BusyBox `free` and `uptime` go through **`sysinfo(2)`** (syscall 99), not
+through `/proc`. While it was unimplemented the applets printed uninitialised
+stack after `ENOSYS`, which is where "57 days of uptime" and gigabytes of used
+RAM came from. `sys_sysinfo` fills uptime, load averages, memory totals and
+process count from kernel state; `_Static_assert`s pin the struct layout to the
+Linux ABI.
 
-```bash
-# Mount RAMFS (typically done at boot)
-mount -t ramfs none /tmp
+`MemAvailable` is reported equal to `MemFree`, and `Buffers` / `Cached` are
+zero. That is accurate rather than unimplemented: IR0 has no reclaimable page
+cache, so nothing is held back that a request could reclaim. `free` reads
+`MemAvailable` for its `available` column and printed `0` while the field was
+absent.
 
-# Create files in RAMFS
-touch /tmp/tempfile.txt
-echo "data" > /tmp/tempfile.txt
+### Timestamps
+
+Pseudo-filesystem `stat` handlers must call `pseudo_fs_stat_now()`, which sets
+`st_atime` / `st_mtime` / `st_ctime` from `clock_get_current_time()`. Handlers
+that only `memset` the struct report the 1970 epoch, which is what `ls -l`
+showed across `/proc`, `/sys` and `/heart`.
+
+Wall-clock time, not uptime: `tmpfs` and `minix_fs` both derived timestamps
+from the millisecond uptime counter and produced 1970 dates on a freshly booted
+system.
+
+### Mount visibility
+
+`/proc/mounts` lists the real VFS mount list, and `/etc/mtab` is a symlink to
+it, so `df` and `mount` see whatever is actually mounted. Only the root
+filesystem is mounted at boot, so a single real row is expected output, not a
+missing-mount bug.
+
+Pseudo-filesystems are not VFS mounts, but `proc_mounts_read()`
+(`fs/procfs.c`) appends them so the session sees the namespaces it is actually
+using, as Linux does:
+
+```
+proc /proc proc rw 0 0
+sysfs /sys sysfs rw 0 0
+devtmpfs /dev devtmpfs rw 0 0
 ```
 
----
+`vfs_statfs()` (`fs/vfs.c`) matches those prefixes before `find_mount()` and
+reports the Linux magic (`PROC_SUPER_MAGIC`, `SYSFS_MAGIC`, `TMPFS_MAGIC` for
+devfs, as devtmpfs) with zero blocks. Without that match `find_mount()` would
+attribute `/proc` to the root mount and `df` would print it with the size of
+the disk; the zero blocks also make `df` skip these rows without `-a`.
 
-### 4. TMPFS - Temporary Filesystem
+`/heart` is served through the same registry but is IR0-specific and is not
+listed.
 
-TMPFS is similar to RAMFS but optimized for temporary directories like `/tmp`. It provides a more structured inode-based filesystem.
+## `/dev`
 
-#### Features
+`devfs` exposes kernel device entry points.
 
-- In-memory storage with inode structure
-- Directory support
-- Maximum 128 files
-- Maximum 64KB per file
-- Maximum 255 characters per filename
-- Maximum 32 directories
-- Supports directory hierarchy
+### Common Nodes
 
-#### Usage
+- `/dev/null`, `/dev/zero`
+- `/dev/console`, `/dev/tty`
+- `/dev/kmsg` — same event backend as `/proc/kmsg` on read; writes → `klog_info("USER", …)`
+- `/dev/disk`
+- `/dev/net`
+- `/dev/audio`
+- `/dev/mouse`
 
-TMPFS is typically mounted for temporary storage:
+### Notes
 
-```bash
-# Mount TMPFS (typically done at boot)
-mount -t tmpfs none /tmp
+- Access uses standard syscall I/O from user-style binaries.
+- Device registration is routed through driver/bootstrap infrastructure.
 
-# Create files and directories
-mkdir /tmp/mydir
-touch /tmp/mydir/file.txt
-```
+## `/sys`
 
----
+`sysfs` exposes kernel/system data in a structured filesystem namespace.
+Nodes are registered in `pseudo_fs_nodes_register_all()` (`fs/pseudo_fs_nodes.c`)
+and backed by handlers in `fs/sysfs.c`.
 
-## Filesystem Type Summary
+### Common Endpoints
 
-| Filesystem | Type | Storage | Mount Point | Purpose |
-|-----------|------|---------|-------------|---------|
-| `proc` | Virtual | Dynamic | `/proc` | Kernel/process information |
-| `devfs` | Virtual | Dynamic | `/dev` | Device access |
-| `ramfs` | Virtual | Memory | Any | Simple temporary storage |
-| `tmpfs` | Virtual | Memory | Any | Structured temporary storage |
-| `minix` | Physical | Disk | Any | Persistent disk storage |
+- `/sys/kernel/hostname` — live hostname (read/write)
+- `/sys/kernel/version` / `/sys/kernel/osrelease` / `/sys/kernel/build`
+- `/sys/kernel/features` — compiled-in feature summary
+- `/sys/kernel/max_processes` — configured process table limit
+- `/sys/kernel/panic` — **write** any byte to force `panicex(TESTING)`
+  (root-only, `0644`); read returns help text
+- `/sys/kernel/reboot` — write `reboot` to request a synchronized restart
+- `/sys/kernel/poweroff` — write `poweroff` to request synchronized poweroff
+- `/sys/kernel/halt` — write `halt` to synchronize and halt the machine
+- `/sys/devices/system/cpu<N>` and `/sys/devices/system/cpu<N>/online`
+- `/sys/devices/system` / `/sys/devices/block`
+- `/sys/console/mode`
+- `/sys/class/net` and `/sys/class/net/<iface>/...` (dynamic per interface)
+- `/sys/class/bluetooth/hci0/{address,state}`,
+  `/sys/class/bluetooth/{topology/neighbors,sessions}`
 
-## Implementation Notes
+### Notes
 
-- All virtual filesystems are implemented as part of the VFS (Virtual File System) layer
-- Virtual filesystems don't require actual disk storage
-- Files in `/proc` and `/dev` are dynamically generated on access
-- RAMFS and TMPFS store data in kernel memory only
-- All virtual filesystems support standard file operations (open, read, write, stat, etc.)
+- Error handling paths use consistent negative errno returns.
+- Console and backend exposure route through facade-backed interfaces.
+- Directory `stat` uses `pseudo_fs_stat_now()` so `ls -l` shows wall-clock dates.
+- `/sys/kernel/panic` writes the full debugging dump to serial and a compact,
+  non-duplicated diagnostic summary to VGA/GTK; guest check:
+  `python3 scripts/smoke_sys_panic.py`.
+- Power-control nodes require an exact semantic command and are root-writable;
+  they route through `kernel_system_shutdown()` so storage is synchronized
+  before the platform reboot, poweroff or halt callback.
 
-## Viewing Available Filesystems
+## In-Memory Pseudo Backends
 
-To see all registered filesystems (virtual and physical):
+- `tmpfs`: writable memory-backed tree with uid/gid and umask-aware create.
+- `procfs`, `devfs`, `sysfs`: dynamic pseudo filesystems.
 
-```bash
-cat /proc/filesystems
-```
+## Strengths
 
-This will show output like:
-```
-nodev proc
-nodev devfs
-nodev ramfs
-nodev tmpfs
-minix
-```
-
-The `nodev` prefix indicates virtual filesystems that don't require a device.
-
----
-
-For more information about the VFS implementation, see the kernel source code in `fs/` directory.
-
+- Strong observability at runtime without external debug tooling.
+- Consistent user-facing access model through open/read/write/stat patterns.
+- Product exploration: ash + `cat /proc/kmsg` (in-kernel dbgshell removed).
+- BusyBox `top -bn1` works once `/proc/stat` + digit `/proc` dirents are present.

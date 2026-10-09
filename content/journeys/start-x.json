@@ -52,7 +52,7 @@
       "node": "userspace.xserver",
       "label": "TinyX root window",
       "what_ir0_does": "Server draws root window, accepts clients. Historic gray capture documents first success.",
-      "why_it_matters": "Pedagogically honest milestone — not replaced by a mock polished desktop.",
+      "why_it_matters": "Real milestone: TinyX on the kernel framebuffer — the gray root window you see in QEMU.",
       "implementation": { "file": "IR0/tests/ktm/userdev/ktm_x11_evdev_fb_case.c", "label": "KTM X11 case" },
       "deep_dive": { "file": "IR0/Documentation/README.md", "label": "IR0 README screenshots" }
     }

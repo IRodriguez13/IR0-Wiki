@@ -4,7 +4,7 @@
   "title": "Primera hora en ISD",
   "subtitle": "Login, $HOME y después compilá algo — la distro, no el kernel",
   "what_you_see": "First-boot pide un usuario, después un getty, después un prompt en tu home. tcc compila un archivo tuyo.",
-  "why_it_matters": "ISD es el producto que arrancás: rootfs, runit, cuentas, /home. IR0 solo pone los syscalls. Todavía no hay logo de ISD — la máquina es la marca.",
+  "why_it_matters": "ISD es el producto que arrancás: rootfs, runit, cuentas, /home. IR0 pone los syscalls; la máquina en QEMU es la marca.",
   "diagram": "isd",
   "has_dual_view": true,
   "dual_view": {

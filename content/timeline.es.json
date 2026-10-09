@@ -6,7 +6,7 @@
       "id": "first-boot",
       "label": "Primer boot",
       "image": "assets/isd-firstboot.png",
-      "summary": "El kernel llega al init de userspace. Todavía no hay shell — prueba de que la cadena de boot y la superficie de syscalls están vivas.",
+      "summary": "El kernel llega al init de userspace (runit). La cadena de boot y la superficie de syscalls están vivas.",
       "required": ["Multiboot/ISO", "consola serial", "path mínimo de init"]
     },
     {
@@ -69,7 +69,7 @@
       "id": "tinyx",
       "label": "Ventana raíz de TinyX",
       "image": null,
-      "image_note": "La captura histórica de la root window gris queda reservada para este hito — más honesta que un mock de escritorio pulido.",
+      "image_note": "Captura histórica de la root window gris de este hito — el framebuffer real en el momento en que TinyX pintó la primera ventana.",
       "summary": "TinyX/KDrive sin parches sobre UAPI Linux de IR0. Software de terceros expuso un bug de read(2) — el arreglo fue en el kernel, no en X.",
       "required": ["/dev/fb0", "unix sockets", "poll/epoll", "HOME ext2 para el smoke de startx"]
     },

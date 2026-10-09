@@ -1,34 +1,34 @@
 {
   "title": "Explore IR0",
   "subtitle": "Take IR0 apart while it's running",
-  "edition": "0.0.1-rc5",
-  "generated": "2026-09-16",
+  "edition": "0.0.1",
+  "generated": "2026-10-09",
   "normative_notice": "This site is an explanatory guide, not normative documentation. For specs see IR0/Documentation and mandocs at the pinned commit.",
   "repos": {
     "kernel": {
       "name": "IR0",
       "path": "../IR0",
-      "commit": "1c3b990e",
-      "docs_url": "https://github.com/IRodriguez13/IR0/tree/1c3b990e/Documentation"
+      "commit": "8a0cb324",
+      "docs_url": "https://github.com/IRodriguez13/IR0/tree/8a0cb324/Documentation"
     },
     "isd": {
       "name": "ISD",
       "path": "../ISD",
-      "commit": "74424b5"
+      "commit": "ab2f47f"
     },
     "wiki": {
       "name": "IR0-Wiki",
       "path": "..",
-      "commit": "a5932a0"
+      "commit": "e81f712"
     }
   },
   "editions": [
     {
-      "id": "0.0.1-rc5",
-      "label": "0.0.1-rc5",
-      "kernel_commit": "1c3b990e",
-      "isd_commit": "74424b5",
-      "generated": "2026-09-16",
+      "id": "0.0.1",
+      "label": "0.0.1",
+      "kernel_commit": "8a0cb324",
+      "isd_commit": "ab2f47f",
+      "generated": "2026-10-09",
       "current": true
     },
     {
@@ -43,8 +43,8 @@
   "today": {
     "headline": "Today's system",
     "items": [
-      "IR0 kernel @ 1c3b990e \u2014 smokes: IR0_LEGACY_SMOKE=1 smoke-userspace-segv, smoke-busybox-manifest, smoke-tcc-power-halt",
-      "ISD @ 74424b5 \u2014 rootfs profiles via make build ARCH=x86_64",
+      "IR0 kernel @ 8a0cb324 \u2014 smokes: IR0_LEGACY_SMOKE=1 smoke-userspace-segv, smoke-busybox-manifest, smoke-tcc-power-halt",
+      "ISD @ ab2f47f \u2014 rootfs profiles via make build ARCH=x86_64",
       "Atlas traces captured from QEMU serial when --run-smoke is used",
       "Three executable stories: NULL fault, ls /, TCC compile+halt"
     ]

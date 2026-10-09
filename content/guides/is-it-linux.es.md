@@ -2,7 +2,7 @@
 
 IR0 es un **kernel Unix-like independiente**. No es una distribución Linux, no es un fork de Linux y no es “Linux con parches”.
 
-Lo que **sí** comparte con Linux es deliberado y parcial:
+Lo que **sí** comparte con Linux es deliberado:
 
 - Una **ABI userspace compatible con Linux** cuando eso permite correr software existente **sin modificaciones específicas de IR0**.
 - Nodos de dispositivo familiares (`/dev/fb0`, `/dev/events0`, semántica TTY) alineados con lo que musl, BusyBox y TinyX ya esperan.
